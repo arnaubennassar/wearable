@@ -1,0 +1,242 @@
+swagger: '2.0'
+info:
+  version: '002'
+  title: IVF_API
+host: amdnxfot21.execute-api.ap-southeast-1.amazonaws.com
+basePath: /Dev
+schemes:
+  - https
+x-amazon-apigateway-request-validators:
+  body:
+    validateRequestBody: true
+    validateRequestParameters: false
+  params-only:
+    validateRequestBody: false
+    validateRequestParameters: true
+paths:
+  /storeHeart:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-amazon-apigateway-request-validator: body
+      parameters:
+        - in: body
+          name: RequestBodyModel
+          required: true
+          schema:
+            $ref: '#/definitions/heartDataModel'
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/successResult'
+      security:
+        - IVF_USERPOOL: []
+      x-amazon-apigateway-integration:
+        responses:
+          .*:
+            statusCode: '200'
+        uri: 'arn:aws:apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-1:001005271976:function:storeHeart/invocations'
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+  /getHeartData:
+    get:
+      produces:
+        - application/json
+
+      parameters:
+        - in: header
+          name: next
+          required: false
+          type: string
+          format: string
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/successResult'
+      security:
+        - IVF_USERPOOL: []
+      x-amazon-apigateway-integration:
+        responses:
+          .*:
+            statusCode: '200'
+        uri: 'arn:aws:apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-1:001005271976:function:getHeartDataUser/invocations'
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: aws_proxy
+  /getConditions:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: next
+          required: false
+          type: string
+          format: string
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/successResult'
+      x-amazon-apigateway-integration:
+        responses:
+          .*:
+            statusCode: '200'
+        uri: 'arn:aws:apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-1:001005271976:function:getConditions/invocations'
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: aws_proxy 
+  /getPersonalData:
+    get:
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/successResult'
+      security:
+        - IVF_USERPOOL: []
+      x-amazon-apigateway-integration:
+        responses:
+          .*:
+            statusCode: '200'
+        uri: 'arn:aws:apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-1:001005271976:function:getPersonalData/invocations'
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: aws_proxy 
+  /postOSID:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-amazon-apigateway-request-validator: body
+      parameters:
+        - in: body
+          name: postOSIDBodyModel
+          required: true
+          schema:
+            $ref: '#/definitions/postOSIDModel'
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/successResult'
+      security:
+        - IVF_USERPOOL: []
+      x-amazon-apigateway-integration:
+        responses:
+          .*:
+            statusCode: '200'
+        uri: 'arn:aws:apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-1:001005271976:function:postOSID/invocations'
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy   
+  /getNotifications:
+    get:
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: next
+          required: false
+          type: string
+          format: string
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/successResult'
+      security:
+        - IVF_USERPOOL: []
+      x-amazon-apigateway-integration:
+        responses:
+          .*:
+            statusCode: '200'
+        uri: 'arn:aws:apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-1:001005271976:function:getNotifications/invocations'
+        passthroughBehavior: when_no_match
+        httpMethod: GET
+        type: aws_proxy  
+  /postPersonalData:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-amazon-apigateway-request-validator: body
+      parameters:
+        - in: body
+          name: postPersonalDataBodyModel
+          required: true
+          schema:
+            $ref: '#/definitions/postPersonalDataModel'
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/successResult'
+      security:
+        - IVF_USERPOOL: []
+      x-amazon-apigateway-integration:
+        responses:
+          .*:
+            statusCode: '200'
+        uri: 'arn:aws:apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-1:001005271976:function:postPersonalData/invocations'
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy 
+securityDefinitions:
+    IVF_USERPOOL:
+      type: apiKey
+      name: Authorization
+      in: header
+      x-amazon-apigateway-authtype: cognito_user_pools
+      x-amazon-apigateway-authorizer:
+        type: cognito_user_pools
+        providerARNs:
+        - arn:aws:cognito-idp:ap-northeast-1:001005271976:userpool/ap-northeast-1_EZgTRML85
+definitions:
+  heartDataModel:
+    type: object
+    properties:
+      timeStamp:
+        type: integer
+      value:
+        type: number
+    required:
+      - timeStamp
+      - value
+  postOSIDModel:
+    type: object
+    properties:
+      OSID:
+        type: string
+    required:
+      - OSID
+  postPersonalDataModel:
+    type: object
+    properties:
+      height:
+        type: number
+      weight:
+        type: number
+      age:
+        type: number
+  subscribeDoctorModel:
+    type: object
+    properties:
+      email:
+        type: string
+      alias:
+        type: string
+  successResult:
+    type: object
+    properties:
+      successMessage:
+        type: string
