@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, Button, Image, StatusBar } from 'react-native';
 import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
 import * as userActions    from '../redux/actions/user';
+import * as BTActions    from '../redux/actions/BT';
 
 import NavButtons from './NavButtons';
 
@@ -12,12 +13,14 @@ import NavButtons from './NavButtons';
 function mapStateToProps(state){return{
   state: {
     user: state.user.user,
+    BT: state.BT.BT,
   }
 };};
 
 function mapDispatchToProps(dispatch){return {
     actions: {
       user: bindActionCreators(userActions, dispatch),   
+      BT: bindActionCreators(BTActions, dispatch),   
     }    
 }};
 //
@@ -29,6 +32,7 @@ class MainScreen extends Component {
                 <StatusBar backgroundColor="#F53B91" barStyle="light-content" />
                 <Text> PROFILE </Text>
                 <Button onPress={ () => this.props.navigation.navigateWithDebounce("PersonalDataScreen", {tokenAWS:this.props.state.user.tokenAWS, height:this.props.state.user.height, weight:this.props.state.user.weight, age:this.props.state.user.bday, actions:this.props.actions.user} ) } title="Edit Personal Data" />
+                <Button onPress={ () => this.props.navigation.navigateWithDebounce("BTScreen", {actions:this.props.actions.BT, state:this.props.state.BT} ) } title="Connect to wearable" />
                 <Button onPress={ () => this.props.actions.user.logout() } title="LOGOUT" />
             </Image>
         )

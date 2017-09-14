@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import { addNavigationHelpers, StackNavigator } from "react-navigation";
 import ProfileScreen from "../../components/ProfileScreen";
 import PersonalDataScreen from "../../components/PersonalDataScreen";
+import * as BT from "../../components/BlueTooth";
 // Icon
 import Icon from "react-native-vector-icons/FontAwesome";
 //Stack Navigation Configuration
@@ -19,6 +20,16 @@ const routeConfiguration = {
     screen: PersonalDataScreen,
     navigationOptions: {
       title: "Personal Data",
+      headerStyle: { backgroundColor: "#F53B91" }, //Header color
+      headerTintColor: "white", //Back arrow color
+      headerPressColorAndroid: "#54B674", //Ripple effect
+      headerBackTitle: "Back" //Text following the back arrow (iOS)
+    }
+  },
+  BTScreen: {
+    screen: BT.BTScreen,
+    navigationOptions: {
+      title: "BlueTooth",
       headerStyle: { backgroundColor: "#F53B91" }, //Header color
       headerTintColor: "white", //Back arrow color
       headerPressColorAndroid: "#54B674", //Ripple effect

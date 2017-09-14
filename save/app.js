@@ -17,7 +17,7 @@ import PersonalDataScreen from './components/PersonalDataScreen';
 //
 
 
-
+//import {BlueTooth} from './components/BlueTooth' 
 import * as BT from './components/BlueTooth';
 import { recieveBT } from './buissLogic/blue'
 
@@ -41,8 +41,9 @@ var APP  = React.createClass({
       OneSignal.addEventListener('registered', this.onRegistered);
       OneSignal.addEventListener('ids', this.onIds);
     //BLUETOOTH
-      BT.subscribe(this.BTGetData, this.BTDisconnected);
-      BT.connect(this.BTConnected);
+  //   BT.subscribe(this.BTGetData, this.BTDisconnected, this.BTDisabled);
+    // BT.connect(this.BTConnected);
+  //   BT.enable(this.BTEnabled);
   },
 
   componentWillUnmount() {
@@ -50,7 +51,12 @@ var APP  = React.createClass({
       OneSignal.removeEventListener('opened', this.onOpened);
       OneSignal.removeEventListener('registered', this.onRegistered);
       OneSignal.removeEventListener('ids', this.onIds);
-      BT.disconnect();
+      // BT.disconnect();
+      // BT.disable();
+  },
+  componentDidMount(){
+    // BT.subscribe(this.BTGetData, this.BTDisconnected, this.BTDisabled);
+    // BT.connect(this.BTConnected);
   },
 
   onReceived(notification) {
@@ -73,9 +79,15 @@ var APP  = React.createClass({
 //
 //RENDER THE UI
   render(){
+///////BT
+    // if(!this.props.state.BT.BT.enabled && this.props.state.user.user.appInitialized){
+    //   BT.enable(this.BTEnabled);
+    // }
+    // else if(this.props.state.BT.BT.enabled && !this.props.state.BT.BT.connected && !this.props.state.BT.BT.connecting){
+    //     BT.connect(this.BTConnected);
+    //     this.props.actions.BT.connecting();
+    // }
 
-
-    return (  <SplashScreen complete={this.props.actions.user.appInitialized}/>  )
 
 
 
@@ -91,11 +103,17 @@ var APP  = React.createClass({
       console.log('AUTH')
       return( <AuthScreen actions={this.props.actions.user} state={this.props.state.user.user}/> );
     }
-  //RENDER PERSONALDATASCREEN (+ login/register logic)
+  //RENDER PERSONALDATASCREEN 
     else if(!this.props.state.user.user.skipPersonalData)
     {
       console.log('PERSONALDATA')
       return( <PersonalDataScreen actions={this.props.actions.user} tokenAWS={this.props.state.user.user.tokenAWS}/> );
+    }
+  //RENDER BTSCREEN 
+    else if(!this.props.state.BT.BT.skip)
+    {
+      console.log('BT')
+      return( <BT.BTScreen actions={this.props.actions.BT} state={this.props.state.BT.BT}/> );
     }
   //RENDER TabNav (Top navigation ==> MainScreen)
     else 
@@ -104,16 +122,32 @@ var APP  = React.createClass({
       return ( <TabNav hideTabBar={this.props.state.tab.params.hideTabBar}/>  );
     }
   },
-  BTConnected(){
-    console.log('BTConnected!!!!!')
-    this.props.actions.BT.connected( Date.parse(new Date()) );
+  BTEnabled(){
+  //  BT.connect(this.BTConnected);
+    this.props.actions.BT.enabled();
+    //this.props.actions.BT.connecting();
+  },
+  BTDisabled(){
+    this.props.actions.BT.disabled();
+  },
+  BTConnected(success){
+    if(success){
+      this.props.actions.BT.connected( Date.parse(new Date()) );
+    }
+    else{
+      console.log('why this')
+      //BT.connect(this.BTConnected);
+      //this.props.actions.BT.desconnected();
+    }
   },
   BTDisconnected(){
+    BT.disconnect();
+    this.props.actions.BT.desconnected();
     console.log('BT DISConnected!!!!!')
   },
   BTGetData(data){
     console.log(data)
-    recieveBT(data, this.props.state.BT.BT.timeStamp);
+  //  recieveBT(data, this.props.state.BT.BT.timeStamp);
   }
 
 });

@@ -1,17 +1,18 @@
-// import React, { Component } from 'react'
-// import {
-//   Platform,
-//   ScrollView,
-//   StyleSheet,
-//   Switch,
-//   Text,
-//   TouchableOpacity,
-//   TouchableHighlight,
-//   View,
-//   Modal,
-//   ActivityIndicator,
-//   Image
-// } from 'react-native'
+import React, { Component } from 'react'
+import { NavigationActions } from 'react-navigation';
+import {
+//  Platform,
+//  ScrollView,
+  StyleSheet,
+//  Switch,
+  Text,
+  TouchableOpacity,
+  TouchableHighlight,
+  View,
+  Modal,
+  ActivityIndicator,
+  Image
+} from 'react-native'
 
 //import Toast from '@remobile/react-native-toast'
 import BluetoothSerial from 'react-native-bluetooth-serial'
@@ -19,49 +20,216 @@ import BluetoothSerial from 'react-native-bluetooth-serial'
 //import { Buffer } from 'buffer'
 //global.Buffer = Buffer
 //const iconv = require('iconv-lite')
+// export function enable (handler) {
+//     BluetoothSerial.enable()
+//     .then((res) => handler() )
+//     .catch((err) => console.log(err.message))
+// }
+
+// export function disable () {
+//   BluetoothSerial.disable()
+//   .then((res) => console.log(res) )
+//   .catch((err) => console.log(err.message))
+// }
+
+// export function subscribe(getData, connectionLost, disabled){
+//   // Promise.all([
+//   //     BluetoothSerial.isEnabled(),
+//   //     BluetoothSerial.list()
+//   //   ])
+//   //   .then((values) => {
+//   //     console.log('mec')
+//   //   })
+//   BluetoothSerial.subscribe('\r\n').then(  (data) => { console.log('subscribed BT') }  ) //trololoooo
+//   BluetoothSerial.on( 'data', (data) => { getData(data) } );
+//   BluetoothSerial.on( 'connectionLost', () => { connectionLost() } );
+//   BluetoothSerial.on('bluetoothDisabled', () => {  disabled()  }  )
+// }
+
+// export function connect(handler){
+//   //ACTION: CONECTING
+//   console.log('connecting')
+//   BluetoothSerial.connect('30:15:01:07:24:05')
+//     .then((res) => {
+//       //ACTION: BT CONNECTED
+//       console.log('Connected to device')
+//       this.write(() => {}, 'o');
+//       handler(true);
+//     })
+//     .catch((err) => {  
+//       console.log(err);
+//       handler(false);  
+//     })
+// }
+
+// export function disconnect(){
+//     BluetoothSerial.disconnect()
+//       .then(() => console.log('tro'))
+//       .catch((err) => console.log(err.message))
+// }
+
+// export function write (handler, message) {
+//   BluetoothSerial.write(message)
+//   .then((res) => {
+//     console.log('Successfuly wrote to device this: ')
+//     console.log(message)
+//   })
+//   .catch((err) => fail())
+// }
 
 
-export function subscribe(getData, connectionLost){
-  // Promise.all([
-  //     BluetoothSerial.isEnabled(),
-  //     BluetoothSerial.list()
-  //   ])
-  //   .then((values) => {
-  //     console.log('mec')
-  //   })
-  BluetoothSerial.subscribe('\r\n').then(  (data) => { console.log(data) }  ) //trololoooo
-  BluetoothSerial.on( 'data', (data) => { getData(data) } );
-  BluetoothSerial.on( 'connectionLost', () => { connectionLost() } );
+back = require("../resources/images/B1.png");
+wea = require("../resources/images/wearable.png");
+var actions;
+export class BTScreen extends Component {
+  enable () {
+    BluetoothSerial.enable()
+    .then((res) => this.enabled() )
+    .catch((err) => console.log(err.message))
+  }
+  connect(){
+    this.statusText = 'Connecting ...';
+    this.actions.connecting();
+    BluetoothSerial.connect('30:15:01:07:24:05')
+      .then((res) => {
+        //ACTION: BT CONNECTED
+        this.write('o');
+        this.connected(true);
+      })
+      .catch((err) => {  
+        this.connected(false);  
+      })
+    this.forceUpdate()
+  }
+  write (message) {
+    BluetoothSerial.write(message)
+    .then((res) => {
+      console.log('Successfuly wrote to device this: ')
+      console.log(message)
+    })
+    .catch((err) => console.log(err))
+  }
+  componentWillMount () {
+    if (this.props.navigation !== undefined){
+      const setParamsAction = NavigationActions.setParams({
+        params: { hideTabBar: true },
+        key: 'ProfileStack',
+      });
+      this.props.navigation.dispatch(setParamsAction);
+
+      this.actions = this.props.navigation.state.params.actions;
+    }
+    else{
+      this.actions = this.props.actions;
+    }
+    this.enable()
+  }
+  enabled(){
+    this.connect();
+    this.actions.enabled();
+  }
+  connected(success){
+    if(success){
+      this.statusText = 'CONNECTED'
+      this.actions.connected(  Date.parse(new Date())  )
+    }
+    else{
+      this.statusText = 'Fail. Tap to try again'
+    //  this.connect(this.connected)
+      this.actions.desconnected();
+    }
+    this.forceUpdate()
+  }
+  render() {
+      return (
+        <Image style={styles.container} source={back}>
+          <Text style={styles.t1}>1. Turn on your Bluetooth.</Text>
+          <Text style={styles.t2}>2. Pair it with HC-06.</Text>
+          <Image style={styles.wearable} source={wea}></Image>
+          {this.statusText !== 'Connecting ...' ? (
+            <TouchableOpacity
+              style={styles.retryTouch}
+              hitSlop={{ top: 5, bottom: 15, left: 15, right: 15 }}
+              onPress={ () => {this.connect()} }
+            >
+              <Text style={styles.skipText}>{this.statusText}</Text>
+            </TouchableOpacity>
+        ) : <Text style={styles.t3}>{this.statusText}</Text> }
+
+          {this.props.navigation === undefined ? (
+            <TouchableOpacity
+              style={styles.skipTouch}
+              hitSlop={{ top: 5, bottom: 15, left: 15, right: 15 }}
+              onPress={ () => {this.actions.skip()} }
+            >
+              <Text style={styles.skipText}>Skip this step for now</Text>
+            </TouchableOpacity>
+        ) : null }
+        </Image>
+      )
+    }
 }
-
-export function connect(handler){
-  //ACTION: CONECTING
-  BluetoothSerial.connect('30:15:01:07:24:05')
-  .then((res) => {
-    //ACTION: BT CONNECTED
-    console.log('Connected to device')
-    this.write(() => {}, 'o');
-    handler( Date.parse( new Date() ) );
-  })
-  .catch((err) => console.log(err.message))
-}
-
-export function disconnect(){
-    BluetoothSerial.disconnect()
-      .then(() => console.log('tro'))
-      .catch((err) => console.log(err.message))
-}
-
-export function write (handler, message) {
-  BluetoothSerial.write(message)
-  .then((res) => {
-    console.log('Successfuly wrote to device this: ')
-    console.log(message)
-  })
-  .catch((err) => fail())
-}
-
-
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignSelf: "stretch",
+    width: undefined,
+    height: undefined,
+    resizeMode: "cover"
+  },
+  t1: {
+    marginTop: 40,
+    marginLeft: 68,
+    marginRight: 68,
+    textAlign: "center",
+    fontFamily: "System",
+    fontWeight: "100",
+    fontSize: 14
+  },
+  t2: {
+    marginLeft: 68,
+    marginRight: 68,
+    textAlign: "center",
+    fontFamily: "System",
+    fontWeight: "100",
+    fontSize: 14
+  },
+  t3: {
+    marginBottom: 50,
+    marginLeft: 68,
+    textDecorationLine: "none",
+    marginRight: 68,
+    textAlign: "center",
+    fontFamily: "System",
+    fontWeight: "100",
+    fontSize: 14
+  },
+  retryTouch: {
+    marginBottom: 50,
+    marginLeft: 68,
+    marginRight: 68
+  },
+  wearable: {
+    marginLeft: 0,
+    flex: 1,
+    marginRight: 0,
+    marginTop:9,
+  },
+  // textDetail: {
+  //   marginRight: 8,
+  //   fontFamily: "System",
+  //   fontWeight: "100",
+  //   fontSize: 14
+  // },
+  skipText: {
+    textAlign: "center",
+    textDecorationLine: "underline",
+    fontFamily: "System",
+    fontWeight: "100",
+    fontSize: 14
+  },
+  skipTouch: { marginTop: 9, marginBottom: 50, marginLeft: 90, marginRight: 90 }
+});
 // export class BlueTooth extends Component {
 //   constructor (props) {
 //     super(props)
