@@ -110,11 +110,11 @@ var APP  = React.createClass({
       return( <PersonalDataScreen actions={this.props.actions.user} tokenAWS={this.props.state.user.user.tokenAWS}/> );
     }
   //RENDER BTSCREEN 
-    else if(!this.props.state.BT.BT.skip)
-    {
-      console.log('BT')
-      return( <BT.BTScreen actions={this.props.actions.BT} state={this.props.state.BT.BT}/> );
-    }
+    // else if(!this.props.state.BT.BT.skip)
+    // {
+    //   console.log('BT')
+    //   return( <BT.BTScreen actions={this.props.actions.BT} state={this.props.state.BT.BT}/> );
+    // }
   //RENDER TabNav (Top navigation ==> MainScreen)
     else 
     {
