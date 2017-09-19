@@ -19,7 +19,7 @@ import PersonalDataScreen from './components/PersonalDataScreen';
 
 //import {BlueTooth} from './components/BlueTooth' 
 import * as BT from './components/BlueTooth';
-import { recieveBT } from './buissLogic/blue'
+import { processData } from './buissLogic/dataProcessor'
 
 //CONNECT TO REDUX state & actions
 function mapStateToProps(state){return{state: state};};
@@ -41,8 +41,8 @@ var APP  = React.createClass({
       OneSignal.addEventListener('registered', this.onRegistered);
       OneSignal.addEventListener('ids', this.onIds);
     //BLUETOOTH
-  //   BT.subscribe(this.BTGetData, this.BTDisconnected, this.BTDisabled);
-    // BT.connect(this.BTConnected);
+       BT.subscribe(this.BTGetData, this.BTDisconnected, this.BTDisabled);
+       BT.connect(this.BTConnected);
   //   BT.enable(this.BTEnabled);
   },
 
@@ -146,8 +146,8 @@ var APP  = React.createClass({
     console.log('BT DISConnected!!!!!')
   },
   BTGetData(data){
-    console.log(data)
-  //  recieveBT(data, this.props.state.BT.BT.timeStamp);
+    console.log(data);
+    processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp);
   }
 
 });

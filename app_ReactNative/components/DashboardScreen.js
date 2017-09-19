@@ -13,6 +13,7 @@ import NavButtons from './NavButtons';
 function mapStateToProps(state){return{
   state: {
     user: state.user.user,
+    data: state.data.data,
   }
 };};
 

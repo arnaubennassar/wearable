@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { View, Text, Image, StatusBar, StyleSheet} from 'react-native';
 //
 // BUISSNESS LOGIC
-import initStorage from '../buissLogic/initStorage';
+import {initStorage} from '../buissLogic/storage';
 //
 // INIT APP CONTROL VARIABLES
 var storage = false;

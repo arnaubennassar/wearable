@@ -32,35 +32,35 @@ import BluetoothSerial from 'react-native-bluetooth-serial'
 //   .catch((err) => console.log(err.message))
 // }
 
-// export function subscribe(getData, connectionLost, disabled){
-//   // Promise.all([
-//   //     BluetoothSerial.isEnabled(),
-//   //     BluetoothSerial.list()
-//   //   ])
-//   //   .then((values) => {
-//   //     console.log('mec')
-//   //   })
-//   BluetoothSerial.subscribe('\r\n').then(  (data) => { console.log('subscribed BT') }  ) //trololoooo
-//   BluetoothSerial.on( 'data', (data) => { getData(data) } );
-//   BluetoothSerial.on( 'connectionLost', () => { connectionLost() } );
-//   BluetoothSerial.on('bluetoothDisabled', () => {  disabled()  }  )
-// }
+export function subscribe(getData, connectionLost, disabled){
+  // Promise.all([
+  //     BluetoothSerial.isEnabled(),
+  //     BluetoothSerial.list()
+  //   ])
+  //   .then((values) => {
+  //     console.log('mec')
+  //   })
+  BluetoothSerial.subscribe('\r\n').then(  (data) => { console.log('subscribed BT') }  ) //trololoooo
+  BluetoothSerial.on( 'data', (data) => { getData(data) } );
+  BluetoothSerial.on( 'connectionLost', () => { connectionLost() } );
+  BluetoothSerial.on('bluetoothDisabled', () => {  disabled()  }  )
+}
 
-// export function connect(handler){
-//   //ACTION: CONECTING
-//   console.log('connecting')
-//   BluetoothSerial.connect('30:15:01:07:24:05')
-//     .then((res) => {
-//       //ACTION: BT CONNECTED
-//       console.log('Connected to device')
-//       this.write(() => {}, 'o');
-//       handler(true);
-//     })
-//     .catch((err) => {  
-//       console.log(err);
-//       handler(false);  
-//     })
-// }
+export function connect(handler){
+  //ACTION: CONECTING
+  console.log('connecting')
+  BluetoothSerial.connect('30:15:01:07:24:05')
+    .then((res) => {
+      //ACTION: BT CONNECTED
+      console.log('Connected to device')
+      this.write(() => {}, 'o');
+      handler(true);
+    })
+    .catch((err) => {  
+      console.log(err);
+      handler(false);  
+    })
+}
 
 // export function disconnect(){
 //     BluetoothSerial.disconnect()
@@ -68,14 +68,14 @@ import BluetoothSerial from 'react-native-bluetooth-serial'
 //       .catch((err) => console.log(err.message))
 // }
 
-// export function write (handler, message) {
-//   BluetoothSerial.write(message)
-//   .then((res) => {
-//     console.log('Successfuly wrote to device this: ')
-//     console.log(message)
-//   })
-//   .catch((err) => fail())
-// }
+export function write (handler, message) {
+  BluetoothSerial.write(message)
+  .then((res) => {
+    console.log('Successfuly wrote to device this: ')
+    console.log(message)
+  })
+  .catch((err) => fail())
+}
 
 
 back = require("../resources/images/B1.png");

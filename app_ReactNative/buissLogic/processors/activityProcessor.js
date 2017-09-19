@@ -1,5 +1,5 @@
 /*@flow*/
-export function heartProcessor(data: Object, timeStamp){
+export function activityProcessor(data: Object, timeStamp){
   for (var i = 0; i < data.length; i++) {
     data[i].c += timeStamp; 
   };

@@ -1,5 +1,12 @@
 /*@flow*/
 
+
+
+export function dataUpdated(data){
+	return {type: "DATA_UPDATED", payload: data};
+}
+
+//BS...
 export function initLoadingData (){
   return {type: "DATA_LOADING"}
 }
