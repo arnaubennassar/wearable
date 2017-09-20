@@ -12,7 +12,7 @@ import NavButtons from './NavButtons';
 //REDUX CONNECTION
 function mapStateToProps(state){return{
   state: {
-    user: state.user.user,
+  //  user: state.user.user,
     data: state.data.data,
   }
 };};
@@ -26,6 +26,16 @@ function mapDispatchToProps(dispatch){return {
 
 class DashboardScreen extends Component {
     render() {
+      var len;
+      var temp;
+      if (this.props.state.data.temperature !== undefined){
+        len = this.props.state.data.temperature.length;
+        temp = this.props.state.data.temperature[len -1].v;
+      }
+      else {
+        len = null;
+        temp = '-';
+      }
         return(
             <Image style={styles.container} source={require('../resources/images/B3.png')} >
                 <TouchableOpacity
@@ -35,7 +45,7 @@ class DashboardScreen extends Component {
                     <Text style={styles.t1}>MyBBT</Text>
                     <View style={styles.BBTChartContainer}>
                         <VictoryLine
-                        domain={{x: [0, 6], y: [29, 41]}}
+                        domain={{y: [22, 26]}}
                         padding={0}
                         width={200}
                         height={50}
@@ -45,15 +55,14 @@ class DashboardScreen extends Component {
                             data: { stroke: "#969696" },
                           }}
                           interpolation="natural"
-                          data={ [
-                            {x: 1, y: Math.random() * 10 + 30, key: 0},
-                            {x: 2, y: Math.random() * 10 + 30, key: 1},
-                            {x: 3, y: Math.random() * 10 + 30, key: 2},
-                            {x: 4, y: Math.random() * 10 + 30, key: 3},
-                            {x: 5, y: Math.random() * 10 + 30, key: 4}
+                          data= {this.props.state.data.temperature  == undefined ? null : [
+                            {x: 1/*this.props.state.data.temperature[len - 4].c*/, y: this.props.state.data.temperature[len - 4].v},
+                            {x: 2/*this.props.state.data.temperature[len - 3].c*/, y: this.props.state.data.temperature[len - 3].v},
+                            {x: 3/*this.props.state.data.temperature[len - 2].c*/, y: this.props.state.data.temperature[len - 2].v},
+                            {x: 4/*this.props.state.data.temperature[len - 1].c*/, y: this.props.state.data.temperature[len - 1].v},
                           ]}
                         />
-                      <Text style={styles.t2}><Text style={{fontWeight:'900'}}>97.0</Text><Text style={{fontWeight:'100'}}> F</Text></Text>
+                      <Text style={styles.t2}><Text style={{fontWeight:'900'}}>{temp}</Text><Text style={{fontWeight:'100'}}> Cº</Text></Text>
                     </View>
                     <Image style={{width:20, height:48, marginTop:10, marginRight: 10}} source={require('../resources/images/termometer.png')} ></Image>
                 </TouchableOpacity>

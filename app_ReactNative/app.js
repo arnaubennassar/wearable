@@ -30,6 +30,8 @@ function mapDispatchToProps(dispatch){return {
     }       
 }};
 //
+var waitingBTReq = false; 
+var waitingBTData = false; 
 var APP  = React.createClass({
 //SETUP NOTIFICATIONS
   componentWillMount() {
@@ -42,7 +44,7 @@ var APP  = React.createClass({
       OneSignal.addEventListener('ids', this.onIds);
     //BLUETOOTH
        BT.subscribe(this.BTGetData, this.BTDisconnected, this.BTDisabled);
-       BT.connect(this.BTConnected);
+       BT.connect(this.BTConnected);    //OGT
   //   BT.enable(this.BTEnabled);
   },
 
@@ -79,6 +81,9 @@ var APP  = React.createClass({
 //
 //RENDER THE UI
   render(){
+    // if(!waitingBTData && petitionBTResponded){
+    //   BT.write(() => {}, 'k');
+    // }
 ///////BT
     // if(!this.props.state.BT.BT.enabled && this.props.state.user.user.appInitialized){
     //   BT.enable(this.BTEnabled);
@@ -146,8 +151,41 @@ var APP  = React.createClass({
     console.log('BT DISConnected!!!!!')
   },
   BTGetData(data){
-    console.log(data);
-    processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp);
+    //console.log(data);
+    if (!waitingBTReq && !waitingBTData ){//WAITING ACK
+      console.log("WAITING ACK 1");
+      if (data.data == "r\r\n") {
+        console.log("BT data request");
+        waitingBTData = true;
+        BT.write(() => {}, 'a');
+      }
+      else{
+        BT.write(() => {}, 'a');
+      }
+    }
+    else if (!waitingBTReq && waitingBTData){//WAITING DATA
+      console.log("WAITING DATA");
+      if (data.data == "r\r\n") {
+        BT.write(() => {}, 'a');
+      }
+      else{
+        processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp);
+        BT.write(() => {}, 'k');
+        waitingBTData = false;
+        petitionBTResponded = true;
+      }
+    }
+    else {//WAITING ACK
+      console.log("WAITING ACK 2")
+      if (data.data != "r\r\n") {
+        BT.write(() => {}, 'k');
+      }
+      else{
+        waitingBTData = true;
+        petitionBTResponded = false;
+        BT.write(() => {}, 'a');
+      }
+    }
   }
 
 });

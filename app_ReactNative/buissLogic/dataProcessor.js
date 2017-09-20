@@ -11,7 +11,7 @@ import { store } from '../redux/store';
 import { dispatch } from 'redux';
 
 export function processData(data, timeStamp){
-  console.log(data);
+//  console.log(data);
   var processedActivityData = null;
   var processedHeartData = null;
   var processedTemperatureData = null;

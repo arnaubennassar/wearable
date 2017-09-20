@@ -12,7 +12,7 @@ export function initStorage (handler){
 }
 
 function _initStorage (dataType: string, returnFunction){
-  console.log('initializing: ' + dataType);
+ // console.log('initializing: ' + dataType);
   AsyncStorage.getItem(dataType).then((settingsStr)=>{
     totalSamples = parseInt(settingsStr);
     if ( isNaN(totalSamples) ){
@@ -31,12 +31,12 @@ function _initStorage (dataType: string, returnFunction){
 }
 
 export function storeData(dataType, data: Object){
-  console.log('storing: ' + dataType);
+ // console.log('storing: ' + dataType);
   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
     totalSamples = parseInt(storedNSamples);
     AsyncStorage.setItem( dataType + totalSamples.toString, JSON.stringify(data) );
     AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', (totalSamples + 1).toString() );
-    console.log('A NEW TOTAL OF ' + totalSamples + dataType);
+  //  console.log('A NEW TOTAL OF ' + totalSamples + dataType);
   });
 }
   // var newSamples : number = 1;    //unit samples!!!
