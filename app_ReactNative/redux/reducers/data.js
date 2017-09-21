@@ -7,12 +7,12 @@ let cloneObject = function (obj){
 export const dataDefault: DataState =
 {
   data: {
-    data: {
-      activity:[],
-      heart:[],
-      temperature:[]
-    }, 
-  }
+    activity:[],
+    dailyActivity: 0,
+    activityObjective: 10000,
+    heart:[],
+    temperature:[]
+  }, 
 };
 
 type DataState = {
@@ -21,6 +21,8 @@ type DataState = {
       amount: number,
       timeStamp: string
     }],
+    dailyActivity: number,
+    activityObjective: number,
     heart:[{
       BPM: number,
       timeStamp: string
@@ -41,6 +43,9 @@ export const dataReducer = (state: DataState, action: Object) => {
           newState.data.activity = action.payload.activity;
         }
         else newState.data.activity.push.apply(newState.data.activity, action.payload.activity);
+      }
+      if (action.payload.activityIncrement != null){
+        newState.data.dailyActivity += action.payload.activityIncrement;
       }
       if (action.payload.heart != null){
         if(newState.data.heart === undefined){

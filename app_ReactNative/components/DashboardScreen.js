@@ -26,15 +26,16 @@ function mapDispatchToProps(dispatch){return {
 
 class DashboardScreen extends Component {
     render() {
-      var len;
-      var temp;
-      if (this.props.state.data.temperature !== undefined){
+      var len = 0;
+      var temp = '-';
+      var acti = 0;
+      if (this.props.state.data.temperature.length > 0){
+        console.log("  bigger  BIGGER");
         len = this.props.state.data.temperature.length;
         temp = this.props.state.data.temperature[len -1].v;
       }
-      else {
-        len = null;
-        temp = '-';
+      if (this.props.state.data.dailyActivity !== undefined){
+        acti = (this.props.state.data.dailyActivity / this.props.state.data.activityObjective) * 100;
       }
         return(
             <Image style={styles.container} source={require('../resources/images/B3.png')} >
@@ -55,7 +56,7 @@ class DashboardScreen extends Component {
                             data: { stroke: "#969696" },
                           }}
                           interpolation="natural"
-                          data= {this.props.state.data.temperature  == undefined ? null : [
+                          data= {(len < 5) ? null : [
                             {x: 1/*this.props.state.data.temperature[len - 4].c*/, y: this.props.state.data.temperature[len - 4].v},
                             {x: 2/*this.props.state.data.temperature[len - 3].c*/, y: this.props.state.data.temperature[len - 3].v},
                             {x: 3/*this.props.state.data.temperature[len - 2].c*/, y: this.props.state.data.temperature[len - 2].v},
@@ -90,11 +91,10 @@ class DashboardScreen extends Component {
                     <Image style={{width:48, height:57, marginTop:10}} source={require('../resources/images/termometer.png')} ></Image>
                     <View style={{marginLeft:30}}>
                       <VictoryPie
-                        animate={{ duration: 500, onLoad: {duration: 1000}  }}
                         width={115} height={115} padding={0}
                         data={ [
-                              {x: '75%', y: 75},
-                              {x: ' ', y: 25}
+                              {x: Math.round(acti).toString() + '%', y: acti},
+                              {x: ' ', y: 100 - acti}
                             ]}
                         innerRadius={38}
                         cornerRadius={25}

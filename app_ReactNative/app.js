@@ -169,7 +169,7 @@ var APP  = React.createClass({
         BT.write(() => {}, 'a');
       }
       else{
-        processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp);
+        processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password);
         BT.write(() => {}, 'k');
         waitingBTData = false;
         petitionBTResponded = true;

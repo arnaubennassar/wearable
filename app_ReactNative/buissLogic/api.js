@@ -27,8 +27,8 @@ export function postOSID (AWS: string, OS: string){
 	});
 }
 
-export function postHeartData (AWS: string, timeStamp: string, value: number){
-	fetch(baseURL + 'storeHeart', {  
+export function postData (data, timeStamp, AWS: string, endPoint: string, handler){
+	fetch(baseURL + 'postData', {  
 	  method: 'POST',
 	  headers: {
 	    'Accept': 'application/json',
@@ -37,18 +37,14 @@ export function postHeartData (AWS: string, timeStamp: string, value: number){
 	  },
 	  body: JSON.stringify({
 	    timeStamp: timeStamp,
-	    value: value
+	    data: data,
+	    DB: endPoint
 	  })
 	}).then(function (response){
-		console.log(response);
-		if(response.status == 401){
-			unauthHandle('postHeartData', {'timeStamp': timeStamp, 'value': value});
-			return;
-		}
+		handler(response);
 	});
 }
-
-export function getHeartData (AWS: string, next: string){
+export function getData (AWS: string, endPoint: string, next: string){
 	var head = {
 	    'Accept': 'application/json',
 	    'Content-Type': 'application/json',
@@ -59,29 +55,31 @@ export function getHeartData (AWS: string, next: string){
 		    'Accept': 'application/json',
 		    'Content-Type': 'application/json',
 		    'Authorization' : AWS,
-		    'next' : next
+		    'next' : next,
+		    'DB': endPoint
 		  }
 	  }
 
-	fetch(baseURL + 'getHeartData', {  
+	fetch(baseURL + 'getData', {  
 	  method: 'GET',
 	  headers: head,
 	}).then(function (response){
 		console.log(response);
-		if(response.status == 401){
-			unauthHandle('getHeartData', {'next': next});
-			return;
-		}
-		else if (response.status != 200){
-			return;
-		}
-		return response.json();
-	}).then(function (responseData){
-		 console.log("inside responsejson");
-		 console.log('response object:',responseData);
-		 console.log('HANDLE DATAAAA');
+	// 	if(response.status == 401){
+	// 		unauthHandle('getHeartData', {'next': next});
+	// 		return;
+	// 	}
+	// 	else if (response.status != 200){
+	// 		return;
+	// 	}
+	// 	return response.json();
+	// }).then(function (responseData){
+	// 	 console.log("inside responsejson");
+	// 	 console.log('response object:',responseData);
+	// 	 console.log('HANDLE DATAAAA');
     });
 }
+
 
 export function postPersonalData (AWS: string, height: number, weight: number, age: number){
 	fetch(baseURL + 'postPersonalData', {  

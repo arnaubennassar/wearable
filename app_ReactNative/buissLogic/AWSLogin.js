@@ -67,7 +67,7 @@ export function login(email: string, password: string, handler ){
   });
 }
 
-export function silentLogin(email: string, password: string){
+export function silentLogin(email: string, password: string, handler){
   const authenticationData = {
     Username: email,
     Password: password,
@@ -80,7 +80,6 @@ export function silentLogin(email: string, password: string){
     Pool: userPool
   };
   const cognitoUser = new CognitoUser(userData);
-  store.dispatch( silentLoginStart() );
   cognitoUser.authenticateUser(authenticationDetails, {
     onSuccess: (result) => {
       Config.credentials = new CognitoIdentityCredentials({
@@ -89,10 +88,10 @@ export function silentLogin(email: string, password: string){
           [`cognito-idp.${appConfig.region}.amazonaws.com/${appConfig.UserPoolId}`]: result.getIdToken().getJwtToken()
         }
       });
-      store.dispatch( loginSuccess( result.getIdToken().getJwtToken() ) );
+      handler( result.getIdToken().getJwtToken()  );
     },
     onFailure: (err) => {
-      store.dispatch( loginFail( err ) );
+      console.log( err );
     },
   });
 }

@@ -121,7 +121,7 @@ export default (AuthScreen = React.createClass({
       ////// LOAD USER DATA //////
       this.tokenAWS = res.message
       getPersonalData(this.tokenAWS, this.handlerPersonalData);
-
+      this.props.actions.loginSuccess(this.tokenAWS);
           //ADD NEW PERSISTENT CLOUD DATA HERE
 
 
@@ -166,7 +166,6 @@ export default (AuthScreen = React.createClass({
   ////
   //focus next field
   focusNextField(id) {
-    console.log(this.refs[id]);
     this.refs[id]._root.focus();
   },
   ////
