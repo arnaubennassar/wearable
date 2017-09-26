@@ -27,23 +27,21 @@ function mapDispatchToProps(dispatch){return {
 }};
 
 
-const heart   = (<View style={{width: 55}}><Image style={{width:20, height:48, marginTop:10, marginRight:5}} resizeMode='stretch' source={require('../resources/images/termometer.png')}/></View>)
-const moon    = (<View style={{width: 55}}><Icon style={{marginTop: 10}} size={ 48 } name={ "moon-o" } color={ '#979797' }/></View>)
-const runner  = (<View style={{width: 55}}><Image style={{width:40, height:48, marginTop:10}} resizeMode='stretch' source={require('../resources/images/runner.png')}/></View>)
+const heart   = (<View style={{width: 55}}><Image style={{marginLeft: 15, marginTop:10, width:20, height:48, marginTop:10, marginRight:5}} resizeMode='stretch' source={require('../resources/images/termometer.png')}/></View>)
+const moon    = (<View style={{width: 55}}><Icon style={{marginLeft: 5, marginTop: 15}} size={ 48 } name={ "moon-o" } color={ '#979797' }/></View>)
+const runner  = (<View style={{width: 55}}><Image style={{marginLeft: 5, marginTop:10, width:40, height:48, marginTop:10}} resizeMode='stretch' source={require('../resources/images/runner.png')}/></View>)
+const bground = require('../resources/images/B1.png');
 class MainScreen extends Component {
-    componentWillMount(){
-    //  sendNotification('test 8', "aqui una altre altre altre altre altre altre altre altrealtre altre altre altre altre altre altre altrealtre altre altre altre altre altre altre altrealtre altre altre altre altre altre altre altrealtre altre altre altre altre altre altre altre prova", 'runner', {fullDescription: "es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen. No sólo sobrevivió 500 años, sino que tambien ingresó como texto de relleno en documentos electrónicos, quedando esencialmente igual al original. Fue popularizado en los 60s con la creación de las hojas Letraset, las cuales contenian pasajes de Lorem Ipsum, y más recientemente con software de autoedición, como por ejemplo Aldus PageMaker, el cual incluye versiones de Lorem Ipsum"}, this.props.state.user.tokenAWS, (ans)=>{console.log(ans)});
-    }
     render() {
         return (
-            <Image style={styles.container} source={require('../resources/images/B1.png')} >
-                <FlatList style={{ width:'80%'}} 
+            <Image style={styles.container} source={bground} >
+                <FlatList
                   data={ this.props.state.notifications }
                   keyExtractor={item => item.timeStamp }  //Piece of data that its unique for each element on the list!!!
                   renderItem={ ({ item }) => (
                     <TouchableOpacity
-                      style={[styles.itemContainerRow, {height: 132}]}
-                      onPress={ () => {  this.props.navigation.navigateWithDebounce("DetailScreen")   } }
+                      style={[styles.itemContainerRow, {height: 132, width:'80%', alignSelf:'center'}]}
+                      onPress={ () => {  this.props.navigation.navigateWithDebounce("DetailScreen", {title: item.notification.headings.en, subtitle: item.notification.contents.en, fullDescription: item.notification.data.data.fullDescription, date:item.timeStamp})   } }
                     >
                       <View style={styles.itemContainerCol}>
                             {item.notification.data.icon == 'heart' ? heart : null}

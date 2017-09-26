@@ -32,7 +32,7 @@ const routeConfiguration = {
       title: "BlueTooth",
       headerStyle: { backgroundColor: "#F53B91" }, //Header color
       headerTintColor: "white", //Back arrow color
-      headerPressColorAndroid: "#54B674", //Ripple effect
+      headerPressColorAndroid: "pink", //Ripple effect
       headerBackTitle: "Back" //Text following the back arrow (iOS)
     }
   }

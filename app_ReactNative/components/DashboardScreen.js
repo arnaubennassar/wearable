@@ -25,7 +25,7 @@ function mapDispatchToProps(dispatch){return {
 //
 const moon = (<Image style={{width:150, height:66, marginTop:15}} source={require('../resources/images/moon.png')} ></Image> );
 const runner = (<Image style={{width:48, height:57, marginTop:10}} source={require('../resources/images/runner.png')} ></Image>);
-const termometer = <Image style={{width:20, height:48, marginTop:10, marginRight: 10}} source={require('../resources/images/termometer.png')} ></Image>;
+const termometer = <Image style={{width:20, height:48, marginTop:10, marginLeft: 30}} source={require('../resources/images/termometer.png')} ></Image>;
 const bground = require('../resources/images/B2.png');
 class DashboardScreen extends Component {
     
@@ -47,16 +47,17 @@ class DashboardScreen extends Component {
         return(
             <Image style={styles.container} source={bground} >
                 <TouchableOpacity
-                  style={[styles.touch1, {height: 105}]}
+                  style={[styles.touch1, {height: 132}]}
                   onPress={ () => {} }
                 >
+                  <View style={{flexDirection:'column'}}>
                     <Text style={styles.t1}>MyBBT</Text>
                     <View style={styles.BBTChartContainer}>
                         <VictoryLine
                         domain={{y: [22, 30]}}
                         padding={0}
-                        width={200}
-                        height={50}
+                        width={175}
+                        height={70}
                         animate={{duration: 500, onLoad: {duration: 1000}}}
                         easing="linear"
                           style={{
@@ -72,6 +73,7 @@ class DashboardScreen extends Component {
                         />
                       <Text style={styles.t2}><Text style={{fontWeight:'900'}}>{temp}</Text><Text style={{fontWeight:'100'}}> Cº</Text></Text>
                     </View>
+                  </View>
                     {termometer}
                 </TouchableOpacity>
 
@@ -92,13 +94,13 @@ class DashboardScreen extends Component {
 
 
                 <TouchableOpacity
-                  style={[styles.touch1, {height: 155}]}
+                  style={[styles.touch1, {height: 132}]}
                   onPress={ () => {} }
                 >
                     {runner}
-                    <View style={{marginLeft:30}}>
+                    <View style={{marginLeft:40}}>
                       <VictoryPie
-                        width={115} height={115} padding={0}
+                        width={110} height={110} padding={0}
                         data={ [
                               {x: Math.round(acti).toString() + '%', y: acti},
                               {x: ' ', y: 100 - acti}
@@ -115,7 +117,7 @@ class DashboardScreen extends Component {
                           labels: { fill: "#B5B2B2", fontSize: 20, fontWeight: "bold" }
                         }}
                       />
-                      <Text style={styles.t1}>of daily exercise</Text>
+                    <Text style={[styles.t1, {marginBottom:5}]}>of daily exercise</Text>
                     </View>
                 </TouchableOpacity>
             </Image>
@@ -164,10 +166,10 @@ const styles = StyleSheet.create({
       color: '#B5B2B2'
     },
     BBTChartContainer: {
-      marginTop: 4,
-      marginLeft: 0,
-      width: 200,       //130
-      height:50        //50
+      marginTop: 2,
+      marginLeft: 50,
+      width: 175,       //130
+      height:70        //50
     },
     BBTChart: {
       width: "auto",       //130

@@ -18,10 +18,9 @@ const routeConfiguration = {
   DetailScreen: {
     screen: DetailScreen,
     navigationOptions: {
-      title: "Detail",
-      headerStyle: { backgroundColor: "#1A1047" }, //Header color
-      headerTintColor: "#54B674", //Back arrow color
-      headerPressColorAndroid: "#54B674", //Ripple effect
+      headerStyle: { backgroundColor: "#F53B91" }, //Header color
+      headerTintColor: "white", //Back arrow color
+      headerPressColorAndroid: "pink", //Ripple effect
       headerBackTitle: "Back" //Text following the back arrow (iOS)
     }
   }
