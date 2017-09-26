@@ -18,7 +18,7 @@ var weightInput = "";
 var ageInput = "";
 var actions;
 var tokenAWS;
-i = require("../resources/images/B3.png");
+const backgra = require("../resources/images/B3.png");
 
 export default (PersonalDataScreen = React.createClass({
   componentWillMount () {
@@ -60,7 +60,7 @@ export default (PersonalDataScreen = React.createClass({
   },
   render() {
     return (
-      <Image style={styles.container} source={i}>
+      <Image style={styles.container} source={backgra}>
       <KeyboardAvoidingView style={styles.super} behavior="position">
         <Text style={styles.text1}>Set up your profile...</Text>
         <Item

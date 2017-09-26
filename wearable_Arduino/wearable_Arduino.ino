@@ -1,4 +1,4 @@
-//#include <SoftwareSerial.h>
+//#include <Software//Serial.h>
 //SoftwareSerial bluetooth(2, 3); // RX, TX
                           //LIBRARIES
 #define bluetooth Serial1
@@ -6,6 +6,8 @@
 #include <DateTime.h>
 #include <GY80.h>
 #include "MAX30100_PulseOximeter.h"
+
+float maxim = 0;
                   //SENSORS
 int ledPin = 6;
 int tmpPin = 45;
@@ -65,24 +67,24 @@ int indexBufferTemperature = 0;
 bool sendingDataRequestACK = true;
               //SETUP
 void setup() {
-  Serial.write("BOOT");
+  //Serial.write("BOOT");
   DateTime.sync(0000000000L);  // default start, Jan 1, 2010
-  Serial.begin(9600);
+  //Serial.begin(9600);
 //  pinMode(ledPin, OUTPUT); // for LED status
 //  pinMode(tmpPin, INPUT); // for temperature sensor
   bluetooth.begin(9600);
   if (!HeartSensor.begin()) {
-      Serial.println("FAILED");
+      //Serial.println("FAILED");
       for(;;);
   } else {
-      Serial.println("SUCCESS");
+      //Serial.println("SUCCESS");
   }
   IMUSensor = GY80();
   IMUSensor.begin();
 }
               //LOOP
 void loop() {
-  delay(500);
+  delay(100);
 //RECIEVE FROM BLUETOOTH
   listenBT();
 //TEMPERATURE SENSOR
@@ -92,8 +94,8 @@ void loop() {
 //HEART SENSOR
   readHeartSensor();
 //SEND BLUETOOTH    
-  if (indexActivity > activitySamplesLength/2 || indexHeart > heartSamplesLength/2 || indexTemperature > temperatureSamplesLength/2  ){
-    Serial.println("data ready");
+  if (indexActivity > activitySamplesLength/2 && indexHeart > heartSamplesLength/2 && indexTemperature > temperatureSamplesLength/2  ){
+  //  Serial.println("data ready");
     if (sendingDataRequestACK == true){
       requestSendBT();
     }
@@ -103,8 +105,8 @@ void loop() {
   }
   else {
     Serial.println("  data NOT ready");
-    Serial.print("  indexTemperature = ");
-    Serial.println(indexTemperature);
+  //  Serial.print("  indexTemperature = ");
+  //  Serial.println(indexTemperature);
   }
 }  
 
@@ -116,7 +118,7 @@ void readHeartSensor(){
     
     //SAMPLES IS FULL
     if (indexHeart == heartSamplesLength){
-      Serial.println("--COMPRESSING DATAAAAAAAAAAAAAAAAAAAAAAA");
+      //Serial.println("--COMPRESSING DATAAAAAAAAAAAAAAAAAAAAAAA");
       //compress SAMPLES data
       int steps = 0;
       for (int i = 0; i < heartSamplesLength; i += 2){
@@ -137,7 +139,7 @@ void readHeartSensor(){
     heartSamples[indexHeart].timeStamp = heartBuffer[0].timeStamp + ((heartBuffer[heartBufferLength - 1].timeStamp - heartBuffer[0].timeStamp)/2);
     ++ indexHeart;
   }
-  if (heartSampleRateIndex == heartSampleRate){
+  if (heartSampleRateIndex >= heartSampleRate){
     HeartSensor.update();
     heartSampleRateIndex = 0;
     heartBuffer[indexBufferHeart].timeStamp = DateTime.now();
@@ -156,7 +158,7 @@ void readIMUSensor(){
     indexBufferActivity = 0;
     //SAMPLES IS FULL
     if (indexActivity == activitySamplesLength){
-      Serial.println("--COMPRESSING DATAAAAAAAAAAAAAAAAAAAAAAA");
+      //Serial.println("--COMPRESSING DATAAAAAAAAAAAAAAAAAAAAAAA");
       //compress SAMPLES data
       int steps = 0;
       for (int i = 0; i < activitySamplesLength; i += 2){
@@ -165,7 +167,7 @@ void readIMUSensor(){
         ++steps;
       }
       indexActivity = activitySamplesLength/2;
-      activitySampleRate *= 2;
+    //  activitySampleRate *= 2;
     }
     activitySample sum = {0,0,0,0,0,0, DateTime.now()};
     time_t timeStampActivity = activityBuffer[0].timeStamp + ((activityBuffer[activityBufferLength - 1].timeStamp - activityBuffer[0].timeStamp)/2);
@@ -176,20 +178,29 @@ void readIMUSensor(){
     ++ indexActivity;
   }
   //SAMPLE RATE
-  if (activitySampleRateIndex == activitySampleRate){
+  if (activitySampleRateIndex >= activitySampleRate){
     //READ DATA
     activitySampleRateIndex = 0;
     GY80_scaled IMUValues = IMUSensor.read_scaled();
     activityBuffer[indexBufferActivity] = {
+      min(100,  max(abs(IMUValues.a_x), 20) - 20),
+      min(100,  max(abs(IMUValues.a_y), 20) - 20), 
+      min(100,  max(abs(IMUValues.a_z), 20) - 20),         //INVERTIT!!!!!!!!!!!!!!
       abs(IMUValues.g_x),
       abs(IMUValues.g_y),
       abs(IMUValues.g_x),
-      abs(IMUValues.a_x),
-      abs(IMUValues.a_y),
-      abs(IMUValues.a_x),
       DateTime.now(),
     };
+    maxim = max( maxim, max( abs(IMUValues.g_x), max(abs(IMUValues.g_y), abs(IMUValues.g_z))) ); 
     ++indexBufferActivity;
+    //Serial.println(' ');
+    //Serial.println(max( 0, max( abs(IMUValues.g_x), max(abs(IMUValues.g_y), abs(IMUValues.g_z))) ));
+   // Serial.println(' ');
+  
+    //Serial.println("  MAG");
+    //Serial.println(IMUValues.m_x);
+    //Serial.println(IMUValues.m_y);
+    //Serial.println(IMUValues.m_z);
   }
   else {
     ++activitySampleRateIndex;
@@ -243,7 +254,7 @@ void readTemperatureSensor(){
     temperatureSamples[indexTemperature].timeStamp = temperatureBuffer[0].timeStamp + ((temperatureBuffer[temperatureBufferLength - 1].timeStamp - temperatureBuffer[0].timeStamp)/2);
      ++ indexTemperature;
   }
-  if (temperatureSampleRateIndex == temperatureSampleRate){
+  if (temperatureSampleRateIndex >= temperatureSampleRate){
     temperatureSampleRateIndex = 0;
     temperatureBuffer[indexBufferTemperature].timeStamp = DateTime.now();
     temperatureBuffer[indexBufferTemperature].temperature = (5.0 * analogRead(tmpPin) * 100.0) / 1024;
@@ -260,29 +271,30 @@ void listenBT(){
   if( bluetooth.available() > 0 )       
   {
     val = bluetooth.read();
-    Serial.println(val);
+    //Serial.println(val);
     if(!sendingDataRequestACK){
-      Serial.println("current state => send DATA");
+      //Serial.println("current state => send DATA");
     }else {
-      Serial.println("current state => send ACK");
+      //Serial.println("current state => send ACK");
     }
     
     if ( val == 'N' ){
-      Serial.println("sync time");
+      Serial.println("=== sync time RECEIVED ===>");
       DateTime.sync(0000000000L);
     }
     if( val == '@' ){/////REQ ACK recieved
-      Serial.print("REQ ACK");
+      Serial.println("=== REQUEST/RESET ACK RECEIVED ===>");
       sendingDataRequestACK = !sendingDataRequestACK;
       if(!sendingDataRequestACK){
-        Serial.println(", next state => send DATA");
+        //Serial.println(", next state => send DATA");
       }else {
-        Serial.println(", next state => send ACK");
+        //Serial.println(", next state => send ACK");
       }
     }    
     if ( val == 'B'){/////DATA ACK recieved
       if(!sendingDataRequestACK){
-        Serial.println("DATA ACK, next state => waiting data to be ready => send ACK");
+        Serial.println("=== DATA ACK RECEIVED ===>");
+        //Serial.println("DATA ACK, next state => waiting data to be ready => send ACK");
         sendingDataRequestACK = true;
         indexActivity = 0;
         indexHeart = 0;
@@ -298,10 +310,11 @@ void listenBT(){
 
                 //SEND BLUETOOTH
 void requestSendBT(){
+  Serial.println("<=== SENDING DATA REQUEST ===");
   bluetooth.println( 'r' );
 }
 void sendBT (){
-  Serial.println("sending data");
+  Serial.println("<=== SENDING DATA ===");
   bluetooth.print( "{\"t\":[" );
   sendTemperature();
   bluetooth.print( "],\"h\":[" );
@@ -310,7 +323,7 @@ void sendBT (){
   sendActivity();
   bluetooth.print( "]" );
   bluetooth.println( "}" );
-//  Serial.println("sent");
+//  //Serial.println("sent");
 
 }
 void sendTemperature (){

@@ -22,8 +22,8 @@ if(Platform.OS === 'ios') {
     // tint color is passed to text and icons (if enabled) on the tab bar
     activeTintColor: '#F9308A',
     inactiveTintColor: '#FB92C3',
-    activeBackgroundColor: 'white',
-    inactiveBackgroundColor: 'white',
+    activeBackgroundColor: '#FDF3FB',
+    inactiveBackgroundColor: '#FDF3FB',
     // style:{
     //   backgroundColor: 'rgba(0, 0, 0, 0)',
     //   borderTopWidth: 0,
@@ -45,7 +45,7 @@ else {
       opacity: 0
     },
     style: {
-      backgroundColor: '#FDF3FB',
+      backgroundColor: '#FCF1FA',
     },
     iconStyle: {
         flex: 1,

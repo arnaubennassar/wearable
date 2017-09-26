@@ -14,6 +14,34 @@ x-amazon-apigateway-request-validators:
     validateRequestBody: false
     validateRequestParameters: true
 paths:
+  /sendNotification:
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-amazon-apigateway-request-validator: body
+      parameters:
+        - in: body
+          name: RequestBodyModel
+          required: true
+          schema:
+            $ref: '#/definitions/heartDataModel'
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/successResult'
+      security:
+        - IVF_USERPOOL: []
+      x-amazon-apigateway-integration:
+        responses:
+          .*:
+            statusCode: '200'
+        uri: 'arn:aws:apigateway:ap-southeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-southeast-1:001005271976:function:sendSingleNotification/invocations'
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
   /storeHeart:
     post:
       consumes:

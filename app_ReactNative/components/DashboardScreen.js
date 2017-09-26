@@ -23,22 +23,29 @@ function mapDispatchToProps(dispatch){return {
     }    
 }};
 //
-
+const moon = (<Image style={{width:150, height:66, marginTop:15}} source={require('../resources/images/moon.png')} ></Image> );
+const runner = (<Image style={{width:48, height:57, marginTop:10}} source={require('../resources/images/runner.png')} ></Image>);
+const termometer = <Image style={{width:20, height:48, marginTop:10, marginRight: 10}} source={require('../resources/images/termometer.png')} ></Image>;
+const bground = require('../resources/images/B2.png');
 class DashboardScreen extends Component {
+    
     render() {
       var len = 0;
       var temp = '-';
       var acti = 0;
       if (this.props.state.data.temperature.length > 0){
-        console.log("  bigger  BIGGER");
         len = this.props.state.data.temperature.length;
-        temp = this.props.state.data.temperature[len -1].v;
+        sum = 0;
+        for (var i = 0; i < this.props.state.data.temperature.length; i++) {
+          sum += this.props.state.data.temperature[i].v;
+        };
+        temp = sum / len;
       }
       if (this.props.state.data.dailyActivity !== undefined){
         acti = (this.props.state.data.dailyActivity / this.props.state.data.activityObjective) * 100;
       }
         return(
-            <Image style={styles.container} source={require('../resources/images/B3.png')} >
+            <Image style={styles.container} source={bground} >
                 <TouchableOpacity
                   style={[styles.touch1, {height: 105}]}
                   onPress={ () => {} }
@@ -46,7 +53,7 @@ class DashboardScreen extends Component {
                     <Text style={styles.t1}>MyBBT</Text>
                     <View style={styles.BBTChartContainer}>
                         <VictoryLine
-                        domain={{y: [22, 26]}}
+                        domain={{y: [22, 30]}}
                         padding={0}
                         width={200}
                         height={50}
@@ -65,7 +72,7 @@ class DashboardScreen extends Component {
                         />
                       <Text style={styles.t2}><Text style={{fontWeight:'900'}}>{temp}</Text><Text style={{fontWeight:'100'}}> Cº</Text></Text>
                     </View>
-                    <Image style={{width:20, height:48, marginTop:10, marginRight: 10}} source={require('../resources/images/termometer.png')} ></Image>
+                    {termometer}
                 </TouchableOpacity>
 
 
@@ -75,7 +82,7 @@ class DashboardScreen extends Component {
                 >
                   <View>
                     <Text style={styles.t1}>Your last sleep</Text>
-                    <Image style={{width:150, height:66, marginTop:15}} source={require('../resources/images/moon.png')} ></Image>
+                    {moon}
                   </View>
                   <View style={{marginTop:34, marginLeft:20}}>
                     <Text style={styles.t3}><Text style={{fontWeight:'900'}}>8</Text><Text style={{fontWeight:'100'}}> h</Text></Text>
@@ -88,7 +95,7 @@ class DashboardScreen extends Component {
                   style={[styles.touch1, {height: 155}]}
                   onPress={ () => {} }
                 >
-                    <Image style={{width:48, height:57, marginTop:10}} source={require('../resources/images/termometer.png')} ></Image>
+                    {runner}
                     <View style={{marginLeft:30}}>
                       <VictoryPie
                         width={115} height={115} padding={0}
@@ -114,18 +121,6 @@ class DashboardScreen extends Component {
             </Image>
             
         )
-        /*
-        
-
-        return (
-            <Image style={styles.container} source={require('../resources/images/splash.png')} >
-                <StatusBar backgroundColor="#F53B91" barStyle="light-content" />
-                <Text> Main </Text>
-                <Button onPress={ () => this.props.navigation.navigateWithDebounce("BBTScreen") } title="Go to Detail" />
-                <Button onPress={ () => this.props.actions.user.logout() } title="LOGOUT" />
-            </Image>
-        )
-        */
     }
 }
 

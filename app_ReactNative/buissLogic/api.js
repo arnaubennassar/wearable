@@ -27,6 +27,58 @@ export function postOSID (AWS: string, OS: string){
 	});
 }
 
+export function sendNotification (title, body, icon, data, AWS, handler){
+	fetch(baseURL + 'sendNotification', {  
+	  method: 'POST',
+	  headers: {
+	    'Accept': 'application/json',
+	    'Content-Type': 'application/json',
+	    'Authorization' : AWS
+	  },
+	  body: JSON.stringify({
+	    title: title,
+	    body: body,
+	    icon: icon,
+	    data: data
+	  })
+	}).then(function (response){
+		handler(response);
+	});
+}
+
+export function getNotifications(AWS, next, handler){
+	var head = {
+	    'Accept': 'application/json',
+	    'Content-Type': 'application/json',
+	    'Authorization' : AWS
+	}
+	if(next != null){
+	  	head = {
+		    'Accept': 'application/json',
+		    'Content-Type': 'application/json',
+		    'Authorization' : AWS,
+		    'next' : next,
+		}
+	}
+	fetch(baseURL + 'getNotifications', {  
+	  method: 'GET',
+	  headers: head,
+	}).then(function (response){
+		console.log(response);
+		if(response.status == 401){
+			handler({'error':401})
+			return;
+		}
+		else if (response.status != 200){
+			handler({'error':'unknown'})
+			return;
+		}
+		return response.json();
+    }).then(function (responseData){
+		 handler(responseData);
+    });
+}
+
 export function postData (data, timeStamp, AWS: string, endPoint: string, handler){
 	fetch(baseURL + 'postData', {  
 	  method: 'POST',

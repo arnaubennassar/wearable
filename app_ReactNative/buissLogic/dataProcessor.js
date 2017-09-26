@@ -32,6 +32,7 @@ export function processData(data, timeStamp, AWS, mail, pass){
         //    HEART DATA        //
   if (data.hasOwnProperty(dataTypes.HEART)){
     processedHeartData = heartProcessor(data[dataTypes.HEART], timeStamp);
+   // console.log(processedHeartData);
     storeData(dataTypes.HEART, processedHeartData);
     API.postData(processedHeartData, processedHeartData[processedHeartData.length - 1].c.toString(), AWS, 'HEART', handler);
   }

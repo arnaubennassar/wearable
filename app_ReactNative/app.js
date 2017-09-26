@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
 import * as userActions from './redux/actions/user';
 import * as BTActions from './redux/actions/BT';
+import * as notificationsActions from './redux/actions/notifications';
 //
 // NOTIFICATIONS
 import OneSignal from 'react-native-onesignal';
@@ -20,13 +21,14 @@ import PersonalDataScreen from './components/PersonalDataScreen';
 //import {BlueTooth} from './components/BlueTooth' 
 import * as BT from './components/BlueTooth';
 import { processData } from './buissLogic/dataProcessor'
-
+import {postOSID, getNotifications} from './buissLogic/api'
 //CONNECT TO REDUX state & actions
 function mapStateToProps(state){return{state: state};};
 function mapDispatchToProps(dispatch){return {
     actions: {
       user: bindActionCreators(userActions, dispatch), 
       BT: bindActionCreators(BTActions, dispatch), 
+      notifications: bindActionCreators(notificationsActions, dispatch), 
     }       
 }};
 //
@@ -44,7 +46,7 @@ var APP  = React.createClass({
       OneSignal.addEventListener('ids', this.onIds);
     //BLUETOOTH
        BT.subscribe(this.BTGetData, this.BTDisconnected, this.BTDisabled);
-       BT.connect(this.BTConnected);    //OGT
+    //   BT.enable(this.BTEnabled);    
   //   BT.enable(this.BTEnabled);
   },
 
@@ -62,13 +64,15 @@ var APP  = React.createClass({
   },
 
   onReceived(notification) {
-      console.log("Notification received: ", notification);
+      getNotifications(this.props.state.user.user.tokenAWS, null, (res) => {
+        this.props.actions.notifications.notificationsUpdated(res.data.Items);
+      });
   },
   onOpened(openResult) {
-    console.log('Message: ', openResult.notification.payload.body);
-    console.log('Data: ', openResult.notification.payload.additionalData);
-    console.log('isActive: ', openResult.notification.isAppInFocus);
-    console.log('openResult: ', openResult);
+    // console.log('Message: ', openResult.notification.payload.body);
+    // console.log('Data: ', openResult.notification.payload.additionalData);
+    // console.log('isActive: ', openResult.notification.isAppInFocus);
+    // console.log('openResult: ', openResult);
   },
 
   onRegistered(notifData) {
@@ -85,8 +89,8 @@ var APP  = React.createClass({
     //   BT.write(() => {}, 'k');
     // }
 ///////BT
-    // if(!this.props.state.BT.BT.enabled && this.props.state.user.user.appInitialized){
-    //   BT.enable(this.BTEnabled);
+    // if(this.props.state.BT.BT.enabled && !this.props.state.BT.BT.connected && !this.props.state.BT.BT.connecting){
+    //   BT.connect(this.BTConnected);
     // }
     // else if(this.props.state.BT.BT.enabled && !this.props.state.BT.BT.connected && !this.props.state.BT.BT.connecting){
     //     BT.connect(this.BTConnected);
@@ -114,16 +118,17 @@ var APP  = React.createClass({
       console.log('PERSONALDATA')
       return( <PersonalDataScreen actions={this.props.actions.user} tokenAWS={this.props.state.user.user.tokenAWS}/> );
     }
-  //RENDER BTSCREEN 
+ // RENDER BTSCREEN 
     // else if(!this.props.state.BT.BT.skip)
     // {
     //   console.log('BT')
+    //   postOSID(this.props.state.user.user.tokenAWS, this.props.state.user.user.tokenOS);
     //   return( <BT.BTScreen actions={this.props.actions.BT} state={this.props.state.BT.BT}/> );
     // }
   //RENDER TabNav (Top navigation ==> MainScreen)
     else 
     {
-      console.log('NAVIGATION')
+     // console.log('NAVIGATION')
       return ( <TabNav hideTabBar={this.props.state.tab.params.hideTabBar}/>  );
     }
   },
@@ -146,20 +151,23 @@ var APP  = React.createClass({
     }
   },
   BTDisconnected(){
-    BT.disconnect();
+//    BT.disconnect();
     this.props.actions.BT.desconnected();
     console.log('BT DISConnected!!!!!')
   },
   BTGetData(data){
     //console.log(data);
     if (!waitingBTReq && !waitingBTData ){//WAITING ACK
-      console.log("WAITING ACK 1");
+      console.log("WAITING DATA REQUEST");
       if (data.data == "r\r\n") {
-        console.log("BT data request");
+        console.log(" <===   DATA REQUEST RECEIVED   ===");
+        console.log("===   SENDING DATA REQUEST ACK   ===>");
         waitingBTData = true;
         BT.write(() => {}, 'a');
       }
       else{
+        console.log(" <===   UNECSPECTED MESSAGE RECEIVED   ===");
+        console.log("===   SENDING RESET REQUEST   ===>");
         BT.write(() => {}, 'a');
       }
     }
@@ -169,6 +177,8 @@ var APP  = React.createClass({
         BT.write(() => {}, 'a');
       }
       else{
+        console.log( " <===   DATA RECEIVED   ===");
+        console.log("===   SENDING DATA ACK   ===>");
         processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password);
         BT.write(() => {}, 'k');
         waitingBTData = false;
@@ -176,11 +186,15 @@ var APP  = React.createClass({
       }
     }
     else {//WAITING ACK
-      console.log("WAITING ACK 2")
+      console.log("WAITING DATA REQUEST")
       if (data.data != "r\r\n") {
+        console.log(" <===   UNECSPECTED MESSAGE RECEIVED   ===");
+        console.log("===   SENDING RESET REQUEST   ===>");
         BT.write(() => {}, 'k');
       }
       else{
+        console.log(" <===   DATA REQUEST RECEIVED   ===");
+        console.log("===   SENDING DATA REQUEST ACK   ===>");
         waitingBTData = true;
         petitionBTResponded = false;
         BT.write(() => {}, 'a');

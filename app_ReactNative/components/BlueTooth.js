@@ -46,20 +46,39 @@ export function subscribe(getData, connectionLost, disabled){
   BluetoothSerial.on('bluetoothDisabled', () => {  disabled()  }  )
 }
 
+export function enable(handler){
+    BluetoothSerial.enable()
+    .then((res) =>  {
+      handler(true);
+    } )
+    .catch((err) => handler(false) )
+}
+
 export function connect(handler){
-  //ACTION: CONECTING
-  console.log('connecting')
-  BluetoothSerial.connect('30:15:01:07:24:05')
+    BluetoothSerial.connect('30:15:01:07:24:05')
     .then((res) => {
-      //ACTION: BT CONNECTED
-      console.log('Connected to device')
       this.write(() => {}, 'o');
       handler(true);
     })
-    .catch((err) => {  
-      console.log(err);
-      handler(false);  
-    })
+    .catch((err) => handler(false) )
+ 
+
+  //ACTION: CONECTING
+  // BluetoothSerial.requestEnable()
+  //   .then((resp) => {
+  //     console.log('connecting')
+  //     console.log(resp)
+  //     // BluetoothSerial.connect('30:15:01:07:24:05')
+  //     // .then((res) => {
+  //     //   console.log('connected')
+  //     //   this.write(() => {}, 'o');
+  //     //   handler(true);
+  //     // })
+  //   })
+  //   .catch((err) => {  
+  //     console.log(err);
+  //     handler(false);  
+  //   })
 }
 
 // export function disconnect(){
@@ -71,19 +90,23 @@ export function connect(handler){
 export function write (handler, message) {
   BluetoothSerial.write(message)
   .then((res) => {
-    console.log('Successfuly wrote to device this: ')
-    console.log(message)
   })
   .catch((err) => fail())
 }
 
 
-back = require("../resources/images/B1.png");
-wea = require("../resources/images/wearable.png");
+
+
+
+
+const wearable = (<View style={{    marginTop:50, marginHorizontal:0, justifyContent: 'center', alignItems: 'center', height:300,}}><Image style={{width:204, flex:1}} source={require("../resources/images/smartwatch.png")}></Image></View>)
+const back = require("../resources/images/loadBT.gif");
+const oka = require("../resources/images/backup.png");
 var actions;
 export class BTScreen extends Component {
   enable () {
-    BluetoothSerial.enable()
+    this.statusText = 'Tap to connect.';
+    BluetoothSerial.requestEnable()
     .then((res) => this.enabled() )
     .catch((err) => console.log(err.message))
   }
@@ -125,7 +148,7 @@ export class BTScreen extends Component {
     this.enable()
   }
   enabled(){
-    this.connect();
+  //  this.connect();
     this.actions.enabled();
   }
   connected(success){
@@ -142,21 +165,26 @@ export class BTScreen extends Component {
   }
   render() {
       return (
-        <Image style={styles.container} source={back}>
+
+        <Image style={styles.container} 
+          source={this.statusText == 'Connecting ...' ? back : oka}
+        >
           <Text style={styles.t1}>1. Turn on your Bluetooth.</Text>
           <Text style={styles.t2}>2. Pair it with HC-06.</Text>
-          <Image style={styles.wearable} source={wea}></Image>
+    
+          {wearable}
           {this.statusText !== 'Connecting ...' ? (
             <TouchableOpacity
               style={styles.retryTouch}
               hitSlop={{ top: 5, bottom: 15, left: 15, right: 15 }}
               onPress={ () => {this.connect()} }
             >
-              <Text style={styles.skipText}>{this.statusText}</Text>
+              <Text style={styles.statusText}>{this.statusText}</Text>
             </TouchableOpacity>
         ) : <Text style={styles.t3}>{this.statusText}</Text> }
 
-          {this.props.navigation === undefined ? (
+          {
+            this.props.navigation === undefined ? (
             <TouchableOpacity
               style={styles.skipTouch}
               hitSlop={{ top: 5, bottom: 15, left: 15, right: 15 }}
@@ -170,12 +198,18 @@ export class BTScreen extends Component {
     }
 }
 const styles = StyleSheet.create({
-  container: {
+  loader: {
     flex: 1,
     alignSelf: "stretch",
     width: undefined,
     height: undefined,
     resizeMode: "cover"
+  },container: {
+    flex: 1,
+    alignSelf: "stretch",
+    width: undefined,
+    height: undefined,
+    backgroundColor:'white'
   },
   t1: {
     marginTop: 40,
@@ -195,7 +229,7 @@ const styles = StyleSheet.create({
     fontSize: 14
   },
   t3: {
-    marginBottom: 50,
+    marginTop: 90,
     marginLeft: 68,
     textDecorationLine: "none",
     marginRight: 68,
@@ -209,11 +243,16 @@ const styles = StyleSheet.create({
     marginLeft: 68,
     marginRight: 68
   },
+  wearableContainer: {
+    marginTop:50,
+    marginHorizontal:0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height:300,
+  },
   wearable: {
-    marginLeft: 0,
-    flex: 1,
-    marginRight: 0,
-    marginTop:9,
+    width:204,
+    flex:1
   },
   // textDetail: {
   //   marginRight: 8,
@@ -221,7 +260,15 @@ const styles = StyleSheet.create({
   //   fontWeight: "100",
   //   fontSize: 14
   // },
-  skipText: {
+  statusText: {
+    marginTop: 70,
+    textAlign: "center",
+    textDecorationLine: "underline",
+    fontFamily: "System",
+    fontWeight: "100",
+    fontSize: 14
+  },  skipText: {
+    marginTop: 10,
     textAlign: "center",
     textDecorationLine: "underline",
     fontFamily: "System",

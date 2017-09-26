@@ -1,11 +1,12 @@
 /*@flow*/
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button, Image, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, Button, Image, StatusBar, TouchableOpacity } from 'react-native';
 
 import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
 import * as userActions    from '../redux/actions/user';
 import * as BTActions    from '../redux/actions/BT';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import NavButtons from './NavButtons';
 
@@ -24,21 +25,55 @@ function mapDispatchToProps(dispatch){return {
     }    
 }};
 //
-
+const backgraun = require('../resources/images/B3.png');
 class MainScreen extends Component {
     render() {
-        return (
-            <Image style={styles.container} source={require('../resources/images/splash.png')} >
-                <StatusBar backgroundColor="#F53B91" barStyle="light-content" />
-                <Text> PROFILE </Text>
-                <Button onPress={ () => this.props.navigation.navigateWithDebounce("PersonalDataScreen", {tokenAWS:this.props.state.user.tokenAWS, height:this.props.state.user.height, weight:this.props.state.user.weight, age:this.props.state.user.bday, actions:this.props.actions.user} ) } title="Edit Personal Data" />
-                <Button onPress={ () => this.props.navigation.navigateWithDebounce("BTScreen", {actions:this.props.actions.BT, state:this.props.state.BT} ) } title="Connect to wearable" />
-                <Button onPress={ () => this.props.actions.user.logout() } title="LOGOUT" />
+
+      return(
+            <Image style={styles.container} source={backgraun} >
+                <TouchableOpacity
+                  style={[styles.touch1, {height: 145}]}
+                  onPress={ () =>  this.props.navigation.navigateWithDebounce("PersonalDataScreen", {tokenAWS:this.props.state.user.tokenAWS, height:this.props.state.user.height, weight:this.props.state.user.weight, age:this.props.state.user.bday, actions:this.props.actions.user} ) }
+                >
+                    <View style={{flexDirection: 'row', flex:1}}>
+                    <Text style={styles.t1}>Edit personal data</Text>
+                    <View style={{width: '10%',}} />
+                    {personalDataIcon}
+                  </View>
+                </TouchableOpacity>
+
+
+                <TouchableOpacity
+                  style={[styles.touch1, {height: 145}]}
+                  onPress={ () => { this.props.navigation.navigateWithDebounce("BTScreen", {actions:this.props.actions.BT, state:this.props.state.BT} ) } } 
+                >
+                  <View style={{flexDirection: 'row', flex:1}}>
+                    {wearableIcon}
+                    <View style={{width: '25%'}} />
+                    <Text style={styles.t1}>Connect to wearable</Text>
+                  </View>
+                </TouchableOpacity>
+
+
+                <TouchableOpacity
+                  style={[styles.touch1, {height: 145}]}
+                  onPress={ () => { this.props.actions.user.logout() }  } 
+                >
+                  <View style={{flexDirection: 'row', flex:1}}>
+                    <Text style={styles.t1}>Logout</Text>
+                    <View style={{width: '10%',}} />
+                    {logoutIcon}
+                  </View>
+                </TouchableOpacity>
             </Image>
-        )
+            );
+        
     }
 }
 
+const personalDataIcon = (<Icon style={{marginTop: 50}} size={ 130 } name={ "cog" } color={ '#B5B2B2' }/>);
+const wearableIcon = (<Icon style={{marginTop: 50}} size={ 130 } name={ "bluetooth-b" } color={ '#B5B2B2' }/>);
+const logoutIcon = (<Icon style={{marginTop: 50}} size={ 130 } name={ "power-off" } color={ '#B5B2B2' }/>);
 const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -46,8 +81,25 @@ const styles = StyleSheet.create({
       width: undefined,
       height: undefined,
       resizeMode: 'cover',
-      justifyContent: 'center',
-      alignItems: 'center',
+    },
+    touch1: {
+      marginTop: 4,
+      marginHorizontal: 40,
+      borderBottomWidth: 2,
+      borderBottomColor: '#979797',
+    },
+    t1: {
+      marginTop: 50,
+      width: '48%',
+      textAlign: "left",
+      fontFamily: "System",
+      fontWeight: "100",
+      fontSize: 16,
+      color: '#B5B2B2'
+    },
+    image:{
+      width:150,
+      height:150,
     }
 });
 

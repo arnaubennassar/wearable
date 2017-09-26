@@ -9,7 +9,7 @@ export const dataDefault: DataState =
   data: {
     activity:[],
     dailyActivity: 0,
-    activityObjective: 10000,
+    activityObjective: 100000,
     heart:[],
     temperature:[]
   }, 
