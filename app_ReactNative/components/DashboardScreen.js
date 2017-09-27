@@ -48,7 +48,7 @@ class DashboardScreen extends Component {
             <Image style={styles.container} source={bground} >
                 <TouchableOpacity
                   style={[styles.touch1, {height: 132}]}
-                  onPress={ () => {} }
+                  onPress={ () => { this.props.navigation.navigateWithDebounce("BBTScreen") } }
                 >
                   <View style={{flexDirection:'column'}}>
                     <Text style={styles.t1}>MyBBT</Text>
@@ -80,7 +80,7 @@ class DashboardScreen extends Component {
 
                 <TouchableOpacity
                   style={[styles.touch1, {height: 132}]}
-                  onPress={ () => {} }
+                  onPress={ () => { this.props.navigation.navigateWithDebounce("sleepScreen") } }
                 >
                   <View>
                     <Text style={styles.t1}>Your last sleep</Text>
@@ -95,7 +95,7 @@ class DashboardScreen extends Component {
 
                 <TouchableOpacity
                   style={[styles.touch1, {height: 132}]}
-                  onPress={ () => {} }
+                  onPress={ () => { this.props.navigation.navigateWithDebounce("activityScreen") } }
                 >
                     {runner}
                     <View style={{marginLeft:40}}>

@@ -4,10 +4,11 @@ import React, { Component } from 'react';
 import { View, Text, Image, StatusBar, StyleSheet} from 'react-native';
 //
 // BUISSNESS LOGIC
-import {initStorage} from '../buissLogic/storage';
+import {initStorage, getAllData} from '../buissLogic/storage';
 //
 // INIT APP CONTROL VARIABLES
 var storage = false;
+var storageLoaded = false;
 //
 export default SplashScreen = React.createClass({
 //INITIALIZE APP LOGIC HERE
@@ -16,10 +17,19 @@ export default SplashScreen = React.createClass({
     },
     storageInitialized(){
       storage = true;
+      this.loadStorage();
+    },
+    loadStorage(){
+    /*this.storageLoaded({});*/  getAllData('t', this.storageLoaded)
+    },
+    storageLoaded(data){
+      console.log(data);
+      //this.props.dataUpdated(data);
+      storageLoaded = true;
       this.checkInit();
     },
     checkInit (){
-      if (storage /* && xxxx && yyyy*/){
+      if (storage && storageLoaded/*  && yyyy*/){
         this.props.complete();
       }
     },

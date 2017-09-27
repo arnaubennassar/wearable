@@ -87,3 +87,28 @@ export function pendingAction (action){
 export function cleanPendings (){
   return {type: "CLEAN_PENDINGS"};
 }
+
+export function setFirstMinBBT (timeStamp){
+  return {type: "FIRST_BBT", payload:timeStamp};
+}
+
+export function setLastMinBBT (timeStamp){
+  return {type: "LAST_BBT", payload:timeStamp};
+}
+
+export function setFirstDailyActivity (timeStamp){
+  return {type: "FIRST_ACTIVITY", payload:timeStamp};
+}
+
+export function setLastDailyActivty (timeStamp){
+  return {type: "LAST_ACTIVITY", payload:timeStamp};
+}
+
+export function setFirstSleep (timeStamp){
+  return {type: "FIRST_SLEEP", payload:timeStamp};
+}
+
+export function setLastSleep (timeStamp){
+  return {type: "LAST_SLEEP", payload:timeStamp};
+}
+

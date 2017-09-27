@@ -39,3 +39,63 @@ export function storeData(dataType, data: Object){
   //  console.log('A NEW TOTAL OF ' + totalSamples + dataType);
   });
 }
+
+export function getAllData (dataType, handler){
+  AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
+    getData(dataType, 0, storedNSamples, (ans) => {
+        handler(ans);
+    });
+  });
+}
+
+export function getData (dataType, from, to, handler) {
+  var ans = [];
+  var completed = to - from;
+  for (var i = from; i < to; i++) {
+    AsyncStorage.getItem(dataType + i.toString).then((sample)=>{
+      ans.push.apply(ans, JSON.parse(sample) );
+      --completed;
+      if (completed == 0){
+        handler(ans);
+      }
+    });
+  }
+}
+
+export function getData_c (dataType, from_c, to_c, handler) {
+  findIndex_c(dataType, from_c, (from_i) => {
+    console.log('index from = ' + from_i)
+    findIndex_c(dataType, to_c, (to_i) => {
+      console.log('index to = ' + to_i)
+      getData(dataType, from_i, to_i, (ans) => {
+        handler(ans);
+      });
+    });
+  });
+}
+
+function findIndex_c (dataType, c, handler){
+  AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((right)=>{
+    asyncBinSearch(dataType, 0, --right, c, handler);
+  });
+}
+
+function asyncBinSearch (dataType, L, R, c, handler){
+    const m = Math.floor((L + R)/2);
+  //  console.log('el den medio delo xixooo = ' + m)
+    AsyncStorage.getItem( dataType + ( m ).toString ).then((sample)=>{
+      var current = JSON.parse(sample);
+      if (c < current[0].c){
+        L = m + 1;
+        asyncBinSearch(dataType, L, R, c, handler);
+      }
+      else if (c > current[current.length - 1].c){
+        R = m - 1;
+        asyncBinSearch(dataType, L, R, c, handler);
+      }
+      if (L > R){
+        handler( m );
+      }
+    });
+  
+}

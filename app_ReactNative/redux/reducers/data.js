@@ -11,7 +11,8 @@ export const dataDefault: DataState =
     dailyActivity: 0,
     activityObjective: 100000,
     heart:[],
-    temperature:[]
+    temperature:[],
+    minBBT:[]
   }, 
 };
 
@@ -30,6 +31,10 @@ type DataState = {
     temperature:[{
       temperauture: number,
       timeStamp: string
+    }],
+    minBBT:[{
+      temperature: number,
+      day: number
     }]
   }
 }
@@ -58,6 +63,12 @@ export const dataReducer = (state: DataState, action: Object) => {
           newState.data.temperature = action.payload.temperature;
         }
         else newState.data.temperature.push.apply(newState.data.temperature, action.payload.temperature);
+      }
+      if (action.payload.minBBT != null){
+        if(newState.data.minBBT === undefined){
+          newState.data.minBBT = action.payload.minBBT;
+        }
+        else newState.data.minBBT.push.apply(newState.data.minBBT, action.payload.minBBT);
       }
       return newState;
                         //BS...

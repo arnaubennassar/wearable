@@ -1,21 +1,22 @@
 {
-	"name": "save",
-	"version": "0.0.1",
-	"private": true,
-	"scripts": {
-		"start": "node node_modules/react-native/local-cli/cli.js start",
-		"test": "jest"
-	},
-	"dependencies": {
-		"react": "16.0.0-alpha.12",
-		"react-native": "0.45.0",
+  "name": "save",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "dependencies": {
     "email-validator": "^1.0.7",
     "lottie-react-native": "^1.1.1",
     "native-base": "^2.1.4",
+    "react": "16.0.0-alpha.12",
+    "react-native": "0.45.0",
     "react-native-animatable": "^1.2.1",
     "react-native-aws-cognito-js": "0.0.4",
     "react-native-bluetooth-serial": "^0.1.6",
     "react-native-onesignal": "^3.0.4",
+    "react-native-simple-radio-button": "^2.6.2",
     "react-native-svg": "^5.2.0",
     "react-native-swiper": "^1.5.4",
     "react-native-vector-icons": "^4.2.0",
@@ -26,13 +27,7 @@
     "redux-persist": "^4.8.0",
     "redux-thunk": "^2.2.0",
     "victory-native": "^0.10.0"
-	},
-	"devDependencies": {
-		"babel-jest": "20.0.3",
-		"babel-preset-react-native": "1.9.2",
-		"jest": "20.0.4",
-		"react-test-renderer": "16.0.0-alpha.12"
-	},
+  },
   "devDependencies": {
     "babel-jest": "20.0.1",
     "babel-preset-react-native": "1.9.2",
@@ -40,7 +35,7 @@
     "react-test-renderer": "16.0.0-alpha.6",
     "redux-logger": "^3.0.6"
   },
-	"jest": {
-		"preset": "react-native"
-	}
+  "jest": {
+    "preset": "react-native"
+  }
 }

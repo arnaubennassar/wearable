@@ -4,6 +4,7 @@ import React from 'react';
 import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
 import * as userActions from './redux/actions/user';
+import * as dataActions from './redux/actions/data';
 import * as BTActions from './redux/actions/BT';
 import * as notificationsActions from './redux/actions/notifications';
 //
@@ -27,6 +28,7 @@ function mapStateToProps(state){return{state: state};};
 function mapDispatchToProps(dispatch){return {
     actions: {
       user: bindActionCreators(userActions, dispatch), 
+      data: bindActionCreators(dataActions, dispatch), 
       BT: bindActionCreators(BTActions, dispatch), 
       notifications: bindActionCreators(notificationsActions, dispatch), 
     }       
@@ -104,7 +106,7 @@ var APP  = React.createClass({
     if(!this.props.state.user.user.appInitialized)
     {
       console.log('SPLASH')
-      return( <SplashScreen complete={this.props.actions.user.appInitialized}/> );
+      return( <SplashScreen complete={this.props.actions.user.appInitialized} dataUpdated={this.props.actions.data.dataUpdated}/> );
     }
   //RENDER AUTHSCREEN (+ login/register logic)
     else if(!this.props.state.user.user.loggedIn)
@@ -154,6 +156,7 @@ var APP  = React.createClass({
 //    BT.disconnect();
     this.props.actions.BT.desconnected();
     console.log('BT DISConnected!!!!!')
+    processData(  {t: [{v: 36, c: Date.parse(new Date())}]}/*JSON.parse( data.data.slice(0, -1) )*/  , 0, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password, 1506340031019 );
   },
   BTGetData(data){
     //console.log(data);
@@ -176,10 +179,10 @@ var APP  = React.createClass({
       if (data.data == "r\r\n") {
         BT.write(() => {}, 'a');
       }
-      else{
+      else{//DATA RECEIVED
         console.log( " <===   DATA RECEIVED   ===");
         console.log("===   SENDING DATA ACK   ===>");
-        processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password);
+        processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password, this.props.state.user.user.lastBBT);
         BT.write(() => {}, 'k');
         waitingBTData = false;
         petitionBTResponded = true;

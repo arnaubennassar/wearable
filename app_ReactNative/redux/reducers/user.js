@@ -62,7 +62,13 @@ type UserState = {
     height: number,
     weight: number,
     bday: string,
-    pendingActions: array[]
+    pendingActions: array[],
+    firstBBT: 0,
+    lastBBT: 0,
+    firstSleep: 0,
+    lastSleep: 0,
+    firstActivity: 0,
+    lastActivity: 0
   }
 }
 
@@ -193,6 +199,30 @@ export const userReducer = (state: UserState, action: Object) => {
     case "SKIP_PERSONAL_DATA":
       var newState: UserState = cloneObject(state);
       newState.user.skipPersonalData = true;
+      return newState;
+    case "FIRST_BBT":
+      var newState: UserState = cloneObject(state);
+      newState.user.firstBBT = action.payload;
+      return newState;
+    case "LAST_BBT":
+      var newState: UserState = cloneObject(state);
+      newState.user.lastBBT = action.payload;
+      return newState;
+    case "FIRST_ACTIVITY":
+      var newState: UserState = cloneObject(state);
+      newState.user.firstActivity = action.payload;
+      return newState;
+    case "LAST_ACTIVITY":
+      var newState: UserState = cloneObject(state);
+      newState.user.lastActivity = action.payload;
+      return newState;
+    case "FIRST_SLEEP":
+      var newState: UserState = cloneObject(state);
+      newState.user.firstSleep = action.payload;
+      return newState;
+    case "LAST_SLEEP":
+      var newState: UserState = cloneObject(state);
+      newState.user.lastSleep = action.payload;
       return newState;
     default:
       return state || userDefault;

@@ -21,6 +21,26 @@ const routeConfiguration = {
   BBTScreen: { 
     screen: BBTScreen,
     navigationOptions:{
+      title: 'Basal body temperature',
+      headerStyle: { backgroundColor: "#F53B91" }, //Header color
+      headerTintColor: "white", //Back arrow color
+      headerPressColorAndroid: "pink", //Ripple effect
+      headerBackTitle: "Back" //Text following the back arrow (iOS)
+    }
+  },
+  sleepScreen: { 
+    screen: BBTScreen,
+    navigationOptions:{
+      title: 'Detail',
+      headerStyle: { backgroundColor: "#F53B91" }, //Header color
+      headerTintColor: "white", //Back arrow color
+      headerPressColorAndroid: "pink", //Ripple effect
+      headerBackTitle: "Back" //Text following the back arrow (iOS)
+    }
+  },
+  activityScreen: { 
+    screen: BBTScreen,
+    navigationOptions:{
       title: 'Detail',
       headerStyle: { backgroundColor: "#F53B91" }, //Header color
       headerTintColor: "white", //Back arrow color
