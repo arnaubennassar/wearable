@@ -1,5 +1,7 @@
 /*@flow*/
 
+import {clearData} from '../../buissLogic/storage';
+
 export function appInitialized(){
 	return {type: "APP_INITIALIZED"}; 
 }
@@ -69,6 +71,7 @@ export function silentLoginStart(){
 }
 
 export function logout(){
+  clearData();
   return {type: "LOGOUT"}
 }
 

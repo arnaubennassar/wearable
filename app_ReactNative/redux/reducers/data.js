@@ -71,6 +71,11 @@ export const dataReducer = (state: DataState, action: Object) => {
         else newState.data.minBBT.push.apply(newState.data.minBBT, action.payload.minBBT);
       }
       return newState;
+    case "LOGOUT":
+      var newState: DataState = cloneObject(state);
+      return newState;
+    default:
+      return state || dataDefault;
                         //BS...
     // case 'DATA_LOADING':
     //   var newState: DataState = cloneObject(state);
@@ -120,7 +125,6 @@ export const dataReducer = (state: DataState, action: Object) => {
     //   newState.data.refreshing = true;
     //   return newState;
                       ///
-    default:
-      return state || dataDefault;
+    
   }
 }

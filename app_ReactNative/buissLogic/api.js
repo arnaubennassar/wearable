@@ -19,7 +19,7 @@ export function postOSID (AWS: string, OS: string){
 	    OSID: OS,
 	  })
 	}).then(function (response){
-		console.log(response);
+		//console.log(response);
 		if(response.status == 401){
 			unauthHandle('postOSID', {'OS': OS});
 			return;
@@ -64,7 +64,7 @@ export function getNotifications(AWS, next, handler){
 	  method: 'GET',
 	  headers: head,
 	}).then(function (response){
-		console.log(response);
+		//console.log(response);
 		if(response.status == 401){
 			handler({'error':401})
 			return;
@@ -96,11 +96,30 @@ export function postData (data, timeStamp, AWS: string, endPoint: string, handle
 		handler(response);
 	});
 }
-export function getData (AWS: string, endPoint: string, next: string){
+
+export function getAllData (AWS: string, endPoint: string, next: string, handler){
+	getData(AWS, endPoint, next, [], (data) => {handler(data)});
+}
+
+function getAllData_handler(AWS, endPoint, next, data, handler){
+	console.log(data.length)
+	if (next != undefined){
+		console.log('lets get more')
+		getData (AWS, endPoint, next, data, handler);
+	}
+	else{ 
+		console.log('thats enoz')
+		handler(data) 
+	}
+}
+
+export function getData (AWS: string, endPoint: string, next: string, data, handler){
+	//console.log('endpoint: ' + endPoint)
 	var head = {
 	    'Accept': 'application/json',
 	    'Content-Type': 'application/json',
-	    'Authorization' : AWS
+	    'Authorization' : AWS,
+	    'db': endPoint
 	  }
 	if(next != null){
 	  	head = {
@@ -108,27 +127,26 @@ export function getData (AWS: string, endPoint: string, next: string){
 		    'Content-Type': 'application/json',
 		    'Authorization' : AWS,
 		    'next' : next,
-		    'DB': endPoint
+		    'db': endPoint
 		  }
 	  }
-
 	fetch(baseURL + 'getData', {  
 	  method: 'GET',
 	  headers: head,
 	}).then(function (response){
-		console.log(response);
-	// 	if(response.status == 401){
-	// 		unauthHandle('getHeartData', {'next': next});
-	// 		return;
-	// 	}
-	// 	else if (response.status != 200){
-	// 		return;
-	// 	}
-	// 	return response.json();
-	// }).then(function (responseData){
-	// 	 console.log("inside responsejson");
-	// 	 console.log('response object:',responseData);
-	// 	 console.log('HANDLE DATAAAA');
+		//console.log(response);
+		if(response.status == 401){
+			handler({'error':401})
+			return;
+		}
+		else if (response.status != 200){
+			handler({'error': response})
+			return;
+		}
+		return response.json();
+    }).then(function (responseData){
+    	data.push.apply(data, responseData.data.Items);
+		getAllData_handler(AWS, endPoint, responseData.next, data, handler);
     });
 }
 
@@ -147,7 +165,7 @@ export function postPersonalData (AWS: string, height: number, weight: number, a
 	    age: age
 	  })
 	}).then(function (response){
-		console.log(response);
+	//	console.log(response);
 		if(response.status == 401){
 			unauthHandle('postPersonalData', { height: height, weight: weight,  age: age});
 			return;
@@ -165,7 +183,7 @@ export function getPersonalData(AWS: string, handler){
 	  method: 'GET',
 	  headers: head,
 	}).then(function (response){
-		console.log(response);
+	//	console.log(response);
 		if(response.status == 401){
 			unauthHandle('getPersonalData');
 			return;
@@ -175,9 +193,9 @@ export function getPersonalData(AWS: string, handler){
 		}
 		return response.json();
 	}).then(function (responseData){
-		 console.log("inside responsejson");
-		 console.log('response object:',responseData);
-		 console.log('HANDLE DATAAAA');
+		 // console.log("inside responsejson");
+		 // console.log('response object:',responseData);
+		 // console.log('HANDLE DATAAAA');
 		 handler(responseData);
     });
 }

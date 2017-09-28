@@ -12,11 +12,11 @@ export const userDefault: UserState = {
     rehydrated: false,
     registering: false,
     registerLoading: false,
-    registerError: {},
+    registerError: '',
     registered: false,
     validating: false,
     validateLoading: false,
-    validateError: {},
+    validateError: '',
     validated: false,
     loadingLogin:false,
     loggedIn: false,
@@ -87,6 +87,7 @@ export const userReducer = (state: UserState, action: Object) => {
     case "APP_INITIALIZED":
       var newState: UserState = cloneObject(state);
       newState.user.appInitialized = true;
+      newState.user.loadingLogin = false;
       return newState;
     case "REGISTER_MODE":
       var newState: UserState = cloneObject(state);

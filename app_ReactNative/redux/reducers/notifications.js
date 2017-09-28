@@ -19,6 +19,9 @@ export const notificationsReducer = (state: notificationsState, action: Object) 
       var newState: notificationsState = cloneObject(state);
       newState.notifications = action.payload;
       return newState;
+    case "LOGOUT":
+      var newState: notificationsState = cloneObject(state);
+      return newState;
     default:
       return state || notificationsDefault;
   }

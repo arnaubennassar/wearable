@@ -12,7 +12,8 @@ import {
   TouchableOpacity
 } from "react-native";
 import { login, register, verify } from "../buissLogic/AWSLogin";
-import { getPersonalData } from "../buissLogic/api";
+import { getPersonalData, getAllData } from "../buissLogic/api";
+import { storeData_i, storeData_i_last } from "../buissLogic/storage";
 import Swiper from "react-native-swiper";
 import { Button, Form, Item, Input, InputGroup } from "native-base";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -121,10 +122,9 @@ export default (AuthScreen = React.createClass({
       ////// LOAD USER DATA //////
       this.tokenAWS = res.message
       getPersonalData(this.tokenAWS, this.handlerPersonalData);
-      this.props.actions.loginSuccess(this.tokenAWS);
-          //ADD NEW PERSISTENT CLOUD DATA HERE
-
-
+      this._getAllData('HEART', 'a');
+      this._getAllData('HEART', 'h');
+      this._getAllData('TEMPERATURE', 't');
     } else {
       this.props.actions.loginFail(res.message);
       if (res.message == "User is not confirmed.") {
@@ -132,9 +132,28 @@ export default (AuthScreen = React.createClass({
       }
     }
   },
+  _getAllData(url, dataType){
+    getAllData(this.tokenAWS, url, null, (ans) => {
+        if (ans.hasOwnProperty('error') ){
+          console.log(ans);
+        }
+        else {
+          for (var i = 0; i < ans.length; i++) {
+            if (i == ans.length - 1){
+              storeData_i_last(dataType, ans[i], i, () => {
+                this.completeLogin();
+              })
+            }
+            else {
+              storeData_i( dataType, ans[i], i )
+            };
+          };
+        }
+    });
+  },
   //HANDLE PERSONAL DATA RESPONSE
   handlerPersonalData(res){
-    console.log(res);
+  //  console.log(res);
     if(res.data.Items.length > 0){
       var data = res.data.Items[0];
       this.props.actions.setPersonalData (data.height, data.weight, data.age);
@@ -143,7 +162,7 @@ export default (AuthScreen = React.createClass({
   },
   completeLogin(){
     ++completedLogin;
-    if (completedLogin == 1){
+    if (completedLogin == 4){
       this.props.actions.loginSuccess(this.tokenAWS);
     }
   },
@@ -281,8 +300,7 @@ export default (AuthScreen = React.createClass({
             ) : null}
             {this.props.state.loginError != "" ? (
               <Text style={styles.textError}>
-                {" "}
-                {this.props.state.loginError}{" "}
+                {this.props.state.loginError}
               </Text>
             ) : null}
           </Image>
@@ -419,8 +437,7 @@ export default (AuthScreen = React.createClass({
             </Button>
             {this.props.state.registerError != "" ? (
               <Text style={styles.textError}>
-                {" "}
-                {this.props.state.registerError}{" "}
+                {this.props.state.registerError}
               </Text>
             ) : null}
             {this.props.state.registerLoading ? (
@@ -510,8 +527,7 @@ export default (AuthScreen = React.createClass({
             </Button>
             {this.props.state.validateError != "" ? (
               <Text style={styles.textError}>
-                {" "}
-                {this.props.state.validateError}{" "}
+                {this.props.state.validateError}
               </Text>
             ) : null}
             {this.props.state.validateLoading ? (

@@ -20,7 +20,7 @@ export default SplashScreen = React.createClass({
       this.loadStorage();
     },
     loadStorage(){
-    /*this.storageLoaded({});*/  getAllData('t', this.storageLoaded)
+      this.storageLoaded({});  //getAllData('a', this.storageLoaded)
     },
     storageLoaded(data){
       console.log(data);
