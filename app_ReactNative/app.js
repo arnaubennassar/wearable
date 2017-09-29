@@ -23,6 +23,7 @@ import PersonalDataScreen from './components/PersonalDataScreen';
 import * as BT from './components/BlueTooth';
 import { processData } from './buissLogic/dataProcessor'
 import {postOSID, getNotifications} from './buissLogic/api'
+import {getAllData, checkDay, clearData} from './buissLogic/storage'
 //CONNECT TO REDUX state & actions
 function mapStateToProps(state){return{state: state};};
 function mapDispatchToProps(dispatch){return {
@@ -39,6 +40,8 @@ var waitingBTData = false;
 var APP  = React.createClass({
 //SETUP NOTIFICATIONS
   componentWillMount() {
+    var now = Date.parse(new Date())
+      console.log( new Date(now).getDate() )
     //INITIAL STATE for splash screen only 
       this.setState({user: {user: {appInitialized: false}} });
     //NOTIFICATIONS LISTENERS
@@ -156,7 +159,16 @@ var APP  = React.createClass({
 //    BT.disconnect();
     this.props.actions.BT.desconnected();
     console.log('BT DISConnected!!!!!')
-    processData(  {t: [{v: 36, c: Date.parse(new Date())}]}/*JSON.parse( data.data.slice(0, -1) )*/  , 0, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password, 1506340031019 );
+    // getAllData('a',(data)=>{
+    //   clearData();
+    //   console.log('gotcha activity data')
+    //   //console.log(data);
+    //   processData({a: data}, 0, 'AWS', 'mail', 'pass');
+    // })
+    // checkDay('a');
+    // checkDay('h');
+    //checkDay('t');
+    //processData(  {t: [{v: 36, c: Date.parse(new Date())}]}/*JSON.parse( data.data.slice(0, -1) )*/  , 0, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password, 1506340031019 );
   },
   BTGetData(data){
     //console.log(data);
@@ -182,7 +194,7 @@ var APP  = React.createClass({
       else{//DATA RECEIVED
         console.log( " <===   DATA RECEIVED   ===");
         console.log("===   SENDING DATA ACK   ===>");
-        processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password, this.props.state.user.user.lastBBT);
+        processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp, this.props.state.user.user.tokenAWS, true);
         BT.write(() => {}, 'k');
         waitingBTData = false;
         petitionBTResponded = true;

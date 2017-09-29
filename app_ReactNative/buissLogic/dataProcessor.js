@@ -4,7 +4,7 @@ import {heartProcessor} from './processors/heartProcessor';
 import {temperatureProcessor} from './processors/temperatureProcessor';
 import {activityProcessor} from './processors/activityProcessor';
 
-import {storeData, getData_c} from './storage'
+import {storeData, storeData_multiSample, getData_c} from './storage'
 import * as API from './api'
 import {silentLogin} from './AWSLogin'
 
@@ -17,7 +17,7 @@ import { dispatch } from 'redux';
 var email = '';
 var password = '';
 const totalSteps = 4;
-export function processData(data, timeStamp, AWS, mail, pass, lastBBT){
+export function processData(data, timeStamp, AWS, isNew){
   email = mail;
   password = pass;
 //  console.log(data);
@@ -29,23 +29,19 @@ export function processData(data, timeStamp, AWS, mail, pass, lastBBT){
         //    ACTIVITY DATA     //
   if (data.hasOwnProperty(dataTypes.ACTIVITY)){
     processedActivityData = activityProcessor(data[dataTypes.ACTIVITY], timeStamp);
-    storeData(dataTypes.ACTIVITY, processedActivityData.data);
-    API.postData(processedActivityData.data, processedActivityData.data[processedActivityData.data.length - 1].c.toString(), AWS, 'ACTIVITY', handler);
+    _storeData(dataTypes.ACTIVITY, processedActivityData.data, isNew, AWS, 'ACTIVITY');
     ++step;
-  }
-        //    HEART DATA        //
+  }      
+        //    HEART DATA     //
   if (data.hasOwnProperty(dataTypes.HEART)){
     processedHeartData = heartProcessor(data[dataTypes.HEART], timeStamp);
-   // console.log(processedHeartData);
-    storeData(dataTypes.HEART, processedHeartData);
-    API.postData(processedHeartData, processedHeartData[processedHeartData.length - 1].c.toString(), AWS, 'HEART', handler);
+    _storeData(dataTypes.HEART, processedHeartData, isNew, AWS, 'HEART');
     ++step;
-  }
-        //    TEMPERATURE DATA   //
+  }  
+        //    TEMPERATURE DATA     //
   if (data.hasOwnProperty(dataTypes.TEMPERATURE)){
     processedTemperatureData = temperatureProcessor(data[dataTypes.TEMPERATURE], timeStamp);
-    storeData(dataTypes.TEMPERATURE, processedTemperatureData);
-    API.postData(processedTemperatureData, processedTemperatureData[processedTemperatureData.length - 1].c.toString(), AWS, 'TEMPERATURE', handler);
+    _storeData(dataTypes.TEMPERATURE, processedTemperatureData, isNew, AWS, 'TEMPERATURE');
     ++step;
   }
 
@@ -92,18 +88,35 @@ export function processData(data, timeStamp, AWS, mail, pass, lastBBT){
   //     }
   //   }
   // }
-  //       //    DISPATCH DATA   //
-  // else {
-    dispatchData(step, {
-      activity: processedActivityData.data, 
-      activityIncrement: processedActivityData.activityIncrement, 
-      heart: processedHeartData, 
-      temperature: processedTemperatureData,
-      minBBT: processedMinBBTData,
-    });
- // }
   
 }
+
+function _storeData (dataType, data, isNew, AWS, endPoint){
+    var last = 0;
+    var pos  = 0;
+    var days = [];
+  //  console.log(data);
+  //SPLIT BY DAYS
+    for (var i = 0; i < data.length - 1; i++) {
+      if ( new Date(data[i].c).getDate() != new Date(data[i + 1].c).getDate() ){
+        //another day
+        days[pos] = data.slice(last, i + 1);
+        ++pos;
+        last = i + 1;
+      }
+    };
+  //STORE
+    if (last == 0){
+       storeData(dataType, data, ()=>{});
+    }
+    else {
+      storeData_multiSample(dataType, days);
+    }
+    if(isNew){
+      API.postData(data, data[data.length -1].c, AWS, endPoint, handler);
+    }
+} 
+
 function dispatchData (steps, data){
   if(steps == totalSteps){
     store.dispatch(dataActions.dataUpdated(data));

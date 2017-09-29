@@ -102,7 +102,7 @@ export function getAllData (AWS: string, endPoint: string, next: string, handler
 }
 
 function getAllData_handler(AWS, endPoint, next, data, handler){
-	console.log(data.length)
+//	console.log(data.length)
 	if (next != undefined){
 		console.log('lets get more')
 		getData (AWS, endPoint, next, data, handler);
@@ -183,7 +183,7 @@ export function getPersonalData(AWS: string, handler){
 	  method: 'GET',
 	  headers: head,
 	}).then(function (response){
-	//	console.log(response);
+		console.log(response);
 		if(response.status == 401){
 			unauthHandle('getPersonalData');
 			return;

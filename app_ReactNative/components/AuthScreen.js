@@ -16,6 +16,7 @@ import { getPersonalData, getAllData } from "../buissLogic/api";
 import { storeData_i, storeData_i_last } from "../buissLogic/storage";
 import Swiper from "react-native-swiper";
 import { Button, Form, Item, Input, InputGroup } from "native-base";
+import {processData} from '../buissLogic/dataProcessor';
 import Icon from "react-native-vector-icons/FontAwesome";
 
 var userInput = "";
@@ -122,9 +123,18 @@ export default (AuthScreen = React.createClass({
       ////// LOAD USER DATA //////
       this.tokenAWS = res.message
       getPersonalData(this.tokenAWS, this.handlerPersonalData);
-      this._getAllData('HEART', 'a');
-      this._getAllData('HEART', 'h');
-      this._getAllData('TEMPERATURE', 't');
+      this._getAllData('ACTIVITY', 'a', (ans) => { 
+        processData({a: ans}, 0, this.tokenAWS, false); 
+        this.completeLogin();
+      });
+      this._getAllData('HEART', 'h', (ans) => { 
+        processData({h: ans}, 0, this.tokenAWS, false); 
+        this.completeLogin();
+      });
+      this._getAllData('TEMPERATURE', 't', (ans) => { 
+        processData({t: ans}, 0, this.tokenAWS, false); 
+        this.completeLogin();
+      });
     } else {
       this.props.actions.loginFail(res.message);
       if (res.message == "User is not confirmed.") {
@@ -132,22 +142,18 @@ export default (AuthScreen = React.createClass({
       }
     }
   },
-  _getAllData(url, dataType){
+  _getAllData(url, dataType, handler){
     getAllData(this.tokenAWS, url, null, (ans) => {
         if (ans.hasOwnProperty('error') ){
-          console.log(ans);
+          this._getAllData(url, dataType);
         }
         else {
+          res = [];
+          console.log(ans);
           for (var i = 0; i < ans.length; i++) {
-            if (i == ans.length - 1){
-              storeData_i_last(dataType, ans[i], i, () => {
-                this.completeLogin();
-              })
-            }
-            else {
-              storeData_i( dataType, ans[i], i )
-            };
+            res.push.apply(res, ans[i].data)
           };
+          handler(res);
         }
     });
   },
