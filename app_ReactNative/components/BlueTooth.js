@@ -57,7 +57,6 @@ export function enable(handler){
 export function connect(handler){
     BluetoothSerial.connect('30:15:01:07:24:05')
     .then((res) => {
-      this.write(() => {}, 'o');
       handler(true);
     })
     .catch((err) => handler(false) )
@@ -116,7 +115,7 @@ export class BTScreen extends Component {
     BluetoothSerial.connect('30:15:01:07:24:05')
       .then((res) => {
         //ACTION: BT CONNECTED
-        this.write('o');
+      //  this.write('o');
         this.connected(true);
       })
       .catch((err) => {  

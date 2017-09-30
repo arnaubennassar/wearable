@@ -149,7 +149,7 @@ export default (AuthScreen = React.createClass({
         }
         else {
           res = [];
-          console.log(ans);
+        //  console.log(ans);
           for (var i = 0; i < ans.length; i++) {
             res.push.apply(res, ans[i].data)
           };

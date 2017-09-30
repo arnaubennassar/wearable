@@ -40,9 +40,7 @@ var waitingBTData = false;
 var APP  = React.createClass({
 //SETUP NOTIFICATIONS
   componentWillMount() {
-    var now = Date.parse(new Date())
-      console.log( new Date(now).getDate() )
-    //INITIAL STATE for splash screen only 
+      //INITIAL STATE for splash screen only 
       this.setState({user: {user: {appInitialized: false}} });
     //NOTIFICATIONS LISTENERS
       OneSignal.addEventListener('received', this.onReceived);
@@ -167,7 +165,7 @@ var APP  = React.createClass({
     // })
     // checkDay('a');
     // checkDay('h');
-    //checkDay('t');
+    //  checkDay('t');
     //processData(  {t: [{v: 36, c: Date.parse(new Date())}]}/*JSON.parse( data.data.slice(0, -1) )*/  , 0, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password, 1506340031019 );
   },
   BTGetData(data){
@@ -194,7 +192,7 @@ var APP  = React.createClass({
       else{//DATA RECEIVED
         console.log( " <===   DATA RECEIVED   ===");
         console.log("===   SENDING DATA ACK   ===>");
-        processData(  JSON.parse( data.data.slice(0, -1) )  , this.props.state.BT.BT.timeStamp, this.props.state.user.user.tokenAWS, true);
+        processData(  JSON.parse( data.data.slice(0, -1) )  ,  Date.parse(new Date()), this.props.state.user.user.tokenAWS, true);
         BT.write(() => {}, 'k');
         waitingBTData = false;
         petitionBTResponded = true;

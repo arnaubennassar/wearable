@@ -18,8 +18,12 @@ var email = '';
 var password = '';
 const totalSteps = 4;
 export function processData(data, timeStamp, AWS, isNew){
-  email = mail;
-  password = pass;
+  // email = mail;
+  // password = pass;
+  var arduino_c = 0;
+  if (isNew){
+    arduino_c = data.c;
+  }
 //  console.log(data);
   var processedActivityData = {data: null, activityIncrement: null};
   var processedHeartData = null;
@@ -28,19 +32,34 @@ export function processData(data, timeStamp, AWS, isNew){
   var step = 0;
         //    ACTIVITY DATA     //
   if (data.hasOwnProperty(dataTypes.ACTIVITY)){
-    processedActivityData = activityProcessor(data[dataTypes.ACTIVITY], timeStamp);
-    _storeData(dataTypes.ACTIVITY, processedActivityData.data, isNew, AWS, 'ACTIVITY');
+    if (isNew){
+      processedActivityData = activityProcessor(data[dataTypes.ACTIVITY], timeStamp, arduino_c).data;
+    }
+    else{
+      processedActivityData = data[dataTypes.ACTIVITY];
+    }
+    _storeData(dataTypes.ACTIVITY, processedActivityData, isNew, AWS, 'ACTIVITY');
     ++step;
   }      
         //    HEART DATA     //
   if (data.hasOwnProperty(dataTypes.HEART)){
-    processedHeartData = heartProcessor(data[dataTypes.HEART], timeStamp);
+    if (isNew){
+      processedHeartData = heartProcessor(data[dataTypes.HEART], timeStamp, arduino_c);
+    }
+    else{
+      processedHeartData = data[dataTypes.HEART];
+    }
     _storeData(dataTypes.HEART, processedHeartData, isNew, AWS, 'HEART');
     ++step;
   }  
         //    TEMPERATURE DATA     //
   if (data.hasOwnProperty(dataTypes.TEMPERATURE)){
-    processedTemperatureData = temperatureProcessor(data[dataTypes.TEMPERATURE], timeStamp);
+    if (isNew){
+      processedTemperatureData = temperatureProcessor(data[dataTypes.TEMPERATURE], timeStamp, arduino_c);
+    }
+    else{
+      processedTemperatureData = data[dataTypes.TEMPERATURE];
+    }
     _storeData(dataTypes.TEMPERATURE, processedTemperatureData, isNew, AWS, 'TEMPERATURE');
     ++step;
   }
@@ -97,6 +116,7 @@ function _storeData (dataType, data, isNew, AWS, endPoint){
     var days = [];
   //  console.log(data);
   //SPLIT BY DAYS
+    console.log(data);
     for (var i = 0; i < data.length - 1; i++) {
       if ( new Date(data[i].c).getDate() != new Date(data[i + 1].c).getDate() ){
         //another day
@@ -123,11 +143,11 @@ function dispatchData (steps, data){
   }
 }
 function handler (response){
-  if(response.status == 401){
-      silentLogin(email, password, (token) => {
-        store.dispatch(loginSuccess(token))
-      } );
-  }
+  // if(response.status == 401){
+  //     silentLogin(email, password, (token) => {
+  //       store.dispatch(loginSuccess(token))
+  //     } );
+  // }
 }
 
 export function downloadData(AWS){

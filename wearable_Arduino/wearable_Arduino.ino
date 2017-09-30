@@ -6,7 +6,8 @@
 #include <DateTime.h>
 #include <GY80.h>
 #include "MAX30100_PulseOximeter.h"
-
+#define REPORTING_PERIOD_MS     1000
+uint32_t tsLastReport = 0;
 float maxim = 0;
                   //SENSORS
 int ledPin = 6;
@@ -33,9 +34,9 @@ struct activitySample {
   time_t timeStamp;
 };
 
-const int activityOriginalSampleRate = 1;
-const int heartOriginalSampleRate = 1;
-const int temperatureOriginalSampleRate = 1;                                //DATA ARRAYS
+const int activityOriginalSampleRate = 999;
+const int heartOriginalSampleRate = 10;
+const int temperatureOriginalSampleRate = 10000;                                //DATA ARRAYS
 int activitySampleRate = activityOriginalSampleRate;
 int heartSampleRate = heartOriginalSampleRate;
 int temperatureSampleRate = temperatureOriginalSampleRate;
@@ -43,9 +44,9 @@ int activitySampleRateIndex = 0;
 int heartSampleRateIndex = 0;
 int temperatureSampleRateIndex = 0;
                                       
-const int activitySamplesLength = 10;
-const int heartSamplesLength = 10;
-const int temperatureSamplesLength = 10;
+const int activitySamplesLength = 150;
+const int heartSamplesLength = 150;
+const int temperatureSamplesLength = 150;
 temperatureSample temperatureSamples[temperatureSamplesLength];
 heartSample heartSamples[heartSamplesLength];
 activitySample activitySamples[activitySamplesLength];
@@ -68,7 +69,6 @@ bool sendingDataRequestACK = true;
               //SETUP
 void setup() {
   //Serial.write("BOOT");
-  DateTime.sync(0000000000L);  // default start, Jan 1, 2010
   //Serial.begin(9600);
 //  pinMode(ledPin, OUTPUT); // for LED status
 //  pinMode(tmpPin, INPUT); // for temperature sensor
@@ -84,7 +84,7 @@ void setup() {
 }
               //LOOP
 void loop() {
-  delay(100);
+  //delay(100);
 //RECIEVE FROM BLUETOOTH
   listenBT();
 //TEMPERATURE SENSOR
@@ -92,9 +92,10 @@ void loop() {
 //IMU SENSOR
   readIMUSensor();
 //HEART SENSOR
+  HeartSensor.update();
   readHeartSensor();
 //SEND BLUETOOTH    
-  if (indexActivity > activitySamplesLength/2 && indexHeart > heartSamplesLength/2 && indexTemperature > temperatureSamplesLength/2  ){
+  if (indexActivity > 5 && indexHeart > 5 && indexTemperature > 5  ){
   //  Serial.println("data ready");
     if (sendingDataRequestACK == true){
       requestSendBT();
@@ -104,7 +105,7 @@ void loop() {
     }
   }
   else {
-    Serial.println("  data NOT ready");
+  //  Serial.println("  data NOT ready");
   //  Serial.print("  indexTemperature = ");
   //  Serial.println(indexTemperature);
   }
@@ -139,12 +140,16 @@ void readHeartSensor(){
     heartSamples[indexHeart].timeStamp = heartBuffer[0].timeStamp + ((heartBuffer[heartBufferLength - 1].timeStamp - heartBuffer[0].timeStamp)/2);
     ++ indexHeart;
   }
-  if (heartSampleRateIndex >= heartSampleRate){
-    HeartSensor.update();
+  if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
     heartSampleRateIndex = 0;
     heartBuffer[indexBufferHeart].timeStamp = DateTime.now();
-    heartBuffer[indexBufferHeart].heart = HeartSensor.getHeartRate();
+
+    float bpm = HeartSensor.getHeartRate();
+    heartBuffer[indexBufferHeart].heart = bpm;
+    Serial.print("bpm = ");
+    Serial.println(bpm);
     ++indexBufferHeart;
+    tsLastReport = millis();
   }
   else {
     ++heartSampleRateIndex;
@@ -258,6 +263,8 @@ void readTemperatureSensor(){
     temperatureSampleRateIndex = 0;
     temperatureBuffer[indexBufferTemperature].timeStamp = DateTime.now();
     temperatureBuffer[indexBufferTemperature].temperature = (5.0 * analogRead(tmpPin) * 100.0) / 1024;
+    Serial.print("temperature = ");
+    Serial.println(temperatureBuffer[indexBufferTemperature].temperature);
     ++indexBufferTemperature;
   }
   else {
@@ -279,8 +286,8 @@ void listenBT(){
     }
     
     if ( val == 'N' ){
-      Serial.println("=== sync time RECEIVED ===>");
-      DateTime.sync(0000000000L);
+     // Serial.println("=== sync time RECEIVED ===>");
+    //  DateTime.sync(0000000000L);
     }
     if( val == '@' ){/////REQ ACK recieved
       Serial.println("=== REQUEST/RESET ACK RECEIVED ===>");
@@ -321,7 +328,8 @@ void sendBT (){
   sendHeart();
   bluetooth.print( "],\"a\":[" );
   sendActivity();
-  bluetooth.print( "]" );
+  bluetooth.print( "],\"c\":" );
+  bluetooth.print( DateTime.now() );
   bluetooth.println( "}" );
 //  //Serial.println("sent");
 
