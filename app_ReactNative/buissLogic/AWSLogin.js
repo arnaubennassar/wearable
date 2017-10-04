@@ -61,7 +61,7 @@ export function login(email: string, password: string, handler ){
       handler ( { 'success': true, message: result.getIdToken().getJwtToken() } );
     },
     onFailure: (err) => {
-      console.log(err.number)
+      console.log(err)
         handler ( { 'success': false, message: err.message } );
     },
   });

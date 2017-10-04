@@ -56,7 +56,12 @@ export function checkDay(dataType){
 }
 
 export function storeData_multiSample(dataType, data: Object){
-  _storeData_multiSample(dataType, data, 0);
+  if (dataType == 'b'){
+    _storeData_multiSample_BBT(data, 0);
+  }
+  else {
+    _storeData_multiSample(dataType, data, 0);
+  }
 }
 
 function _storeData_multiSample(dataType, data: Object, current){
@@ -66,6 +71,44 @@ function _storeData_multiSample(dataType, data: Object, current){
     });
   }
   else (console.log('DONE wiz ' + dataType));
+}
+
+function _storeData_multiSample_BBT(data: Object, current){
+  if (current < data.length){
+    console.log('storing:')
+    console.log(data[current])
+    storeData_BBT(data[current], () => {
+      _storeData_multiSample_BBT(data, ++current);
+    });
+  }
+  else (console.log('DONE wiz BBT'));
+}
+
+      //BBT CASE!!!!
+export function storeData_BBT (data, handler){
+    AsyncStorage.getItem('b_TOTAL_SAMPLES').then((storedNSamples)=>{
+    totalSamples = parseInt(storedNSamples);
+  //  console.log('current storage position = ' + totalSamples)
+    AsyncStorage.getItem('b' + totalSamples.toString()).then((lastSample)=>{
+      console.log(lastSample);
+      _lastSample = JSON.parse(lastSample);
+      if (_lastSample == undefined){
+        console.log(data);
+        console.log('storing the first day: ' + new Date(data.c).getDate() );
+        AsyncStorage.setItem( 'b' + '_TOTAL_SAMPLES', '0' ).then((aha) => { console.log(aha); handler(); });
+        AsyncStorage.setItem( 'b' + (totalSamples).toString(), JSON.stringify(data) );
+      }
+      else if ( new Date(_lastSample.c).getDate() != new Date(data.c).getDate() ){
+        console.log('storing a new day: ' + new Date(data.c).getDate() );
+        AsyncStorage.setItem( 'b' + '_TOTAL_SAMPLES', (totalSamples + 1).toString() ).then(() => { handler(); });
+        AsyncStorage.setItem( 'b' + (totalSamples + 1).toString(), JSON.stringify(data) );
+      }
+      else if (_lastSample.v > data.v){
+        console.log('storing to the same day: ' + new Date(_lastSample.c).getDate());
+        AsyncStorage.setItem( 'b' + totalSamples.toString(), JSON.stringify(data) ).then(() => { handler(); });
+      }
+    });
+  });
 }
 
 export function storeData(dataType, data: Object, handler){
@@ -125,42 +168,42 @@ export function getData (dataType, from, to, handler) {
   }
 }
 
-export function getData_c (dataType, from_c, to_c, handler) {
-  findIndex_c(dataType, from_c, (from_i) => {
-    console.log('index from = ' + from_i)
-    findIndex_c(dataType, to_c, (to_i) => {
-      console.log('index to = ' + to_i)
-      getData(dataType, from_i, to_i, (ans) => {
-        handler(ans);
-      });
-    });
-  });
-}
+// export function getData_c (dataType, from_c, to_c, handler) {
+//   findIndex_c(dataType, from_c, (from_i) => {
+//     console.log('index from = ' + from_i)
+//     findIndex_c(dataType, to_c, (to_i) => {
+//       console.log('index to = ' + to_i)
+//       getData(dataType, from_i, to_i, (ans) => {
+//         handler(ans);
+//       });
+//     });
+//   });
+// }
 
-function findIndex_c (dataType, c, handler){
-  AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((right)=>{
-    asyncBinSearch(dataType, 0, --right, c, handler);
-  });
-}
+// function findIndex_c (dataType, c, handler){
+//   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((right)=>{
+//     asyncBinSearch(dataType, 0, --right, c, handler);
+//   });
+// }
 
-function asyncBinSearch (dataType, L, R, c, handler){
-    const m = Math.floor((L + R)/2);
-  //  console.log('el den medio delo xixooo = ' + m)
-    AsyncStorage.getItem( dataType + ( m ).toString() ).then((sample)=>{
-      var current = JSON.parse(sample);
-      if (c < current[0].c){
-        L = m + 1;
-        asyncBinSearch(dataType, L, R, c, handler);
-      }
-      else if (c > current[current.length - 1].c){
-        R = m - 1;
-        asyncBinSearch(dataType, L, R, c, handler);
-      }
-      if (L > R){
-        handler( m );
-      }
-    });
-}
+// function asyncBinSearch (dataType, L, R, c, handler){
+//     const m = Math.floor((L + R)/2);
+//   //  console.log('el den medio delo xixooo = ' + m)
+//     AsyncStorage.getItem( dataType + ( m ).toString() ).then((sample)=>{
+//       var current = JSON.parse(sample);
+//       if (c < current[0].c){
+//         L = m + 1;
+//         asyncBinSearch(dataType, L, R, c, handler);
+//       }
+//       else if (c > current[current.length - 1].c){
+//         R = m - 1;
+//         asyncBinSearch(dataType, L, R, c, handler);
+//       }
+//       if (L > R){
+//         handler( m );
+//       }
+//     });
+// }
 
 export function clearData (){
     AsyncStorage.setItem( 'a' + '_TOTAL_SAMPLES', '0' );

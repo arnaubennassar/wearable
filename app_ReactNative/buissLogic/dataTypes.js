@@ -1,4 +1,5 @@
-export const TEMPERATURE = 't';
-export const HEART = 'h';
 export const ACTIVITY = 'a';
-export const dataTypes = [TEMPERATURE, HEART, ACTIVITY];
+export const HEART = 'h';
+export const TEMPERATURE = 't';
+export const BBT = 'b';
+export const dataTypes = [TEMPERATURE, HEART, ACTIVITY, BBT];

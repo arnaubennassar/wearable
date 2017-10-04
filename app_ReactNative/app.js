@@ -157,15 +157,16 @@ var APP  = React.createClass({
 //    BT.disconnect();
     this.props.actions.BT.desconnected();
     console.log('BT DISConnected!!!!!')
-    // getAllData('a',(data)=>{
+    // getAllData('t',(data)=>{
     //   clearData();
     //   console.log('gotcha activity data')
-    //   //console.log(data);
-    //   processData({a: data}, 0, 'AWS', 'mail', 'pass');
+    //   console.log(data);
+    //   processData({t: data}, 0, 'AWS', 'mail', 'pass', true);
     // })
     // checkDay('a');
     // checkDay('h');
-    //  checkDay('t');
+      checkDay('t');
+      checkDay('b');
     //processData(  {t: [{v: 36, c: Date.parse(new Date())}]}/*JSON.parse( data.data.slice(0, -1) )*/  , 0, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password, 1506340031019 );
   },
   BTGetData(data){
@@ -192,7 +193,7 @@ var APP  = React.createClass({
       else{//DATA RECEIVED
         console.log( " <===   DATA RECEIVED   ===");
         console.log("===   SENDING DATA ACK   ===>");
-        processData(  JSON.parse( data.data.slice(0, -1) )  ,  Date.parse(new Date()), this.props.state.user.user.tokenAWS, true);
+        processData(  JSON.parse( data.data.slice(0, -1) ),  Date.parse(new Date()), this.props.state.user.user.tokenAWS, true);
         BT.write(() => {}, 'k');
         waitingBTData = false;
         petitionBTResponded = true;

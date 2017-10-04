@@ -134,7 +134,7 @@ export function getData (AWS: string, endPoint: string, next: string, data, hand
 	  method: 'GET',
 	  headers: head,
 	}).then(function (response){
-		//console.log(response);
+		console.log(response);
 		if(response.status == 401){
 			handler({'error':401})
 			return;

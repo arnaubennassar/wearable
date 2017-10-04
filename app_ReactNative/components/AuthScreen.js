@@ -120,9 +120,10 @@ export default (AuthScreen = React.createClass({
   //HANDLE LOGIN RESPONSE
   handlerLogin(res) {
     if (res.success) {
-      ////// LOAD USER DATA //////
       this.tokenAWS = res.message
       getPersonalData(this.tokenAWS, this.handlerPersonalData);
+      ////// LOAD USER DATA //////
+
       this._getAllData('ACTIVITY', 'a', (ans) => { 
         processData({a: ans}, 0, this.tokenAWS, false); 
         this.completeLogin();
@@ -132,12 +133,19 @@ export default (AuthScreen = React.createClass({
         this.completeLogin();
       });
       this._getAllData('TEMPERATURE', 't', (ans) => { 
-        processData({t: ans}, 0, this.tokenAWS, false); 
+        console.log(ans[0].c);
+        processData({t: ans}, Date.parse(new Date()), this.tokenAWS, false); 
+        this.completeLogin();
+        this.completeLogin();
+        this.completeLogin();
+      });
+      this._getAllData('BBT', 'b', (ans) => { 
+        processData({b: ans}, 0, this.tokenAWS, false); 
         this.completeLogin();
       });
     } else {
       this.props.actions.loginFail(res.message);
-      if (res.message == "User is not confirmed.") {
+      if (res.message == "User is not confirmed." || res.message == "Password reset required for the user") {
         this.props.actions.validateMode();
       }
     }
@@ -145,7 +153,7 @@ export default (AuthScreen = React.createClass({
   _getAllData(url, dataType, handler){
     getAllData(this.tokenAWS, url, null, (ans) => {
         if (ans.hasOwnProperty('error') ){
-          this._getAllData(url, dataType);
+        //  this._getAllData(url, dataType);
         }
         else {
           res = [];

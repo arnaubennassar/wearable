@@ -34,7 +34,7 @@ struct activitySample {
   time_t timeStamp;
 };
 
-const int activityOriginalSampleRate = 999;
+const int activityOriginalSampleRate = 10000;
 const int heartOriginalSampleRate = 10;
 const int temperatureOriginalSampleRate = 10000;                                //DATA ARRAYS
 int activitySampleRate = activityOriginalSampleRate;
@@ -88,9 +88,11 @@ void loop() {
 //RECIEVE FROM BLUETOOTH
   listenBT();
 //TEMPERATURE SENSOR
-  readTemperatureSensor();
+  bool isValid = readTemperatureSensor();
 //IMU SENSOR
-  readIMUSensor();
+  if (isValid){
+    readIMUSensor();
+  }
 //HEART SENSOR
   HeartSensor.update();
   readHeartSensor();
@@ -141,15 +143,16 @@ void readHeartSensor(){
     ++ indexHeart;
   }
   if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
-    heartSampleRateIndex = 0;
-    heartBuffer[indexBufferHeart].timeStamp = DateTime.now();
-
     float bpm = HeartSensor.getHeartRate();
-    heartBuffer[indexBufferHeart].heart = bpm;
-    Serial.print("bpm = ");
-    Serial.println(bpm);
-    ++indexBufferHeart;
-    tsLastReport = millis();
+    if (bpm > 40 && bpm < 220){
+      heartSampleRateIndex = 0;
+      heartBuffer[indexBufferHeart].timeStamp = DateTime.now();
+      heartBuffer[indexBufferHeart].heart = bpm;
+      Serial.print("bpm = ");
+      Serial.println(bpm);
+      ++indexBufferHeart;
+      tsLastReport = millis();
+    }
   }
   else {
     ++heartSampleRateIndex;
@@ -234,7 +237,7 @@ activitySample sumActivitySamples (bool sub, activitySample a, activitySample b,
 }
 
 //TEMPERATURE
-void readTemperatureSensor(){
+bool readTemperatureSensor(){
     //BUFFER IS FULL
   if (indexBufferTemperature == temperatureBufferLength){
     indexBufferTemperature = 0;
@@ -260,15 +263,21 @@ void readTemperatureSensor(){
      ++ indexTemperature;
   }
   if (temperatureSampleRateIndex >= temperatureSampleRate){
-    temperatureSampleRateIndex = 0;
-    temperatureBuffer[indexBufferTemperature].timeStamp = DateTime.now();
-    temperatureBuffer[indexBufferTemperature].temperature = (5.0 * analogRead(tmpPin) * 100.0) / 1024;
-    Serial.print("temperature = ");
-    Serial.println(temperatureBuffer[indexBufferTemperature].temperature);
-    ++indexBufferTemperature;
+    float _temperature = (5.0 * analogRead(tmpPin) * 100.0) / 1024;
+    if (_temperature > 34 && _temperature < 38){
+      temperatureSampleRateIndex = 0;
+      temperatureBuffer[indexBufferTemperature].timeStamp = DateTime.now();
+      temperatureBuffer[indexBufferTemperature].temperature = _temperature;
+      Serial.print("temperature = ");
+      Serial.println(temperatureBuffer[indexBufferTemperature].temperature);
+      ++indexBufferTemperature;
+      return true;
+    }
+    return false;
   }
   else {
     ++temperatureSampleRateIndex;
+    return false;
   }
 }
 

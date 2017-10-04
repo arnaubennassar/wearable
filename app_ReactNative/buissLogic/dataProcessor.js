@@ -1,10 +1,11 @@
 /*@flow*/
 import * as dataTypes from './dataTypes';
+import {activityProcessor} from './processors/activityProcessor';
 import {heartProcessor} from './processors/heartProcessor';
 import {temperatureProcessor} from './processors/temperatureProcessor';
-import {activityProcessor} from './processors/activityProcessor';
+import {BBTProcessor} from './processors/BBTProcessor';
 
-import {storeData, storeData_multiSample, getData_c} from './storage'
+import {storeData, storeData_multiSample, storeData_BBT} from './storage'
 import * as API from './api'
 import {silentLogin} from './AWSLogin'
 
@@ -24,12 +25,13 @@ export function processData(data, timeStamp, AWS, isNew){
   if (isNew){
     arduino_c = data.c;
   }
-//  console.log(data);
+  console.log(data);
   var processedActivityData = {data: null, activityIncrement: null};
   var processedHeartData = null;
   var processedTemperatureData = null;
-  var processedMinBBTData = null;
+  var processedBBTData = null;
   var step = 0;
+
         //    ACTIVITY DATA     //
   if (data.hasOwnProperty(dataTypes.ACTIVITY)){
     if (isNew){
@@ -41,6 +43,7 @@ export function processData(data, timeStamp, AWS, isNew){
     _storeData(dataTypes.ACTIVITY, processedActivityData, isNew, AWS, 'ACTIVITY');
     ++step;
   }      
+
         //    HEART DATA     //
   if (data.hasOwnProperty(dataTypes.HEART)){
     if (isNew){
@@ -52,6 +55,7 @@ export function processData(data, timeStamp, AWS, isNew){
     _storeData(dataTypes.HEART, processedHeartData, isNew, AWS, 'HEART');
     ++step;
   }  
+
         //    TEMPERATURE DATA     //
   if (data.hasOwnProperty(dataTypes.TEMPERATURE)){
     if (isNew){
@@ -64,58 +68,25 @@ export function processData(data, timeStamp, AWS, isNew){
     ++step;
   }
 
-  // MAKE ASYNC RESPECT TEMPERATURE DATA
         //    BBT DATA   //
-  // if ( data.hasOwnProperty(dataTypes.TEMPERATURE) ) {
-  //     //process from last to current 
-  //   const currentBBT = processedTemperatureData[processedTemperatureData.length - 1].c;
-  //   const count = Math.floor((currentBBT - lastBBT)/8640000);
-  //   var countInner = 0;
-  //   var minTemp = [];
-  //   console.log('processing ' + count + ' minBBT days');
-  //   console.log('currentBBT = ' +currentBBT+ '    lastBBT = '+ lastBBT);
-  //   for (var i = lastBBT; i < currentBBT; i += 8640000 /*1 day*/) {
-  //     if(currentBBT - i > 8640000){
-  //       getData_c(dataTypes.TEMPERATURE, i, i + 8640000, (storedData) => {
-  //         console.log('processing day: ' + countInner);
-  //         var minimalTemperature = 50;
-  //         var minPos;
-  //         for (var i = 0; i < storeData.length; i++) {
-  //           if (storedData[i].v < minimalTemperature){
-  //             minimalTemperature = storedData[i].v;
-  //             minPos = i;
-  //           }
-  //         };
-  //         if (minimalTemperature < 50){
-  //           minTemp.push(storedData[minPos]);
-  //         }
-  //           //DONE
-  //         ++ countInner;
-  //         if (countInner == count){
-  //           store.dispatch(userActions.setLastBBT(minTemp[minTemp.length - 1].c));
-  //           ++step;
-  //           processedMinBBTData = minTemp;
-  //           dispatchData(step, {
-  //             activity: processedActivityData.data, 
-  //             activityIncrement: processedActivityData.activityIncrement, 
-  //             heart: processedHeartData, 
-  //             temperature: processedTemperatureData,
-  //             minBBT: processedMinBBTData,
-  //           });
-  //         }
-  //       })
-  //     }
-  //   }
-  // }
-  
+  if ( isNew && data.hasOwnProperty(dataTypes.TEMPERATURE) ) {
+    console.log('is new');
+    processedBBTData = BBTProcessor(data[dataTypes.TEMPERATURE], timeStamp, arduino_c);
+    _storeData(dataTypes.BBT, processedBBTData, isNew, AWS, 'BBT');
+    ++step;
+  }
+  else if ( data.hasOwnProperty(dataTypes.BBT) ) {
+    processedBBTData = data[dataTypes.BBT];
+    ++step;
+  }
 }
 
 function _storeData (dataType, data, isNew, AWS, endPoint){
     var last = 0;
     var pos  = 0;
     var days = [];
-  //  console.log(data);
   //SPLIT BY DAYS
+    console.log(dataType + ' : ' );
     console.log(data);
     for (var i = 0; i < data.length - 1; i++) {
       if ( new Date(data[i].c).getDate() != new Date(data[i + 1].c).getDate() ){
@@ -127,12 +98,18 @@ function _storeData (dataType, data, isNew, AWS, endPoint){
     };
   //STORE
     if (last == 0){
-       storeData(dataType, data, ()=>{});
+        if (dataType == 'b'){
+          storeData_BBT(processedBBTData, ()=>{});
+        }
+        else {
+          storeData(dataType, data, ()=>{});
+        }
     }
     else {
-      storeData_multiSample(dataType, days);
+      storeData_multiSample(dataType, dataType == 'b' ? data : days);
     }
     if(isNew){
+      console.log('uploading data to cloud')
       API.postData(data, data[data.length -1].c, AWS, endPoint, handler);
     }
 } 

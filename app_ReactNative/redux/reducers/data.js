@@ -12,7 +12,7 @@ export const dataDefault: DataState =
     activityObjective: 100000,
     heart:[],
     temperature:[],
-    minBBT:[]
+    BBT:[]
   }, 
 };
 
@@ -32,9 +32,9 @@ type DataState = {
       temperauture: number,
       timeStamp: string
     }],
-    minBBT:[{
+    BBT:[{
       temperature: number,
-      day: number
+      timeStamp: string
     }]
   }
 }
@@ -64,11 +64,18 @@ export const dataReducer = (state: DataState, action: Object) => {
         }
         else newState.data.temperature.push.apply(newState.data.temperature, action.payload.temperature);
       }
-      if (action.payload.minBBT != null){
-        if(newState.data.minBBT === undefined){
-          newState.data.minBBT = action.payload.minBBT;
+      if (action.payload.BBT != null){
+        if(newState.data.BBT === undefined){
+          newState.data.BBT = action.payload.BBT;
         }
-        else newState.data.minBBT.push.apply(newState.data.minBBT, action.payload.minBBT);
+        else {
+          if (new Date(newState.data.BBT[newState.data.BBT.length - 1].c).getDate() == new Date(action.payload.BBT[0].c).getDate()){
+            if ( newState.data.BBT[newState.data.BBT.length - 1].v > action.payload.BBT[0].v ){
+              newState.data.BBT.pop;
+            }
+          }
+        }
+        newState.data.BBT.push.apply(newState.data.BBT, action.payload.BBT);
       }
       return newState;
     case "LOGOUT":
