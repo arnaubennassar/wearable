@@ -68,7 +68,7 @@ int indexBufferTemperature = 0;
 bool sendingDataRequestACK = true;
               //SETUP
 void setup() {
-  //Serial.write("BOOT");
+  Serial.write("BOOT");
   //Serial.begin(9600);
 //  pinMode(ledPin, OUTPUT); // for LED status
 //  pinMode(tmpPin, INPUT); // for temperature sensor
@@ -86,7 +86,7 @@ void setup() {
 void loop() {
   //delay(100);
 //RECIEVE FROM BLUETOOTH
-  listenBT();
+//  listenBT();
 //TEMPERATURE SENSOR
   bool isValid = readTemperatureSensor();
 //IMU SENSOR
@@ -103,7 +103,7 @@ void loop() {
       requestSendBT();
     }
     else {
-      sendBT();
+     // sendBT();
     }
   }
   else {

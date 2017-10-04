@@ -30,100 +30,130 @@ function _initStorage (dataType: string, returnFunction){
   });
 }
 
-export function checkDay(dataType){
+export function checkDay (dataType){
+    if (dataType == 'b' || dataType == 's'){
+      
+    }
+    else {
+      checkDay_array(dataType);
+    }
+}
+
+function checkDay_array(dataType){
   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
     totalSamples = parseInt(storedNSamples);
     console.log('checking stored days of ' + dataType +'. totalsamples = ' + storedNSamples)
     for (var i = 0; i < totalSamples; i++) {
-            getData(dataType, i, i+1, (ans) => {
-              var day = new Date(ans[0].c).getDate();
-              var totOK = true;
-              for (var j = 0; j < ans.length; j++) {
-                _day = new Date(ans[j].c).getDate();
-                //console.log(_day);
-                if (_day != day){
-                  console.log('not same day: ' + day + ' vs ' + _day);
-                  totOK = false;
-                }
-              };
-              if (totOK){
-                console.log('CORRECT DAY ' + day);
-              }
-            });
-
+        getData(dataType, i, i+1, (ans) => {
+          var day = new Date(ans[0].c).getDate();
+          var totOK = true;
+          for (var j = 0; j < ans.length; j++) {
+            _day = new Date(ans[j].c).getDate();
+            //console.log(_day);
+            if (_day != day){
+              console.log('not same day: ' + day + ' vs ' + _day);
+              totOK = false;
+            }
+          };
+          if (totOK){
+            console.log('CORRECT DAY ' + day);
+          }
+        });
     };
   });
 }
 
 export function storeData_multiSample(dataType, data: Object){
   if (dataType == 'b'){
-    _storeData_multiSample_BBT(data, 0);
+    _storeData_multiSample_object(dataType, data, 0);
   }
   else {
-    _storeData_multiSample(dataType, data, 0);
+    _storeData_multiSample_array(dataType, data, 0);
   }
 }
 
-function _storeData_multiSample(dataType, data: Object, current){
+function _storeData_multiSample_array(dataType, data: Object, current){
   if (current < data.length){
-    storeData(dataType, data[current], () => {
-      _storeData_multiSample(dataType, data, ++current);
+    storeData_array(dataType, data[current], () => {
+      _storeData_multiSample_array(dataType, data, ++current);
     });
   }
   else (console.log('DONE wiz ' + dataType));
 }
 
-function _storeData_multiSample_BBT(data: Object, current){
+function _storeData_multiSample_object(dataType, data: Object, current){
   if (current < data.length){
     console.log('storing:')
     console.log(data[current])
-    storeData_BBT(data[current], () => {
-      _storeData_multiSample_BBT(data, ++current);
+    storeData_object(dataType, data[current], () => {
+      _storeData_multiSample_object(dataType, data, ++current);
     });
   }
-  else (console.log('DONE wiz BBT'));
+  else (console.log('DONE wiz ' + dataType));
 }
 
       //BBT CASE!!!!
-export function storeData_BBT (data, handler){
-    AsyncStorage.getItem('b_TOTAL_SAMPLES').then((storedNSamples)=>{
+export function storeData_object (dataType, data, handler){
+    AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
     totalSamples = parseInt(storedNSamples);
   //  console.log('current storage position = ' + totalSamples)
-    AsyncStorage.getItem('b' + totalSamples.toString()).then((lastSample)=>{
+    AsyncStorage.getItem(dataType + totalSamples.toString()).then((lastSample)=>{
       console.log(lastSample);
       _lastSample = JSON.parse(lastSample);
+      //FIRST SAMPLE
       if (_lastSample == undefined){
         console.log(data);
         console.log('storing the first day: ' + new Date(data.c).getDate() );
-        AsyncStorage.setItem( 'b' + '_TOTAL_SAMPLES', '0' ).then((aha) => { console.log(aha); handler(); });
-        AsyncStorage.setItem( 'b' + (totalSamples).toString(), JSON.stringify(data) );
+        AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', '0' ).then(() => { handler(); });
+        AsyncStorage.setItem( dataType + (totalSamples).toString(), JSON.stringify(data) );
       }
+      //NEW DAY
       else if ( new Date(_lastSample.c).getDate() != new Date(data.c).getDate() ){
         console.log('storing a new day: ' + new Date(data.c).getDate() );
-        AsyncStorage.setItem( 'b' + '_TOTAL_SAMPLES', (totalSamples + 1).toString() ).then(() => { handler(); });
-        AsyncStorage.setItem( 'b' + (totalSamples + 1).toString(), JSON.stringify(data) );
+        AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', (totalSamples + 1).toString() ).then(() => { handler(); });
+        AsyncStorage.setItem( dataType + (totalSamples + 1).toString(), JSON.stringify(data) );
       }
-      else if (_lastSample.v > data.v){
+      //SAME DAY
+      else {
         console.log('storing to the same day: ' + new Date(_lastSample.c).getDate());
-        AsyncStorage.setItem( 'b' + totalSamples.toString(), JSON.stringify(data) ).then(() => { handler(); });
+        if (dataType == 'b' && _lastSample.v > data.v){
+          AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(data) ).then(() => { handler(); });
+        }
+        // else if (dataType == 's'){
+        //   if(_lastSample.sleep == data.sleep){
+        //     _lastSample.c_out = data.c;
+        //     _lastSample.v += data.v;
+        //     AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(_lastSample) ).then(() => { handler(); });
+        //   }
+        //   else{
+        //     AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', (totalSamples + 1).toString() ).then(() => { handler(); });
+        //     AsyncStorage.setItem( dataType + (totalSamples + 1).toString(), JSON.stringify(data) );
+        //   }
+        // }
       }
     });
   });
 }
 
-export function storeData(dataType, data: Object, handler){
+export function storeData_array(dataType, data: Object, handler){
   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
     totalSamples = parseInt(storedNSamples);
-  //  console.log('current storage position = ' + totalSamples)
+    console.log('current storage position = ' + totalSamples)
     AsyncStorage.getItem(dataType + totalSamples.toString()).then((lastSample)=>{
       _lastSample = JSON.parse(lastSample);
-      if ( new Date(_lastSample[0].c).getDate() != new Date(data[0].c).getDate() ){
-  //      console.log('storing a new day: ' + new Date(data[0].c).getDate() );
-        AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', (totalSamples + 1).toString() ).then(() => { handler(); });
+      if (_lastSample == undefined){
+        console.log(data);
+        console.log('storing the first day: ' + new Date(data.c).getDate() );
+        AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', '0' ).then(() => { handler(); });
         AsyncStorage.setItem( dataType + (totalSamples).toString(), JSON.stringify(data) );
       }
+      else if ( new Date(_lastSample[0].c).getDate() != new Date(data[0].c).getDate() ){
+        console.log('storing a new day: ' + new Date(data[0].c).getDate() );
+        AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', (totalSamples + 1).toString() ).then(() => { handler(); });
+        AsyncStorage.setItem( dataType + (totalSamples + 1).toString(), JSON.stringify(data) );
+      }
       else {
-  //      console.log('storing to the same day: ' + new Date(_lastSample[0].c).getDate());
+        console.log('storing to the same day: ' + new Date(_lastSample[0].c).getDate());
         _lastSample.push.apply(_lastSample, data);
         AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(_lastSample) ).then(() => { handler(); });
       }

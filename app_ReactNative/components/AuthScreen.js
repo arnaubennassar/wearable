@@ -127,22 +127,24 @@ export default (AuthScreen = React.createClass({
       this._getAllData('ACTIVITY', 'a', (ans) => { 
         processData({a: ans}, 0, this.tokenAWS, false); 
         this.completeLogin();
-      });
-      this._getAllData('HEART', 'h', (ans) => { 
-        processData({h: ans}, 0, this.tokenAWS, false); 
-        this.completeLogin();
-      });
-      this._getAllData('TEMPERATURE', 't', (ans) => { 
-        console.log(ans[0].c);
-        processData({t: ans}, Date.parse(new Date()), this.tokenAWS, false); 
-        this.completeLogin();
         this.completeLogin();
         this.completeLogin();
       });
-      this._getAllData('BBT', 'b', (ans) => { 
-        processData({b: ans}, 0, this.tokenAWS, false); 
-        this.completeLogin();
-      });
+      // this._getAllData('HEART', 'h', (ans) => { 
+      //   processData({h: ans}, 0, this.tokenAWS, false); 
+      //   this.completeLogin();
+      // });
+      // this._getAllData('TEMPERATURE', 't', (ans) => { 
+      //   console.log(ans[0].c);
+      //   processData({t: ans}, Date.parse(new Date()), this.tokenAWS, false); 
+      //   this.completeLogin();
+      //   this.completeLogin();
+      //   this.completeLogin();
+      // });
+      // this._getAllData('BBT', 'b', (ans) => { 
+      //   processData({b: ans}, 0, this.tokenAWS, false); 
+      //   this.completeLogin();
+      // });
     } else {
       this.props.actions.loginFail(res.message);
       if (res.message == "User is not confirmed." || res.message == "Password reset required for the user") {
