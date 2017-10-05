@@ -7,7 +7,9 @@
 #include <GY80.h>
 #include "MAX30100_PulseOximeter.h"
 #define REPORTING_PERIOD_MS     1000
+#define REPORTING_PERIOD_MS_BT     5000
 uint32_t tsLastReport = 0;
+uint32_t btLastReport = 0;
 float maxim = 0;
                   //SENSORS
 int ledPin = 6;
@@ -34,9 +36,9 @@ struct activitySample {
   time_t timeStamp;
 };
 
-const int activityOriginalSampleRate = 10000;
+const int activityOriginalSampleRate = 5000;
 const int heartOriginalSampleRate = 10;
-const int temperatureOriginalSampleRate = 10000;                                //DATA ARRAYS
+const int temperatureOriginalSampleRate = 5000;                                //DATA ARRAYS
 int activitySampleRate = activityOriginalSampleRate;
 int heartSampleRate = heartOriginalSampleRate;
 int temperatureSampleRate = temperatureOriginalSampleRate;
@@ -86,30 +88,32 @@ void setup() {
 void loop() {
   //delay(100);
 //RECIEVE FROM BLUETOOTH
-//  listenBT();
+  listenBT();
 //TEMPERATURE SENSOR
   bool isValid = readTemperatureSensor();
 //IMU SENSOR
-  if (isValid){
+  //if (isValid){
     readIMUSensor();
-  }
+  //}
 //HEART SENSOR
   HeartSensor.update();
   readHeartSensor();
 //SEND BLUETOOTH    
-  if (indexActivity > 5 && indexHeart > 5 && indexTemperature > 5  ){
-  //  Serial.println("data ready");
-    if (sendingDataRequestACK == true){
-      requestSendBT();
-    }
-    else {
-     // sendBT();
+  if (indexActivity > 50 || indexHeart > 50 || indexTemperature > 50  ){
+    if (millis() - btLastReport > REPORTING_PERIOD_MS) {
+      btLastReport = millis();
+      if (sendingDataRequestACK == true){
+        requestSendBT();
+      }
+      else {
+        sendBT();
+      }
     }
   }
   else {
-  //  Serial.println("  data NOT ready");
-  //  Serial.print("  indexTemperature = ");
-  //  Serial.println(indexTemperature);
+ //   Serial.println("  data NOT ready");
+ //   Serial.print("  indexTemperature = ");
+ //   Serial.println(indexTemperature);
   }
 }  
 
@@ -188,12 +192,13 @@ void readIMUSensor(){
   //SAMPLE RATE
   if (activitySampleRateIndex >= activitySampleRate){
     //READ DATA
+    Serial.println("reading activity");
     activitySampleRateIndex = 0;
     GY80_scaled IMUValues = IMUSensor.read_scaled();
     activityBuffer[indexBufferActivity] = {
-      min(100,  max(abs(IMUValues.a_x), 20) - 20),
-      min(100,  max(abs(IMUValues.a_y), 20) - 20), 
-      min(100,  max(abs(IMUValues.a_z), 20) - 20),         //INVERTIT!!!!!!!!!!!!!!
+      min(100,  abs(IMUValues.a_x)),
+      min(100,  abs(IMUValues.a_y)), 
+      min(100,  abs(IMUValues.a_z)),         //INVERTIT!!!!!!!!!!!!!!
       abs(IMUValues.g_x),
       abs(IMUValues.g_y),
       abs(IMUValues.g_x),
@@ -264,7 +269,7 @@ bool readTemperatureSensor(){
   }
   if (temperatureSampleRateIndex >= temperatureSampleRate){
     float _temperature = (5.0 * analogRead(tmpPin) * 100.0) / 1024;
-    if (_temperature > 34 && _temperature < 38){
+    if (_temperature > 20 && _temperature < 38){
       temperatureSampleRateIndex = 0;
       temperatureBuffer[indexBufferTemperature].timeStamp = DateTime.now();
       temperatureBuffer[indexBufferTemperature].temperature = _temperature;

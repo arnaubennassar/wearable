@@ -3,7 +3,6 @@ import * as dataTypes from './dataTypes';
 
 var step = 0;
 
-
 export function initStorage (handler){
   step = dataTypes.dataTypes.length;
   for (i = 0; i < dataTypes.dataTypes.length; ++i){
@@ -31,19 +30,14 @@ function _initStorage (dataType: string, returnFunction){
 }
 
 export function checkDay (dataType){
-    if (dataType == 'b' || dataType == 's'){
-      
-    }
-    else {
-      checkDay_array(dataType);
-    }
+  checkDay_array(dataType);
 }
 
 function checkDay_array(dataType){
   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
     totalSamples = parseInt(storedNSamples);
     console.log('checking stored days of ' + dataType +'. totalsamples = ' + storedNSamples)
-    for (var i = 0; i < totalSamples; i++) {
+    for (var i = 0; i < totalSamples + 1; i++) {
         getData(dataType, i, i+1, (ans) => {
           var day = new Date(ans[0].c).getDate();
           var totOK = true;
@@ -51,6 +45,7 @@ function checkDay_array(dataType){
             _day = new Date(ans[j].c).getDate();
             //console.log(_day);
             if (_day != day){
+              console.log('datatype: : ' +dataType);
               console.log('not same day: ' + day + ' vs ' + _day);
               totOK = false;
             }
@@ -64,12 +59,13 @@ function checkDay_array(dataType){
 }
 
 export function storeData_multiSample(dataType, data: Object){
-  if (dataType == 'b'){
-    _storeData_multiSample_object(dataType, data, 0);
-  }
-  else {
     _storeData_multiSample_array(dataType, data, 0);
-  }
+  // if (dataType == 'b'){
+  //   _storeData_multiSample_object(dataType, data, 0);
+  // }
+  // else {
+  //   _storeData_multiSample_array(dataType, data, 0);
+  // }
 }
 
 function _storeData_multiSample_array(dataType, data: Object, current){
@@ -86,6 +82,7 @@ function _storeData_multiSample_object(dataType, data: Object, current){
     console.log('storing:')
     console.log(data[current])
     storeData_object(dataType, data[current], () => {
+      console.log('NEXT:')
       _storeData_multiSample_object(dataType, data, ++current);
     });
   }
@@ -98,10 +95,11 @@ export function storeData_object (dataType, data, handler){
     totalSamples = parseInt(storedNSamples);
   //  console.log('current storage position = ' + totalSamples)
     AsyncStorage.getItem(dataType + totalSamples.toString()).then((lastSample)=>{
-      console.log(lastSample);
+      console.log('current storage position = ' + totalSamples + 'dataType = ' + dataType)
       _lastSample = JSON.parse(lastSample);
+      console.log(_lastSample);
       //FIRST SAMPLE
-      if (_lastSample == undefined){
+      if (_lastSample == undefined || _lastSample == 'damm'){
         console.log(data);
         console.log('storing the first day: ' + new Date(data.c).getDate() );
         AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', '0' ).then(() => { handler(); });
@@ -138,12 +136,17 @@ export function storeData_object (dataType, data, handler){
 export function storeData_array(dataType, data: Object, handler){
   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
     totalSamples = parseInt(storedNSamples);
-    console.log('current storage position = ' + totalSamples)
     AsyncStorage.getItem(dataType + totalSamples.toString()).then((lastSample)=>{
-      _lastSample = JSON.parse(lastSample);
+      console.log('current storage position = ' + totalSamples + 'dataType = ' + dataType)
+      var _lastSample;
+      if( lastSample == 'damm'){
+        var _lastSample = undefined;
+      }
+      else {
+        _lastSample = JSON.parse(lastSample);
+      }
       if (_lastSample == undefined){
-        console.log(data);
-        console.log('storing the first day: ' + new Date(data.c).getDate() );
+        console.log('storing the first day: ' + new Date(data[0].c).getDate() );
         AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', '0' ).then(() => { handler(); });
         AsyncStorage.setItem( dataType + (totalSamples).toString(), JSON.stringify(data) );
       }
@@ -154,8 +157,33 @@ export function storeData_array(dataType, data: Object, handler){
       }
       else {
         console.log('storing to the same day: ' + new Date(_lastSample[0].c).getDate());
-        _lastSample.push.apply(_lastSample, data);
-        AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(_lastSample) ).then(() => { handler(); });
+        if (dataType == 'b'){//BBT
+          if(  _lastSample[0].v > data[0].v){
+            AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(data) ).then(() => { handler(); });
+          }
+        }
+        if (dataType == 's'){//SLEEP
+          const pos = _lastSample.length - 1;
+          if(data[0].c - _lastSample[pos].c > dataTypes.timeStep){
+            //new sample in the same day
+            _lastSample[pos].sleep = (_lastSample[pos].v) / (_lastSample[pos].c_out - _lastSample[pos].c) < dataTypes.tresHold;
+            _lastSample.push.apply(_lastSample, data);
+            AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(_lastSample) ).then(() => { handler(); });
+          }
+          else{
+            //same sample
+            data[0].c =  _lastSample[pos].c;
+            data[0].v += _lastSample[pos].v ;
+            _lastSample.pop();
+          }
+          _lastSample.push.apply(_lastSample, data);
+          AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(_lastSample) ).then(() => { handler(); });
+        }
+        else{//DEFAULT
+          _lastSample.push.apply(_lastSample, data);
+          AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(_lastSample) ).then(() => { handler(); });
+        }
+        console.log('fiiiik');
       }
     });
   });
@@ -186,12 +214,12 @@ export function getAllData (dataType, handler){
 export function getData (dataType, from, to, handler) {
   var ans = [];
   var completed = to - from;
-  for (var i = from; i < to; i++) {
+  for (var i = from; i <= to; i++) {
     AsyncStorage.getItem(dataType + i.toString()).then((sample)=>{
-    //  console.log(JSON.parse(sample));
+      console.log(JSON.parse(sample));
       ans.push.apply(ans, JSON.parse(sample) );
       --completed;
-      if (completed == 0){
+      if (completed < 0){
         handler(ans);
       }
     });
@@ -236,7 +264,8 @@ export function getData (dataType, from, to, handler) {
 // }
 
 export function clearData (){
-    AsyncStorage.setItem( 'a' + '_TOTAL_SAMPLES', '0' );
-    AsyncStorage.setItem( 't' + '_TOTAL_SAMPLES', '0' );
-    AsyncStorage.setItem( 'h' + '_TOTAL_SAMPLES', '0' );
+    for (i = 0; i < dataTypes.dataTypes.length; ++i){
+      AsyncStorage.setItem(dataTypes.dataTypes[i] + '_TOTAL_SAMPLES', '0');
+      AsyncStorage.setItem(dataTypes.dataTypes[i] + '0', 'damm');
+    }
 }

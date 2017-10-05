@@ -24,9 +24,9 @@ export function processData(data, timeStamp, AWS, isNew){
   // password = pass;
   var arduino_c = 0;
   if (isNew){
-    //!!!!OGT!!!!!
-  //  arduino_c = data.c;
+    arduino_c = data.c;
   }
+  //isNew = true;
   console.log(data);
   var processedActivityData = {data: null, activityIncrement: null};
   var processedHeartData = null;
@@ -36,19 +36,19 @@ export function processData(data, timeStamp, AWS, isNew){
   var step = 0;
 
         //    ACTIVITY DATA     //
-  // if (data.hasOwnProperty(dataTypes.ACTIVITY)){
-  //   if (isNew){
-  //     processedActivityData = activityProcessor(data[dataTypes.ACTIVITY], timeStamp, arduino_c).data;
-  //   }
-  //   else{
-  //     processedActivityData = data[dataTypes.ACTIVITY];
-  //   }
-  //   _storeData(dataTypes.ACTIVITY, processedActivityData, isNew, AWS, 'ACTIVITY');
-  //   ++step;
-  // }      
+  if (data.hasOwnProperty(dataTypes.ACTIVITY) && data[dataTypes.ACTIVITY].length > 0){
+    if (isNew){
+      processedActivityData = activityProcessor(data[dataTypes.ACTIVITY], timeStamp, arduino_c).data;
+    }
+    else{
+      processedActivityData = data[dataTypes.ACTIVITY];
+    }
+  //  _storeData(dataTypes.ACTIVITY, processedActivityData, isNew, AWS, 'ACTIVITY');
+    ++step;
+  }      
 
   //       //    HEART DATA     //
-  // if (data.hasOwnProperty(dataTypes.HEART)){
+  // if (data.hasOwnProperty(dataTypes.HEART) && data[dataTypes.HEART].length > 0){
   //   if (isNew){
   //     processedHeartData = heartProcessor(data[dataTypes.HEART], timeStamp, arduino_c);
   //   }
@@ -60,7 +60,7 @@ export function processData(data, timeStamp, AWS, isNew){
   // }  
 
   //       //    TEMPERATURE DATA     //
-  // if (data.hasOwnProperty(dataTypes.TEMPERATURE)){
+  // if (data.hasOwnProperty(dataTypes.TEMPERATURE) && data[dataTypes.TEMPERATURE].length > 0){
   //   if (isNew){
   //     processedTemperatureData = temperatureProcessor(data[dataTypes.TEMPERATURE], timeStamp, arduino_c);
   //   }
@@ -72,26 +72,26 @@ export function processData(data, timeStamp, AWS, isNew){
   // }
 
   //       //    BBT DATA   //
-  // if ( isNew && data.hasOwnProperty(dataTypes.TEMPERATURE) ) {
+  // if ( isNew && data.hasOwnProperty(dataTypes.TEMPERATURE) && data[dataTypes.TEMPERATURE].length > 0 ) {
   //   console.log('is new');
   //   processedBBTData = BBTProcessor(data[dataTypes.TEMPERATURE], timeStamp, arduino_c);
   //   _storeData(dataTypes.BBT, processedBBTData, isNew, AWS, 'BBT');
   //   ++step;
   // }
-  // else if ( data.hasOwnProperty(dataTypes.BBT) ) {
+  // else if ( data.hasOwnProperty(dataTypes.BBT) && data[dataTypes.BBT].length > 0 ) {
   //   processedBBTData = data[dataTypes.BBT];
   //   _storeData(dataTypes.BBT, processedBBTData, isNew, AWS, 'SLEEP');
   //   ++step;
   // }
 
-        //    SLEEP DATA   //
-  if ( isNew && data.hasOwnProperty(dataTypes.ACTIVITY) ) {
+          // SLEEP DATA   //
+  if ( isNew && data.hasOwnProperty(dataTypes.ACTIVITY) && data[dataTypes.ACTIVITY].length > 0) {
     console.log('is new');
     processedSleepData = sleepProcessor(data[dataTypes.ACTIVITY], timeStamp, arduino_c);
     _storeData(dataTypes.SLEEP, processedSleepData, isNew, AWS, 'SLEEP');
     ++step;
   }
-  else if ( data.hasOwnProperty(dataTypes.SLEEP) ) {
+  else if ( data.hasOwnProperty(dataTypes.SLEEP) && data[dataTypes.SLEEP].length > 0 ) {
     processedSleepData = data[dataTypes.SLEEP];
     _storeData(dataTypes.SLEEP, processedSleepData, isNew, AWS, 'SLEEP');
     ++step;
@@ -115,9 +115,12 @@ function _storeData (dataType, data, isNew, AWS, endPoint){
         }
       };
     }
-    
-    storeData_multiSample(dataType, last == 0 ? data : days);
-    // }
+    if(last == 0){
+      aux = [];
+      aux[0] = data;
+      days = aux;
+    }
+    storeData_multiSample(dataType, days);
     if(isNew){
       console.log('uploading data to cloud')
     //  API.postData(data, data[data.length -1].c, AWS, endPoint, handler);

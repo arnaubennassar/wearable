@@ -125,26 +125,35 @@ export default (AuthScreen = React.createClass({
       ////// LOAD USER DATA //////
 
       this._getAllData('ACTIVITY', 'a', (ans) => { 
-        processData({a: ans}, 0, this.tokenAWS, false); 
-        this.completeLogin();
-        this.completeLogin();
+        if(ans != false){
+          processData({a: ans}, 0, this.tokenAWS, false); 
+        }
         this.completeLogin();
       });
-      // this._getAllData('HEART', 'h', (ans) => { 
-      //   processData({h: ans}, 0, this.tokenAWS, false); 
-      //   this.completeLogin();
-      // });
-      // this._getAllData('TEMPERATURE', 't', (ans) => { 
-      //   console.log(ans[0].c);
-      //   processData({t: ans}, Date.parse(new Date()), this.tokenAWS, false); 
-      //   this.completeLogin();
-      //   this.completeLogin();
-      //   this.completeLogin();
-      // });
-      // this._getAllData('BBT', 'b', (ans) => { 
-      //   processData({b: ans}, 0, this.tokenAWS, false); 
-      //   this.completeLogin();
-      // });
+      this._getAllData('HEART', 'h', (ans) => { 
+        if(ans != false){
+          processData({h: ans}, 0, this.tokenAWS, false); 
+        }
+        this.completeLogin();
+      });
+      this._getAllData('TEMPERATURE', 't', (ans) => { 
+        if(ans != false){
+          processData({t: ans}, 0, this.tokenAWS, false); 
+        }
+        this.completeLogin();
+      });
+      this._getAllData('BBT', 'b', (ans) => { 
+        if(ans != false){
+          processData({b: ans}, 0, this.tokenAWS, false); 
+        }
+        this.completeLogin();
+      });      
+      this._getAllData('SLEEP', 's', (ans) => { 
+        if(ans != false){
+          processData({s: ans}, 0, this.tokenAWS, false); 
+        }
+        this.completeLogin();
+      });
     } else {
       this.props.actions.loginFail(res.message);
       if (res.message == "User is not confirmed." || res.message == "Password reset required for the user") {
@@ -154,8 +163,10 @@ export default (AuthScreen = React.createClass({
   },
   _getAllData(url, dataType, handler){
     getAllData(this.tokenAWS, url, null, (ans) => {
+      console.log(ans)
         if (ans.hasOwnProperty('error') ){
-        //  this._getAllData(url, dataType);
+        console.log('NOPE')
+          handler(false);
         }
         else {
           res = [];
@@ -178,7 +189,7 @@ export default (AuthScreen = React.createClass({
   },
   completeLogin(){
     ++completedLogin;
-    if (completedLogin == 4){
+    if (completedLogin == 6){
       this.props.actions.loginSuccess(this.tokenAWS);
     }
   },
