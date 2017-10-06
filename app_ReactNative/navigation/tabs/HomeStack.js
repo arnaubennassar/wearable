@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { addNavigationHelpers, StackNavigator } from 'react-navigation'
 import DashboardScreen    from '../../components/DashboardScreen';
 import BBTScreen  from '../../components/BBTScreen';
+import sleepScreen  from '../../components/sleepScreen';
 //import IconAnimation  from '../../components/IconAnimation';
 //import { BlueTooth } from '../../components/BlueTooth';
 // Icon
@@ -29,7 +30,7 @@ const routeConfiguration = {
     }
   },
   sleepScreen: { 
-    screen: BBTScreen,
+    screen: sleepScreen,
     navigationOptions:{
       title: 'Detail',
       headerStyle: { backgroundColor: "#F53B91" }, //Header color

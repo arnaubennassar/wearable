@@ -28,16 +28,56 @@ const runner = (<Image style={{width:48, height:57, marginTop:10}} source={requi
 const termometer = <Image style={{width:20, height:48, marginTop:10, marginLeft: 30}} source={require('../resources/images/termometer.png')} ></Image>;
 const bground = require('../resources/images/B2.png');
 class DashboardScreen extends Component {
-    
     render() {
+    //BBT
       var len = 0;
       var temp = '-';
       var acti = 0;
-      if (this.props.state.data.temperature.length > 0){
-        len = this.props.state.data.temperature.length;
+      var week_b = [];
+      var month_b = [];
+      var all_b = [];
+      var iWeek_b = 0;
+      var iMonth_b = 0;
+      const now = Date.parse(new Date());
+      for (var i = 0; i < this.props.state.data.BBT.length; i++) {
+        current = this.props.state.data.BBT[i];
+        if(now - current.c < 604800000 && i < 10 && i > 6){  //7*24*60*60*1000 = 1 week in ms
+          week_b[iWeek_b] = {x: current.c, y:current.v};
+          ++iWeek_b;
+        }        
+        if(now - current.c < 2592000000){  //30*24*60*60*1000 = 1 month in ms
+          month_b[iMonth_b] = {x: current.c, y:current.v};
+          ++iMonth_b;
+        }        
+        all_b[i] = {x: current.c, y:current.v};
+      };
+      var _BBTData = [week_b, month_b, all_b];
+    //SLEEP
+      var week_s = [];
+      var month_s = [];
+      var all_s = [];
+      var iWeek_s = 0;
+      var iMonth_s = 0;
+      for (var i = 0; i < this.props.state.data.sleep.length; i++) {
+        current = this.getSleepTime(this.props.state.data.BBT[i]);
+        if(now - current.c < 604800000 && i < 10 && i > 6){  //7*24*60*60*1000 = 1 week in ms
+          week_s[iWeek_s] = current;
+          ++iWeek_s;
+        }        
+        if(now - current.c < 2592000000){  //30*24*60*60*1000 = 1 month in ms
+          month_s[iMonth_s] = current;
+          ++iMonth_s;
+        }        
+        all_s[i] = current;
+      };
+      var _sleepData = [week_s, month_s, all_s];
+
+      console.log(_BBTData)
+      if (week_b.length > 0){
+        len = week_b.length;
         sum = 0;
-        for (var i = 0; i < this.props.state.data.temperature.length; i++) {
-          sum += this.props.state.data.temperature[i].v;
+        for (var i = 0; i < week_b.length; i++) {
+          sum += week_b[i].y;
         };
         temp = sum / len;
       }
@@ -48,13 +88,13 @@ class DashboardScreen extends Component {
             <Image style={styles.container} source={bground} >
                 <TouchableOpacity
                   style={[styles.touch1, {height: 132}]}
-                  onPress={ () => { this.props.navigation.navigateWithDebounce("BBTScreen") } }
+                  onPress={ () => { this.props.navigation.navigateWithDebounce("BBTScreen", {BBTData: _BBTData}) } }
                 >
                   <View style={{flexDirection:'column'}}>
                     <Text style={styles.t1}>MyBBT</Text>
                     <View style={styles.BBTChartContainer}>
                         <VictoryLine
-                        domain={{y: [22, 30]}}
+                        domain={{y: [22, 40]}}
                         padding={0}
                         width={175}
                         height={70}
@@ -64,12 +104,7 @@ class DashboardScreen extends Component {
                             data: { stroke: "#969696" },
                           }}
                           interpolation="natural"
-                          data= {(len < 5) ? null : [
-                            {x: 1/*this.props.state.data.temperature[len - 4].c*/, y: this.props.state.data.temperature[len - 4].v},
-                            {x: 2/*this.props.state.data.temperature[len - 3].c*/, y: this.props.state.data.temperature[len - 3].v},
-                            {x: 3/*this.props.state.data.temperature[len - 2].c*/, y: this.props.state.data.temperature[len - 2].v},
-                            {x: 4/*this.props.state.data.temperature[len - 1].c*/, y: this.props.state.data.temperature[len - 1].v},
-                          ]}
+                          data= {week_b}
                         />
                       <Text style={styles.t2}><Text style={{fontWeight:'900'}}>{temp}</Text><Text style={{fontWeight:'100'}}> Cº</Text></Text>
                     </View>
@@ -80,7 +115,7 @@ class DashboardScreen extends Component {
 
                 <TouchableOpacity
                   style={[styles.touch1, {height: 132}]}
-                  onPress={ () => { this.props.navigation.navigateWithDebounce("sleepScreen") } }
+                  onPress={ () => { this.props.navigation.navigateWithDebounce("sleepScreen", {sleepData: _sleepData}) } }
                 >
                   <View>
                     <Text style={styles.t1}>Your last sleep</Text>

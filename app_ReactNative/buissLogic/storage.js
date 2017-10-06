@@ -29,11 +29,7 @@ function _initStorage (dataType: string, returnFunction){
   });
 }
 
-export function checkDay (dataType){
-  checkDay_array(dataType);
-}
-
-function checkDay_array(dataType){
+export function checkDay(dataType){
   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
     totalSamples = parseInt(storedNSamples);
     console.log('checking stored days of ' + dataType +'. totalsamples = ' + storedNSamples)
@@ -58,82 +54,20 @@ function checkDay_array(dataType){
   });
 }
 
-export function storeData_multiSample(dataType, data: Object){
-    _storeData_multiSample_array(dataType, data, 0);
-  // if (dataType == 'b'){
-  //   _storeData_multiSample_object(dataType, data, 0);
-  // }
-  // else {
-  //   _storeData_multiSample_array(dataType, data, 0);
-  // }
+export function storeData_multiSample(dataType, data){
+    _storeData_multiSample(dataType, data, 0);
 }
 
-function _storeData_multiSample_array(dataType, data: Object, current){
+function _storeData_multiSample(dataType, data, current){
   if (current < data.length){
-    storeData_array(dataType, data[current], () => {
-      _storeData_multiSample_array(dataType, data, ++current);
+    storeData(dataType, data[current], () => {
+      _storeData_multiSample(dataType, data, ++current);
     });
   }
   else (console.log('DONE wiz ' + dataType));
 }
 
-function _storeData_multiSample_object(dataType, data: Object, current){
-  if (current < data.length){
-    console.log('storing:')
-    console.log(data[current])
-    storeData_object(dataType, data[current], () => {
-      console.log('NEXT:')
-      _storeData_multiSample_object(dataType, data, ++current);
-    });
-  }
-  else (console.log('DONE wiz ' + dataType));
-}
-
-      //BBT CASE!!!!
-export function storeData_object (dataType, data, handler){
-    AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
-    totalSamples = parseInt(storedNSamples);
-  //  console.log('current storage position = ' + totalSamples)
-    AsyncStorage.getItem(dataType + totalSamples.toString()).then((lastSample)=>{
-      console.log('current storage position = ' + totalSamples + 'dataType = ' + dataType)
-      _lastSample = JSON.parse(lastSample);
-      console.log(_lastSample);
-      //FIRST SAMPLE
-      if (_lastSample == undefined || _lastSample == 'damm'){
-        console.log(data);
-        console.log('storing the first day: ' + new Date(data.c).getDate() );
-        AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', '0' ).then(() => { handler(); });
-        AsyncStorage.setItem( dataType + (totalSamples).toString(), JSON.stringify(data) );
-      }
-      //NEW DAY
-      else if ( new Date(_lastSample.c).getDate() != new Date(data.c).getDate() ){
-        console.log('storing a new day: ' + new Date(data.c).getDate() );
-        AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', (totalSamples + 1).toString() ).then(() => { handler(); });
-        AsyncStorage.setItem( dataType + (totalSamples + 1).toString(), JSON.stringify(data) );
-      }
-      //SAME DAY
-      else {
-        console.log('storing to the same day: ' + new Date(_lastSample.c).getDate());
-        if (dataType == 'b' && _lastSample.v > data.v){
-          AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(data) ).then(() => { handler(); });
-        }
-        // else if (dataType == 's'){
-        //   if(_lastSample.sleep == data.sleep){
-        //     _lastSample.c_out = data.c;
-        //     _lastSample.v += data.v;
-        //     AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(_lastSample) ).then(() => { handler(); });
-        //   }
-        //   else{
-        //     AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', (totalSamples + 1).toString() ).then(() => { handler(); });
-        //     AsyncStorage.setItem( dataType + (totalSamples + 1).toString(), JSON.stringify(data) );
-        //   }
-        // }
-      }
-    });
-  });
-}
-
-export function storeData_array(dataType, data: Object, handler){
+export function storeData(dataType, data: Object, handler){
   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
     totalSamples = parseInt(storedNSamples);
     AsyncStorage.getItem(dataType + totalSamples.toString()).then((lastSample)=>{
@@ -145,76 +79,90 @@ export function storeData_array(dataType, data: Object, handler){
       else {
         _lastSample = JSON.parse(lastSample);
       }
+  //FIRST DAY      
       if (_lastSample == undefined){
-        console.log('storing the first day: ' + new Date(data[0].c).getDate() );
-        AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', '0' ).then(() => { handler(); });
-        AsyncStorage.setItem( dataType + (totalSamples).toString(), JSON.stringify(data) );
+        console.log('storing the very first sample, day: ' + new Date(data[0].c).getDate() );
+        AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', '0' )
+        AsyncStorage.setItem( dataType + (totalSamples).toString(), JSON.stringify(data) ).then(() => { handler(); });
       }
+  //NEW DAY
       else if ( new Date(_lastSample[0].c).getDate() != new Date(data[0].c).getDate() ){
         console.log('storing a new day: ' + new Date(data[0].c).getDate() );
         AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', (totalSamples + 1).toString() ).then(() => { handler(); });
         AsyncStorage.setItem( dataType + (totalSamples + 1).toString(), JSON.stringify(data) );
       }
+  //SAME DAY
       else {
         console.log('storing to the same day: ' + new Date(_lastSample[0].c).getDate());
-        if (dataType == 'b'){//BBT
+      //BBT
+        if (dataType == 'b'){
           if(  _lastSample[0].v > data[0].v){
             AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(data) ).then(() => { handler(); });
           }
-        }
-        if (dataType == 's'){//SLEEP
-          const pos = _lastSample.length - 1;
-          if(data[0].c - _lastSample[pos].c > dataTypes.timeStep){
-            //new sample in the same day
-            _lastSample[pos].sleep = (_lastSample[pos].v) / (_lastSample[pos].c_out - _lastSample[pos].c) < dataTypes.tresHold;
-            _lastSample.push.apply(_lastSample, data);
-            AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(_lastSample) ).then(() => { handler(); });
-          }
           else{
-            //same sample
-            data[0].c =  _lastSample[pos].c;
-            data[0].v += _lastSample[pos].v ;
-            _lastSample.pop();
+            handler();
           }
+        }
+      //DEFAULT
+        else{
           _lastSample.push.apply(_lastSample, data);
           AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(_lastSample) ).then(() => { handler(); });
         }
-        else{//DEFAULT
-          _lastSample.push.apply(_lastSample, data);
-          AsyncStorage.setItem( dataType + totalSamples.toString(), JSON.stringify(_lastSample) ).then(() => { handler(); });
-        }
-        console.log('fiiiik');
       }
     });
   });
 }
 
-export function storeData_i (dataType, data, i){
-    AsyncStorage.setItem( dataType + i.toString(), JSON.stringify(data) );
-}
-
-export function storeData_i_last (dataType, data, i, handler){
-    AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', (i + 1).toString() );
-    AsyncStorage.setItem( dataType + i.toString(), JSON.stringify(data) ).then(() => handler());
-}
-
 export function getAllData (dataType, handler){
   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
     totalSamples = parseInt(storedNSamples);
-    console.log('geting data, total samples to get = ' + totalSamples)
-    if (totalSamples < 1){
-      handler([]);
-    }
-    getData(dataType, 0, totalSamples, (ans) => {
+    console.log('geting data, total samples to get = ' + totalSamples);
+    getData(dataType, 0, Math.max(totalSamples, 1), (ans) => {
         handler(ans);
     });
   });
 }
 
-export function getData (dataType, from, to, handler) {
+export function getData_from (dataType, from_c, handler) {
+  AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
+    totalSamples = Math.max(parseInt(storedNSamples), 1);
+    findIndex_c(dataType, from_c, 0, totalSamples, (from_i) => {
+      if(from_i == false){ handler(false) }
+      else{
+        var ans = [];
+        var completed = totalSamples - from_i;
+        for (var i = from_i; i < to; i++) {
+          AsyncStorage.getItem(dataType + i.toString()).then((sample)=>{
+            ans[from - completed - from_i] = JSON.parse(sample);
+            --completed;
+            if (completed < 0){
+              handler(ans);
+            }
+          });
+        }
+      }
+    });
+  })
+}
+
+function findIndex_c (dataType, c, i, total, handler){
+  AsyncStorage.getItem(dataType + i.toString).then( (sample)=>{
+    if(sample[0].c > c){
+      handler(i);
+    }
+    else if (i + 1 >= total){
+      handler(false);
+    }
+    else{
+      findIndex_c (dataType, c, ++i, total, handler)
+    }
+  });
+}
+
+function getData (dataType, from, to, handler) {
   var ans = [];
   var completed = to - from;
-  for (var i = from; i <= to; i++) {
+  for (var i = from; i < to; i++) {
     AsyncStorage.getItem(dataType + i.toString()).then((sample)=>{
       console.log(JSON.parse(sample));
       ans.push.apply(ans, JSON.parse(sample) );
@@ -225,43 +173,6 @@ export function getData (dataType, from, to, handler) {
     });
   }
 }
-
-// export function getData_c (dataType, from_c, to_c, handler) {
-//   findIndex_c(dataType, from_c, (from_i) => {
-//     console.log('index from = ' + from_i)
-//     findIndex_c(dataType, to_c, (to_i) => {
-//       console.log('index to = ' + to_i)
-//       getData(dataType, from_i, to_i, (ans) => {
-//         handler(ans);
-//       });
-//     });
-//   });
-// }
-
-// function findIndex_c (dataType, c, handler){
-//   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((right)=>{
-//     asyncBinSearch(dataType, 0, --right, c, handler);
-//   });
-// }
-
-// function asyncBinSearch (dataType, L, R, c, handler){
-//     const m = Math.floor((L + R)/2);
-//   //  console.log('el den medio delo xixooo = ' + m)
-//     AsyncStorage.getItem( dataType + ( m ).toString() ).then((sample)=>{
-//       var current = JSON.parse(sample);
-//       if (c < current[0].c){
-//         L = m + 1;
-//         asyncBinSearch(dataType, L, R, c, handler);
-//       }
-//       else if (c > current[current.length - 1].c){
-//         R = m - 1;
-//         asyncBinSearch(dataType, L, R, c, handler);
-//       }
-//       if (L > R){
-//         handler( m );
-//       }
-//     });
-// }
 
 export function clearData (){
     for (i = 0; i < dataTypes.dataTypes.length; ++i){

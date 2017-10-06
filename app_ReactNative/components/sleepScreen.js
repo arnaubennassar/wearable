@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, Dimensions, ScrollView, StyleSheet} from 'react-native';
 import { NavigationActions } from 'react-navigation';
-import { VictoryChart, VictoryLine, VictoryTheme, VictoryAxis } from 'victory-native';
+import { VictoryChart, VictoryBar, VictoryTheme, VictoryAxis } from 'victory-native';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 var rangeSelector = [
@@ -10,8 +10,8 @@ var rangeSelector = [
   {label: 'All records', value: 2 },
 ];
 var rangeSelected = 0;
-const hait = Dimensions.get('window').height * 0.45;
-export default class BBTScreen extends Component {
+const hait = Dimensions.get('window').height * 0.35;
+export default class sleepScreen extends Component {
   // static navigationOptions = {
   //   title: 'Detail',
   //   headerTintColor: '#1A1047',
@@ -36,13 +36,13 @@ export default class BBTScreen extends Component {
               <VictoryAxis 
                 tickFormat={(t) => new Date(t).getDate() + '/' + (new Date(t).getMonth()+1)}
                 style={{ axis: {stroke: "#969696"}, grid: {stroke: (t) => (t > 2.5 && t < 25) ? "#F53B91" : "transparent"}, ticks: {stroke: "grey", size: 0} }} />
-              <VictoryLine
+              <VictoryBar
                 interpolation="natural"
-                domain={{y: [22, 40]}}
+                domain={{y: [0, 86400000]}}//86400000 = 24*60*60*1000 = 1day
                 style={{
-                  data: { stroke: "#969696" },
+                  data: { stroke: "#F53B91" },
                 }}
-                data={ this.props.navigation.state.params.BBTData[rangeSelected] }
+                data={ this.props.navigation.state.params.sleepData[rangeSelected] }
               />
             </VictoryChart>
           </View>
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
 
     scroll: {
         marginTop: '5%',
-        height: '35%',
+        height: '45%',
     },
     body:{
       marginHorizontal:'10%',

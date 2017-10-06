@@ -51,4 +51,4 @@ export const store = createStore(
 		applyMiddleware( createActionBuffer(REHYDRATE), thunk,  logger  )
 	)
 );
-persistStore( store, { storage: AsyncStorage, blacklist: ['tab', 'home', 'data', 'notification', 'profile', 'BT'] } );
+persistStore( store, { storage: AsyncStorage, blacklist: ['tab', 'home', 'notification', 'profile', 'BT'] } );
