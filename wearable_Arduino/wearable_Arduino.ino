@@ -269,7 +269,7 @@ bool readTemperatureSensor(){
   }
   if (temperatureSampleRateIndex >= temperatureSampleRate){
     float _temperature = (5.0 * analogRead(tmpPin) * 100.0) / 1024;
-    if (_temperature > 20 && _temperature < 38){
+    if (_temperature > 34 && _temperature < 42){
       temperatureSampleRateIndex = 0;
       temperatureBuffer[indexBufferTemperature].timeStamp = DateTime.now();
       temperatureBuffer[indexBufferTemperature].temperature = _temperature;

@@ -126,31 +126,31 @@ export default (AuthScreen = React.createClass({
 
       this._getAllData('ACTIVITY', 'a', (ans) => { 
         if(ans != false){
-          processData({a: ans}, 0, this.tokenAWS, false); 
+          processData({a: ans}, 0, false); 
         }
         this.completeLogin();
       });
       this._getAllData('HEART', 'h', (ans) => { 
         if(ans != false){
-          processData({h: ans}, 0, this.tokenAWS, false); 
+          processData({h: ans}, 0, false); 
         }
         this.completeLogin();
       });
       this._getAllData('TEMPERATURE', 't', (ans) => { 
         if(ans != false){
-          processData({t: ans}, 0, this.tokenAWS, false); 
+          processData({t: ans}, 0, false); 
         }
         this.completeLogin();
       });
       this._getAllData('BBT', 'b', (ans) => { 
         if(ans != false){
-          processData({b: ans}, 0, this.tokenAWS, false); 
+          processData({b: ans}, 0, false); 
         }
         this.completeLogin();
       });      
       this._getAllData('SLEEP', 's', (ans) => { 
         if(ans != false){
-          processData({s: ans}, 0, this.tokenAWS, false); 
+          processData({s: ans}, 0, false); 
         }
         this.completeLogin();
       });

@@ -87,13 +87,13 @@ export function storeData(dataType, data: Object, handler){
       }
   //NEW DAY
       else if ( new Date(_lastSample[0].c).getDate() != new Date(data[0].c).getDate() ){
-        console.log('storing a new day: ' + new Date(data[0].c).getDate() );
+        console.log(dataType + ' storing a new day: ' + new Date(data[0].c).getDate() );
         AsyncStorage.setItem( dataType + '_TOTAL_SAMPLES', (totalSamples + 1).toString() ).then(() => { handler(); });
         AsyncStorage.setItem( dataType + (totalSamples + 1).toString(), JSON.stringify(data) );
       }
   //SAME DAY
       else {
-        console.log('storing to the same day: ' + new Date(_lastSample[0].c).getDate());
+        console.log(dataType + ' storing to the same day: ' + new Date(_lastSample[0].c).getDate());
       //BBT
         if (dataType == 'b'){
           if(  _lastSample[0].v > data[0].v){
@@ -127,15 +127,20 @@ export function getData_from (dataType, from_c, handler) {
   AsyncStorage.getItem(dataType + '_TOTAL_SAMPLES').then((storedNSamples)=>{
     totalSamples = Math.max(parseInt(storedNSamples), 1);
     findIndex_c(dataType, from_c, 0, totalSamples, (from_i) => {
-      if(from_i == false){ handler(false) }
+      if(from_i === false){ handler(false) }
       else{
         var ans = [];
         var completed = totalSamples - from_i;
-        for (var i = from_i; i < to; i++) {
+        console.log('from_i = ' + from_i + '  , completed = ' + completed + '  , ')
+        for (var i = from_i; i < totalSamples; i++) {
+            console.log(dataType)
+          console.log('adding new sample')
           AsyncStorage.getItem(dataType + i.toString()).then((sample)=>{
-            ans[from - completed - from_i] = JSON.parse(sample);
+            console.log(sample)
+            console.log(dataType)
+            ans[i - completed - from_i] = JSON.parse(sample);
             --completed;
-            if (completed < 0){
+            if (completed === 0){
               handler(ans);
             }
           });
@@ -146,12 +151,21 @@ export function getData_from (dataType, from_c, handler) {
 }
 
 function findIndex_c (dataType, c, i, total, handler){
-  AsyncStorage.getItem(dataType + i.toString).then( (sample)=>{
-    if(sample[0].c > c){
-      handler(i);
-    }
-    else if (i + 1 >= total){
+  AsyncStorage.getItem(dataType + i.toString()).then( (_sample)=>{
+    sample = JSON.parse(_sample);
+    // console.log('sample = ' + sample[0].c + ' , ' +  new Date(sample[0].c).toString())
+    // console.log('c = ' + c + ' , ' +  new Date(c).toString())
+    // console.log('i: '+i+' , total: ' + total)
+    // console.log('i > total? ' + i > total)
+    // console.log('sample[0].c > c? ' + (sample[0].c > c))
+    // console.log(sample[0].c - c)
+    if (i > total){
+      console.log('nein')
       handler(false);
+    }
+    else if(sample[0].c > c){
+      console.log('suuuuuuuu')
+      handler(i);
     }
     else{
       findIndex_c (dataType, c, ++i, total, handler)
@@ -164,10 +178,10 @@ function getData (dataType, from, to, handler) {
   var completed = to - from;
   for (var i = from; i < to; i++) {
     AsyncStorage.getItem(dataType + i.toString()).then((sample)=>{
-      console.log(JSON.parse(sample));
       ans.push.apply(ans, JSON.parse(sample) );
       --completed;
       if (completed < 0){
+        console.log(ans);
         handler(ans);
       }
     });

@@ -1,7 +1,7 @@
 /*@flow*/
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { Platform } from 'react-native';
+import { Platform, Dimensions } from 'react-native';
 
 import { TabNavigator, addNavigationHelpers, NavigationActions, TabView, TabBarTop } from 'react-navigation'
 // TabNavigator Screens
@@ -16,6 +16,7 @@ var routeConfiguration = {
   ProfileStack: { screen: ProfileStack },
 }
 var tabStyle;
+const hait = Dimensions.get('window').height;
 
 if(Platform.OS === 'ios') {
   tabStyle = {
@@ -50,8 +51,8 @@ else {
     iconStyle: {
         flex: 1,
         justifyContent: 'center',
-        height: 95,
-        width: 95,
+        height: hait*0.1542,
+        width: hait*0.1542,
         alignItems: 'center',
     },
     showIcon: true,

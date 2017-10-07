@@ -22,8 +22,9 @@ import PersonalDataScreen from './components/PersonalDataScreen';
 //import {BlueTooth} from './components/BlueTooth' 
 import * as BT from './components/BlueTooth';
 import { processData } from './buissLogic/dataProcessor'
-import {postOSID, getNotifications} from './buissLogic/api'
-import {getAllData, checkDay, clearData} from './buissLogic/storage'
+import {silentLogin} from './buissLogic/AWSLogin'
+import {postOSID, getNotifications, postData} from './buissLogic/api'
+import {getData_from, getAllData, checkDay} from './buissLogic/storage'
 //CONNECT TO REDUX state & actions
 function mapStateToProps(state){return{state: state};};
 function mapDispatchToProps(dispatch){return {
@@ -51,6 +52,8 @@ var APP  = React.createClass({
        BT.subscribe(this.BTGetData, this.BTDisconnected, this.BTDisabled);
     //   BT.enable(this.BTEnabled);    
   //   BT.enable(this.BTEnabled);
+
+      getAllData('b', (ans)=>console.log(ans))
   },
 
   componentWillUnmount() {
@@ -144,6 +147,7 @@ var APP  = React.createClass({
     this.props.actions.BT.disabled();
   },
   BTConnected(success){
+
     if(success){
       this.props.actions.BT.connected( Date.parse(new Date()) );
     }
@@ -157,22 +161,68 @@ var APP  = React.createClass({
 //    BT.disconnect();
     this.props.actions.BT.desconnected();
     console.log('BT DISConnected!!!!!')
-    getAllData('s',(data)=>{
-    //  clearData();
-      console.log(data)
-      // console.log(data);
-      // processData({a: data}, 0, 'AWS', 'mail', 'pass', true);
-    })
+    // getData_from('a', this.props.state.data.data.lastUpdate - 21600000, (_data) => {
+    //   console.log(_data)
+    //   for (var i = 0; i < _data.length; i++) {
+    //     //postData(_data[i], _data[i][0].c, token, 'ACTIVITY', (response)=>{console.log(response)})
+    //   };
+    // });
+    // getData_from('h', this.props.state.data.data.lastUpdate - 21600000, (_data) => {
+    //   console.log(_data)
+    //   for (var i = 0; i < _data.length; i++) {
+    //     //postData(_data[i], _data[i][0].c, token, 'HEART', (response)=>{console.log(response)})
+    //   };
+    // });
+    // getData_from('t', this.props.state.data.data.lastUpdate - 21600000, (_data) => {
+    //   console.log(_data)
+    //   for (var i = 0; i < _data.length; i++) {
+    //     //postData(_data[i], _data[i][0].c, token, 'TEMPERATURE', (response)=>{console.log(response)})
+    //   };
+    // });
+    // getData_from('b', this.props.state.data.data.lastUpdate - 21600000, (_data) => {
+    //   console.log(_data)
+    //   for (var i = 0; i < _data.length; i++) {
+    //     //postData(_data[i], _data[i][0].c, token, 'BBT', (response)=>{console.log(response)})
+    //   };
+    // });
+    // getData_from('s', this.props.state.data.data.lastUpdate - 21600000, (_data) => {
+    //   console.log(_data)
+    //   for (var i = 0; i < _data.length; i++) {
+    //     //postData(_data[i], _data[i][0].c, token, 'SLEEP', (response)=>{console.log(response)})
+    //   };
+    // });
+    // getAllData('a',(data)=>{
+    //   console.log(data)
+    // });
+    // getAllData('h',(data)=>{
+    //   console.log(data)
+    // });
+    // getAllData('t',(data)=>{
+    //   console.log(data)
+    // });
+    // getAllData('b',(data)=>{
+    //   console.log(data)
+    // });
+    // getAllData('s',(data)=>{
+    //   console.log(data)
+    // })
     // checkDay('a');
     // checkDay('h');
     // checkDay('t');
     // checkDay('b');
-    checkDay('s');
+    //checkDay('s');
     //processData(  {t: [{v: 36, c: Date.parse(new Date())}]}/*JSON.parse( data.data.slice(0, -1) )*/  , 0, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password, 1506340031019 );
   },
   BTGetData(data){
     //console.log(data);
     if (!waitingBTReq && !waitingBTData ){//WAITING ACK
+
+
+            this.props.actions.data.dataUpdated({lastUpdate: Date.parse(new Date()) -21600000});
+
+
+
+
       console.log("WAITING DATA REQUEST");
       if (data.data == "r\r\n") {
         console.log(" <===   DATA REQUEST RECEIVED   ===");
@@ -194,7 +244,55 @@ var APP  = React.createClass({
       else{//DATA RECEIVED
         console.log( " <===   DATA RECEIVED   ===");
         console.log("===   SENDING DATA ACK   ===>");
-        processData(  JSON.parse( data.data.slice(0, -1) ),  Date.parse(new Date()), this.props.state.user.user.tokenAWS, true);
+        lastTimeStamp = processData(  JSON.parse( data.data.slice(0, -1) ),  Date.parse(new Date()), true);
+        console.log(lastTimeStamp);
+        console.log(this.props.state.data.data.lastUpdate);
+        if(new Date(lastTimeStamp).getDate() != new Date(this.props.state.data.data.lastUpdate).getDate()){
+          //check login
+          console.log('uploading data')
+          silentLogin(this.props.state.user.user.email, this.props.state.user.user.password, (token) => {
+            //get and post data
+            getData_from('a', this.props.state.data.data.lastUpdate, (_data) => {
+              if(_data !== false){
+                for (var i = 0; i < _data.length; i++) {
+                  postData(_data[i], _data[i][0].c.toString(), token, 'ACTIVITY', (response)=>{})
+                };
+              }
+            });
+            getData_from('h', this.props.state.data.data.lastUpdate, (_data) => {
+              if(_data !== false){
+                for (var i = 0; i < _data.length; i++) {
+                  postData(_data[i], _data[i][0].c.toString(), token, 'HEART', (response)=>{})
+                };
+              }
+            });
+            getData_from('t', this.props.state.data.data.lastUpdate, (_data) => {
+              if(_data !== false){
+                for (var i = 0; i < _data.length; i++) {
+                  postData(_data[i], _data[i][0].c.toString(), token, 'TEMPERATURE', (response)=>{})
+                };
+              }
+            });
+            getData_from('b', this.props.state.data.data.lastUpdate, (_data) => {
+              console.log(_data)
+              if(_data !== false){
+                for (var i = 0; i < _data.length; i++) {
+                  postData(_data[i], _data[i][0].c.toString(), token, 'BBT', (response)=>{console.log(response)})
+                };
+              }
+            });
+            getData_from('s', this.props.state.data.data.lastUpdate, (_data) => {
+              if(_data !== false){
+                for (var i = 0; i < _data.length; i++) {
+                  postData(_data[i], _data[i][0].c.toString(), token, 'SLEEP', (response)=>{})
+                };
+              }
+            });
+            //dispatch new lastUpdate
+            this.props.actions.data.dataUpdated({lastUpdate: lastTimeStamp});
+            this.props.actions.user.loginSuccess(token);
+          } );
+        }
         BT.write(() => {}, 'k');
         waitingBTData = false;
         petitionBTResponded = true;

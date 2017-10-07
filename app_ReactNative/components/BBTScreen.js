@@ -38,7 +38,7 @@ export default class BBTScreen extends Component {
                 style={{ axis: {stroke: "#969696"}, grid: {stroke: (t) => (t > 2.5 && t < 25) ? "#F53B91" : "transparent"}, ticks: {stroke: "grey", size: 0} }} />
               <VictoryLine
                 interpolation="natural"
-                domain={{y: [22, 40]}}
+                domain={{y: [34, 42]}}
                 style={{
                   data: { stroke: "#969696" },
                 }}

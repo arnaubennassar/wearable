@@ -8,7 +8,10 @@ export const dataDefault: DataState =
 {
   data: {
     BBT:[],
-    sleep: []
+    sleep: [], 
+    dailyActivity: [],
+    activityObjective: 100000,
+    lastUpdate: Date.parse(new Date())
   }, 
 };
 
@@ -25,7 +28,9 @@ type DataState = {
     dailyActivity:[{
       v: number,
       c: number
-    }]
+    }],
+    activityObjective: number,
+    lastUpdate: number
   }
 }
 
@@ -50,8 +55,10 @@ export const dataReducer = (state: DataState, action: Object) => {
     case 'DATA_UPDATED':
       var newState: DataState = cloneObject(state);
 //dailyActivity
-      if (action.payload.dailyActivity != null){
+      if (action.payload.activity != null){
+
         if(newState.data.dailyActivity.length === 0){//first sample
+
           for(var i = 0; i < action.payload.activity.length; ++i){
             newState.data.dailyActivity[i] = {c: action.payload.activity[i][0].c, v: getAcumulatedActivity(action.payload.activity[i])}
           }
@@ -63,7 +70,7 @@ export const dataReducer = (state: DataState, action: Object) => {
             newState.data.dailyActivity[newState.data.dailyActivity.length - 1].v += getAcumulatedActivity(action.payload.activity[0]);
             i = 1;
           }
-          for(i; i < action.payload.dailyActivity.length; ++i){
+          for(i; i < action.payload.activity.length; ++i){
             newActivityData[i] = {c: action.payload.activity[i][0].c, v: getAcumulatedActivity(action.payload.activity[i])}
           }
           newState.data.dailyActivity.push.apply(newState.data.dailyActivity, newActivityData);
@@ -71,23 +78,30 @@ export const dataReducer = (state: DataState, action: Object) => {
       }
 //BBT
       if (action.payload.BBT != null){
+        console.log(action.payload.BBT)
         if(newState.data.BBT.length === 0){//First sample
-          newState.data.BBT = action.payload.BBT;
+          for (var i = 0; i < action.payload.BBT.length; i++) {
+            newState.data.BBT[i] = action.payload.BBT[i][0];
+          };
         }
         else {
-          if (new Date(newState.data.BBT[newState.data.BBT.length - 1].c).getDate() == new Date(action.payload.BBT[0].c).getDate()){
-            if ( newState.data.BBT[newState.data.BBT.length - 1].v > action.payload.BBT[0].v ){//sample from the same day and lower temperature
+          if (new Date(newState.data.BBT[newState.data.BBT.length - 1].c).getDate() == new Date(action.payload.BBT[0][0].c).getDate()){
+            if ( newState.data.BBT[newState.data.BBT.length - 1].v > action.payload.BBT[0][0].v ){//sample from the same day and lower temperature
               newState.data.BBT.pop;
             }
           }
-          newState.data.BBT.push.apply(newState.data.BBT, action.payload.BBT);
+          currentLength = newState.data.BBT.length;
+          for (var i = 0; i < action.payload.BBT.length; i++) {
+            newState.data.BBT[i + currentLength] = action.payload.BBT[i][0];
+          };
         }
       }
 //SLEEP
       if (action.payload.sleep != null){
+        console.log(action.payload.sleep)
         if(newState.data.sleep.length === 0){//first sample
           for(var i = 0; i < action.payload.sleep.length; ++i){
-            newState.data.sleep[i] = {c: action.payload.sleep[i][0].c, v: getSleepTime(action.payload.sleep[i])}
+            newState.data.sleep[0] = {c: action.payload.sleep[i][0].c, v: getSleepTime(action.payload.sleep[i])}
           }
         }
         else {
@@ -102,6 +116,9 @@ export const dataReducer = (state: DataState, action: Object) => {
           }
           newState.data.sleep.push.apply(newState.data.sleep, newSleepData);
         }
+      }
+      if (action.payload.lastUpdate < 0){
+        newState.data.lastUpdate = action.payload.lastUpdate;
       }
       return newState;
 

@@ -1,6 +1,6 @@
 /*@flow*/
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button, Image, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Button, Image, StatusBar, TouchableOpacity, Dimensions } from 'react-native';
 import { VictoryChart, VictoryLine, VictoryTheme, VictoryAxis, VictoryPie, VictoryAnimation, VictoryLabel } from 'victory-native';
 
 import {bindActionCreators} from 'redux';
@@ -22,17 +22,20 @@ function mapDispatchToProps(dispatch){return {
       user: bindActionCreators(userActions, dispatch),   
     }    
 }};
-//
-const moon = (<Image style={{width:150, height:66, marginTop:15}} source={require('../resources/images/moon.png')} ></Image> );
-const runner = (<Image style={{width:48, height:57, marginTop:10}} source={require('../resources/images/runner.png')} ></Image>);
-const termometer = <Image style={{width:20, height:48, marginTop:10, marginLeft: 30}} source={require('../resources/images/termometer.png')} ></Image>;
+
 const bground = require('../resources/images/B2.png');
+const hait = Dimensions.get('window').height;
+const wiz = Dimensions.get('window').width;
+const termometer = <Image style={{width:wiz*0.05, height:hait*0.08, marginTop:hait*0.0225, marginLeft: wiz*0.0625, resizeMode:'stretch'}}  source={require('../resources/images/termometer.png')} ></Image>;
+const moon = (<Image style={{width:wiz*0.4, height:hait*0.106, marginTop:hait*0.03, resizeMode:'stretch'}}  source={require('../resources/images/moon.png')} ></Image> );
+const runner = (<Image style={{width:wiz*0.1123, height:hait*0.0925, marginTop:10, resizeMode:'stretch'}}  source={require('../resources/images/runner.png')} ></Image>);
+
 class DashboardScreen extends Component {
     render() {
     //BBT
       var len = 0;
       var temp = '-';
-      var acti = 0;
+      var acti = 75;
       var week_b = [];
       var month_b = [];
       var all_b = [];
@@ -41,7 +44,7 @@ class DashboardScreen extends Component {
       const now = Date.parse(new Date());
       for (var i = 0; i < this.props.state.data.BBT.length; i++) {
         current = this.props.state.data.BBT[i];
-        if(now - current.c < 604800000 && i < 10 && i > 6){  //7*24*60*60*1000 = 1 week in ms
+        if(now - current.c < 604800000 ){  //7*24*60*60*1000 = 1 week in ms
           week_b[iWeek_b] = {x: current.c, y:current.v};
           ++iWeek_b;
         }        
@@ -59,108 +62,108 @@ class DashboardScreen extends Component {
       var iWeek_s = 0;
       var iMonth_s = 0;
       for (var i = 0; i < this.props.state.data.sleep.length; i++) {
-        current = this.getSleepTime(this.props.state.data.BBT[i]);
-        if(now - current.c < 604800000 && i < 10 && i > 6){  //7*24*60*60*1000 = 1 week in ms
-          week_s[iWeek_s] = current;
+        current = this.props.state.data.sleep[i];
+        if(now - current.c < 604800000){  //7*24*60*60*1000 = 1 week in ms
+          week_s[iWeek_s] = {x: current.c, y:current.v};
           ++iWeek_s;
         }        
         if(now - current.c < 2592000000){  //30*24*60*60*1000 = 1 month in ms
-          month_s[iMonth_s] = current;
+          month_s[iMonth_s] = {x: current.c, y:current.v};
           ++iMonth_s;
         }        
-        all_s[i] = current;
+        all_s[i] = {x: current.c, y:current.v};
       };
       var _sleepData = [week_s, month_s, all_s];
-
-      console.log(_BBTData)
+      console.log(_BBTData);
+      console.log(_sleepData);
+      var sleepHours = Math.floor(week_s[week_s.length-1].y /(60*60*1000)); 
+      var sleepMinutes = Math.floor((week_s[week_s.length-1].y - sleepHours)/(60*1000));
       if (week_b.length > 0){
-        len = week_b.length;
-        sum = 0;
-        for (var i = 0; i < week_b.length; i++) {
-          sum += week_b[i].y;
-        };
-        temp = sum / len;
+        temp = week_b[week_b.length -1].y;
       }
       if (this.props.state.data.dailyActivity !== undefined){
-        acti = (this.props.state.data.dailyActivity / this.props.state.data.activityObjective) * 100;
+        acti = (this.props.state.data.dailyActivity[this.props.state.data.dailyActivity.length -1].v / this.props.state.data.activityObjective);
+        acti = Math.floor(acti);
       }
+
         return(
             <Image style={styles.container} source={bground} >
                 <TouchableOpacity
-                  style={[styles.touch1, {height: 132}]}
+                  style={[styles.touch1, {flexDirection: 'row'}]}
                   onPress={ () => { this.props.navigation.navigateWithDebounce("BBTScreen", {BBTData: _BBTData}) } }
                 >
-                  <View style={{flexDirection:'column'}}>
-                    <Text style={styles.t1}>MyBBT</Text>
-                    <View style={styles.BBTChartContainer}>
-                        <VictoryLine
-                        domain={{y: [22, 40]}}
-                        padding={0}
-                        width={175}
-                        height={70}
-                        animate={{duration: 500, onLoad: {duration: 1000}}}
-                        easing="linear"
-                          style={{
-                            data: { stroke: "#969696" },
-                          }}
-                          interpolation="natural"
-                          data= {week_b}
-                        />
-                      <Text style={styles.t2}><Text style={{fontWeight:'900'}}>{temp}</Text><Text style={{fontWeight:'100'}}> Cº</Text></Text>
+                    <Text style={styles.t1}>My BBT</Text>
+                    <View style={styles.BBTView}>
+                      <View style={styles.BBTChartContainer}>
+                          <VictoryLine
+                            domain={{y: [34, 42]}}
+                            padding={0}
+                            width={wiz*0.35}
+                            height={hait*0.105}
+                              style={{
+                                data: { stroke: "#969696", strokeWidth: hait*0.005 },
+                              }}
+                              interpolation="natural"
+                              data= {week_b}
+                          />
+                      </View>
+                      <View style={styles.t2View}>
+                        <Text style={styles.t2}>
+                          <Text style={{fontWeight:'900'}}>{temp}</Text>
+                          <Text style={{fontWeight:'100'}}> Cº</Text>
+                        </Text>
+                      </View>
                     </View>
-                  </View>
                     {termometer}
                 </TouchableOpacity>
 
 
                 <TouchableOpacity
-                  style={[styles.touch1, {height: 132}]}
+                  style={[styles.touch1, {flexDirection: 'row'}]}
                   onPress={ () => { this.props.navigation.navigateWithDebounce("sleepScreen", {sleepData: _sleepData}) } }
                 >
-                  <View>
-                    <Text style={styles.t1}>Your last sleep</Text>
+                  <View style={styles.moon}>
+                    <Text style={styles.t4}>Your last sleep</Text>
                     {moon}
                   </View>
-                  <View style={{marginTop:34, marginLeft:20}}>
-                    <Text style={styles.t3}><Text style={{fontWeight:'900'}}>8</Text><Text style={{fontWeight:'100'}}> h</Text></Text>
-                    <Text style={styles.t3}><Text style={{fontWeight:'900'}}>12</Text><Text style={{fontWeight:'100'}}> min</Text></Text>
+                  <View style={styles.sleep}>
+                    <Text style={styles.t3}><Text style={{fontWeight:'bold'}}>{sleepHours}</Text><Text style={{fontWeight:'100'}}> h</Text></Text>
+                    <Text style={styles.t3}><Text style={{fontWeight:'bold'}}>{sleepMinutes}</Text><Text style={{fontWeight:'100'}}> min</Text></Text>
                   </View>
                 </TouchableOpacity>
 
 
                 <TouchableOpacity
-                  style={[styles.touch1, {height: 132}]}
+                  style={[styles.touch1, {flexDirection: 'row'}]}
                   onPress={ () => { this.props.navigation.navigateWithDebounce("activityScreen") } }
                 >
                     {runner}
-                    <View style={{marginLeft:40}}>
+                    <View style={styles.exercise}>
                       <VictoryPie
-                        width={110} height={110} padding={0}
+                        width={hait*0.15} height={hait*0.15} padding={0}
                         data={ [
-                              {x: Math.round(acti).toString() + '%', y: acti},
+                              {x: '  ', y: acti},
                               {x: ' ', y: 100 - acti}
                             ]}
-                        innerRadius={38}
-                        cornerRadius={25}
-                        labelRadius={0.1}
+                        innerRadius={hait*0.055}
+                        cornerRadius={hait*0.04}
                         style={{
-                          marginTop:10,
                           data: { fill: (d) => {
                             const color = "#F9308A";
                             return d.x !== ' ' ? color : "transparent";
                           }},
-                          labels: { fill: "#B5B2B2", fontSize: 20, fontWeight: "bold" }
                         }}
                       />
-                    <Text style={[styles.t1, {marginBottom:5}]}>of daily exercise</Text>
+                      <Text style={styles.t5}>Of daily exercise</Text>
                     </View>
+                    <View style={styles.percent}><Text style={[styles.t2, {fontWeight:'bold'}]}>{acti}%</Text></View>
                 </TouchableOpacity>
             </Image>
             
         )
     }
 }
-
+                            
 const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -175,36 +178,56 @@ const styles = StyleSheet.create({
       alignItems: 'flex-end' 
     },
     touch1: {
-      flexDirection: 'row',
-      marginTop: 4,
-      marginHorizontal: 40,
+      height:'27%',
+      marginTop: '0.3%',
+      marginHorizontal: '15%',
       borderBottomWidth: 2,
       borderBottomColor: '#979797',
     },
     t1: {
+      width:'25%',
       textAlign: "left",
       fontFamily: "System",
       fontWeight: "100",
-      fontSize: 14,
+      fontSize: hait*0.022,
       color: '#B5B2B2'
     },
     t2: {
       textAlign: "center",
       fontFamily: "System",
-      fontSize: 30,
+      fontSize: hait*0.04,
       color: '#B5B2B2'
+    },
+    t2View: {
+      height:'35%',
+      marginTop:'5%',
     },
     t3: {
       textAlign: "center",
       fontFamily: "System",
-      fontSize: 24,
+      fontSize: hait*0.04,
       color: '#B5B2B2'
     },
+    t4: {
+      fontFamily: "System",
+      fontSize: hait*0.02,
+      color: '#B5B2B2'
+    },
+    t5: {
+      textAlign: "center",
+      fontFamily: "System",
+      fontSize: hait*0.018,
+      color: '#B5B2B2',
+      marginTop: '3%'
+    },
+    BBTView:{
+      flexDirection: 'column',
+      width: '50%',       //130
+      height:'100%', 
+    },
     BBTChartContainer: {
-      marginTop: 2,
-      marginLeft: 50,
-      width: 175,       //130
-      height:70        //50
+      width: '100%',       //130
+      height:'50%',        //50
     },
     BBTChart: {
       width: "auto",       //130
@@ -212,6 +235,27 @@ const styles = StyleSheet.create({
       padding:1000
     },
     diferente: {
+    },
+    moon:{
+      width: '60%',
+      height: '100%',
+    },
+    sleep:{
+      width: '40%',
+      height: '100%',
+      marginTop: hait*0.05,
+    },
+    exercise: { 
+      flexDirection: 'column',
+      alignItems:'center',
+      marginTop:'4%',
+      width:wiz*0.48,
+    },
+    percent: { 
+      position: 'absolute',
+      alignSelf:'center',
+      width: '100%',
+      height: hait*0.08,
     }
 });
 
