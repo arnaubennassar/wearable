@@ -189,7 +189,9 @@ export default (AuthScreen = React.createClass({
   },
   completeLogin(){
     ++completedLogin;
+    console.log('login completed : ' + completedLogin + ' / 6' )
     if (completedLogin == 6){
+      completedLogin = 0;
       this.props.actions.loginSuccess(this.tokenAWS);
     }
   },

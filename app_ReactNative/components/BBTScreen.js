@@ -34,8 +34,9 @@ export default class BBTScreen extends Component {
               padding={{ top: 10, bottom: 30, left: 10, right: 10 }}
             >
               <VictoryAxis 
+                tickCount={8}
                 tickFormat={(t) => new Date(t).getDate() + '/' + (new Date(t).getMonth()+1)}
-                style={{ axis: {stroke: "#969696"}, grid: {stroke: (t) => (t > 2.5 && t < 25) ? "#F53B91" : "transparent"}, ticks: {stroke: "grey", size: 0} }} />
+              />
               <VictoryLine
                 interpolation="natural"
                 domain={{y: [34, 42]}}

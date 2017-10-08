@@ -32,31 +32,36 @@ export function processData(data, timeStamp, isNew){
 //    ACTIVITY DATA     //
   if (data.hasOwnProperty(dataTypes.ACTIVITY) && data[dataTypes.ACTIVITY].length > 0){
     if (isNew){
-      processedActivityData = activityProcessor( splitByDays(data[dataTypes.ACTIVITY], timeStamp, arduino_c) );
+      processedActivityData = activityProcessor( splitByDays(data[dataTypes.ACTIVITY], timeStamp, arduino_c, isNew) );
       maxTime = (maxTime < processedActivityData[processedActivityData.length - 1][0].c) ? processedActivityData[processedActivityData.length - 1][0].c : maxTime;
   //SLEEP NEW DATA//
       processedSleepData = sleepProcessor( processedActivityData );
       storeData_multiSample(dataTypes.SLEEP, processedSleepData);
     }
     else{
-      processedActivityData = data[dataTypes.ACTIVITY];
+      processedActivityData = splitByDays (data[dataTypes.ACTIVITY], 0,0, isNew)
     }
     storeData_multiSample(dataTypes.ACTIVITY, processedActivityData);
   }      
   //SLEEP OLD DATA//
   if ( data.hasOwnProperty(dataTypes.SLEEP) && data[dataTypes.SLEEP].length > 0 ) {
-    processedSleepData = data[dataTypes.SLEEP];
+    // processedSleepData = [];
+    // for (var i = 0; i < data[dataTypes.SLEEP].length; i++) {
+    //   processedSleepData[i] = [];
+    //   processedSleepData[i] = data[dataTypes.SLEEP][i];
+    // };
+    processedSleepData = splitByDays(data[dataTypes.SLEEP], 0,0, isNew)
     storeData_multiSample(dataTypes.SLEEP, processedSleepData);
   }
 //____________________//
 //    HEART DATA     //
   if (data.hasOwnProperty(dataTypes.HEART) && data[dataTypes.HEART].length > 0){
     if (isNew){
-      processedHeartData = heartProcessor( splitByDays(data[dataTypes.HEART], timeStamp, arduino_c) );
+      processedHeartData = heartProcessor( splitByDays(data[dataTypes.HEART], timeStamp, arduino_c, isNew) );
       maxTime = (maxTime < processedHeartData[processedHeartData.length - 1][0].c) ? processedHeartData[processedHeartData.length - 1][0].c : maxTime;
     }
     else{
-      processedHeartData = data[dataTypes.HEART];
+      processedHeartData = splitByDays (data[dataTypes.HEART], 0,0, isNew)
     }
     storeData_multiSample(dataTypes.HEART, processedHeartData);
   }  
@@ -64,7 +69,7 @@ export function processData(data, timeStamp, isNew){
 //    TEMPERATURE DATA     //
   if (data.hasOwnProperty(dataTypes.TEMPERATURE) && data[dataTypes.TEMPERATURE].length > 0){
     if (isNew){
-      splitedTemperatureData = splitByDays( data[dataTypes.TEMPERATURE], timeStamp, arduino_c )
+      splitedTemperatureData = splitByDays( data[dataTypes.TEMPERATURE], timeStamp, arduino_c, isNew )
       processedTemperatureData = temperatureProcessor( splitedTemperatureData );
       maxTime = (maxTime < processedTemperatureData[processedTemperatureData.length - 1][0].c) ? processedTemperatureData[processedTemperatureData.length - 1][0].c : maxTime;
   //BBT NEW DATA//
@@ -72,13 +77,13 @@ export function processData(data, timeStamp, isNew){
       storeData_multiSample(dataTypes.BBT, processedBBTData);
     }
     else{
-      processedTemperatureData = data[dataTypes.TEMPERATURE];
+      processedTemperatureData = splitByDays (data[dataTypes.TEMPERATURE], 0,0, isNew)
     }
     storeData_multiSample(dataTypes.TEMPERATURE, processedTemperatureData);
   }
   //BBT OLD DATA//
   if ( data.hasOwnProperty(dataTypes.BBT) && data[dataTypes.BBT].length > 0 ) {
-    processedBBTData = data[dataTypes.BBT];
+    processedBBTData = splitByDays (data[dataTypes.BBT], 0,0, isNew)
     storeData_multiSample(dataTypes.BBT, processedBBTData);
   }
 //____________________//
@@ -89,25 +94,30 @@ export function processData(data, timeStamp, isNew){
     activity: processedActivityData,
     BBT: processedBBTData,
     sleep: processedSleepData,
-    lastUpdate: null
+    lastUpdate: isNew? null : maxTime
   }));
   return maxTime;
 }
 
-function splitByDays(data, timeStamp, arduino_c){
+function splitByDays(data, timeStamp, arduino_c, isNew){
   var ans = [];
   var last = 0;
   var index = 0;
   for (var i = 0; i < data.length - 1; i++) {
-    data[i].c = timeStamp - ((arduino_c - data[i].c)*1000); 
-    nextDay = timeStamp - ((arduino_c - data[i + 1].c)*1000);
+    if(isNew){
+      data[i].c = timeStamp - ((arduino_c - data[i].c)*1000); 
+      nextDay = timeStamp - ((arduino_c - data[i + 1].c)*1000);
+    }
+    else {nextDay = data[i + 1].c};
     if(new Date(data[i].c).getDate() != new Date(nextDay).getDate()){
       ans[index] = data.slice(last, i + 1);
       ++index;
       last = i + 1;
     }
   };
-  data[data.length - 1].c = timeStamp - ((arduino_c - data[data.length - 1].c)*1000); 
+  if (isNew){
+    data[data.length - 1].c = timeStamp - ((arduino_c - data[data.length - 1].c)*1000); 
+  }
   ans[index] = data.slice(last, data.length);
   return ans;
 }

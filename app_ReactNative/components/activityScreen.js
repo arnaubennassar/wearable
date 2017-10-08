@@ -12,7 +12,7 @@ var rangeSelector = [
 var rangeSelected = 0;
 const hait = Dimensions.get('window').height * 0.35;
 const wiz = Dimensions.get('window').width;
-export default class sleepScreen extends Component {
+export default class activityScreen extends Component {
   // static navigationOptions = {
   //   title: 'Detail',
   //   headerTintColor: '#1A1047',
@@ -31,16 +31,16 @@ export default class sleepScreen extends Component {
       ticks[0] = []
       ticks[1] = []
       ticks[2] = []
-      for (var i = 0; i < this.props.navigation.state.params.sleepData[0].length; i++) {
-        ticks[0][i] = this.props.navigation.state.params.sleepData[0][i].c;
-        console.log(this.props.navigation.state.params.sleepData[0][i])
+      for (var i = 0; i < this.props.navigation.state.params.activityData[0].length; i++) {
+        ticks[0][i] = this.props.navigation.state.params.activityData[0][i].c;
+        console.log(this.props.navigation.state.params.activityData[0][i])
       };
       console.log(ticks)
-      for (var i = 0; i < this.props.navigation.state.params.sleepData[1].length; i++) {
-        ticks[1][i] = this.props.navigation.state.params.sleepData[0][i].c;
+      for (var i = 0; i < this.props.navigation.state.params.activityData[1].length; i++) {
+        ticks[1][i] = this.props.navigation.state.params.activityData[0][i].c;
       };
-      for (var i = 0; i < this.props.navigation.state.params.sleepData[2].length; i++) {
-        ticks[2][i] = this.props.navigation.state.params.sleepData[0][i].c;
+      for (var i = 0; i < this.props.navigation.state.params.activityData[2].length; i++) {
+        ticks[2][i] = this.props.navigation.state.params.activityData[0][i].c;
       };
       return (
          <View style={styles.container}>
@@ -48,34 +48,27 @@ export default class sleepScreen extends Component {
             <VictoryChart
               theme={VictoryTheme.material}
               height={hait}
-              padding={{ top: 10, bottom: 30, left: 30, right: 10 }}
-              domainPadding={{x: (wiz*0.6)/this.props.navigation.state.params.sleepData[rangeSelected].length, y: hait*0.1}}
+              padding={{ top: 10, bottom: 30, left: 10, right: 10 }}
+              domainPadding={{x: (wiz*0.6)/this.props.navigation.state.params.activityData[rangeSelected].length, y: hait*0.1}}
             >
               <VictoryAxis 
-                tickCount={Math.min(10, this.props.navigation.state.params.sleepData[rangeSelected].length)}
+                tickCount={Math.min(8, this.props.navigation.state.params.activityData[rangeSelected].length)} 
                 tickFormat={(t) => new Date(ticks[rangeSelected][t-1]).getDate() + '/' + (new Date(ticks[rangeSelected][t-1]).getMonth()+1)} 
               />
-              <VictoryAxis 
-                dependentAxis
-                tickCount={8}
-                tickFormat={(t) => Math.floor(t / 3600000).toString() + 'h'}
-                style={{ axis: {stroke: "#969696"}, grid: {stroke: (t) => (Math.floor(t / 3600000) == 8) ? "#B5B2B2" : "transparent"}, ticks: {stroke: "grey", size: 0} }} 
-              />
               <VictoryBar
-                labels={(d) => Math.floor(d.y/3600000).toString()+":"+Math.floor(((d.y-(Math.floor(d.y/3600000)/1000))%60)).toString()}
-                domain={{y: [0, 57600000]}}//86400000 = 16*60*60*1000 = 16h
+                domain={{y: [0, 1]}}//86400000 = 16*60*60*1000 = 16h
                 style={{
                   parent: {
                     border: "1px solid #ccc"
                   },
                   data: {
-                    fill: "#F53B91", stroke: "#F53B91", strokeWidth: 3, width: ((wiz*0.65)/(this.props.navigation.state.params.sleepData[rangeSelected].length) )
+                    fill: "#F53B91", stroke: "#F53B91", strokeWidth: 3, width: ((wiz*0.65)/(this.props.navigation.state.params.activityData[rangeSelected].length) )
                   },
                   labels: {
                     fontSize: 15, fill: "#B5B2B2"
                   }
                 }}
-                data={ this.props.navigation.state.params.sleepData[rangeSelected] }
+                data={ this.props.navigation.state.params.activityData[rangeSelected] }
               />
             </VictoryChart>
           </View>

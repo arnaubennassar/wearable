@@ -1,6 +1,6 @@
 /*@flow*/
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button, Image, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Button, Image, StatusBar, TouchableOpacity, Dimensions } from 'react-native';
 
 import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
@@ -32,7 +32,7 @@ class MainScreen extends Component {
       return(
             <Image style={styles.container} source={backgraun} >
                 <TouchableOpacity
-                  style={[styles.touch1, {height: 132}]}
+                  style={styles.touch1}
                   onPress={ () =>  this.props.navigation.navigateWithDebounce("PersonalDataScreen", {tokenAWS:this.props.state.user.tokenAWS, height:this.props.state.user.height, weight:this.props.state.user.weight, age:this.props.state.user.bday, actions:this.props.actions.user} ) }
                 >
                     <View style={{flexDirection: 'row', flex:1}}>
@@ -44,7 +44,7 @@ class MainScreen extends Component {
 
 
                 <TouchableOpacity
-                  style={[styles.touch1, {height: 132}]}
+                  style={styles.touch1}
                   onPress={ () => { this.props.navigation.navigateWithDebounce("BTScreen", {actions:this.props.actions.BT, state:this.props.state.BT} ) } } 
                 >
                   <View style={{flexDirection: 'row', flex:1}}>
@@ -56,7 +56,7 @@ class MainScreen extends Component {
 
 
                 <TouchableOpacity
-                  style={[styles.touch1, {height: 132}]}
+                  style={styles.touch1}
                   onPress={ () => { this.props.actions.user.logout() }  } 
                 >
                   <View style={{flexDirection: 'row', flex:1}}>
@@ -70,10 +70,11 @@ class MainScreen extends Component {
         
     }
 }
-
-const personalDataIcon = (<Icon style={{marginTop: 40}} size={ 130 } name={ "cog" } color={ '#B5B2B2' }/>);
-const wearableIcon = (<Icon style={{marginTop: 40}} size={ 130 } name={ "bluetooth-b" } color={ '#B5B2B2' }/>);
-const logoutIcon = (<Icon style={{marginTop: 40}} size={ 130 } name={ "power-off" } color={ '#B5B2B2' }/>);
+const hait = Dimensions.get('window').height;
+const wiz = Dimensions.get('window').width;
+const personalDataIcon = (<Icon style={{marginTop: 40}} size={ wiz*0.3 } name={ "cog" } color={ '#B5B2B2' }/>);
+const wearableIcon = (<Icon style={{marginTop: 40}} size={ wiz*0.3 } name={ "bluetooth-b" } color={ '#B5B2B2' }/>);
+const logoutIcon = (<Icon style={{marginTop: 40}} size={ wiz*0.3 } name={ "power-off" } color={ '#B5B2B2' }/>);
 const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -83,8 +84,9 @@ const styles = StyleSheet.create({
       resizeMode: 'cover',
     },
     touch1: {
-      marginTop: 4,
-      marginHorizontal: 40,
+      height:'27%',
+      marginTop: '0.3%',
+      marginHorizontal: '15%',
       borderBottomWidth: 2,
       borderBottomColor: '#979797',
     },

@@ -63,28 +63,75 @@ class DashboardScreen extends Component {
       var iMonth_s = 0;
       for (var i = 0; i < this.props.state.data.sleep.length; i++) {
         current = this.props.state.data.sleep[i];
-        if(now - current.c < 604800000){  //7*24*60*60*1000 = 1 week in ms
-          week_s[iWeek_s] = {x: current.c, y:current.v};
-          ++iWeek_s;
-        }        
-        if(now - current.c < 2592000000){  //30*24*60*60*1000 = 1 month in ms
-          month_s[iMonth_s] = {x: current.c, y:current.v};
-          ++iMonth_s;
-        }        
-        all_s[i] = {x: current.c, y:current.v};
+        if(current != null){
+          if(now - current.c < 604800000){  //7*24*60*60*1000 = 1 week in ms
+            week_s[iWeek_s] = {x: i+1, c: current.c, y:current.v};
+            ++iWeek_s;
+          }        
+          if(now - current.c < 2592000000){  //30*24*60*60*1000 = 1 month in ms
+            month_s[iMonth_s] = {x: i+1, c: current.c, y:current.v};
+            ++iMonth_s;
+          }        
+          all_s[i] = {x: i+1, c: current.c, y:current.v};
+        }
       };
       var _sleepData = [week_s, month_s, all_s];
+
+    //ACTIVITY
+      var week_a = [];
+      var month_a = [];
+      var all_a = [];
+      var iWeek_a = 0;
+      var iMonth_a = 0;
+      var _objective = this.props.state.data.activityObjective;
+      for (var i = 0; i < this.props.state.data.dailyActivity.length; i++) {
+        current = this.props.state.data.dailyActivity[i];
+        if(current != null){
+          if(now - current.c < 604800000){  //7*24*60*60*1000 = 1 week in ms
+            week_a[iWeek_a] = {x: i+1, c: current.c, y:current.v/_objective};
+            ++iWeek_a;
+          }        
+          if(now - current.c < 2592000000){  //30*24*60*60*1000 = 1 month in ms
+            month_a[iMonth_a] = {x: i+1, c: current.c, y:current.v};
+            ++iMonth_a;
+          }        
+          all_a[i] = {x: i+1, c: current.c, y:current.v};
+        }
+      };
+      var _activityData = [week_a, month_a, all_a];
+
       console.log(_BBTData);
       console.log(_sleepData);
-      var sleepHours = Math.floor(week_s[week_s.length-1].y /(60*60*1000)); 
-      var sleepMinutes = Math.floor((week_s[week_s.length-1].y - sleepHours)/(60*1000));
+      console.log(_activityData);
+      var sleepHours = 0; 
+      var sleepMinutes = 0;
+      if(week_s[0] != undefined){
+        sleepHours = Math.floor(week_s[week_s.length-1].y /(60*60*1000)); 
+        sleepMinutes = Math.floor((week_s[week_s.length-1].y - sleepHours)/(60*1000));
+      }
       if (week_b.length > 0){
         temp = week_b[week_b.length -1].y;
       }
-      if (this.props.state.data.dailyActivity !== undefined){
-        acti = (this.props.state.data.dailyActivity[this.props.state.data.dailyActivity.length -1].v / this.props.state.data.activityObjective);
+      if (week_a.length > 0){
+        acti = (week_a[week_a.length -1].y / this.props.state.data.activityObjective)*100;
         acti = Math.floor(acti);
       }
+  //////      FAKE DATA   ////
+      week_b = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
+      month_b = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
+      all_b   = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
+      var _BBTData = [week_b, month_b, all_b];
+
+      week_s  = [{x: 1, c:1506874513000, y: 7000000}, {x: 2, c:1506960913000, y: 28000000}, {x: 3, c:1507047313000, y: 8200000}, {x: 4, c:1507133713000, y: 55500000} ];
+      month_s = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000}, {x: 5, y: 7000000}, {x: 6, y: 28000000}, {x: 7, y: 8200000}, {x: 8, y: 55500000},{x: 9, y: 7000000}, {x: 10, y: 28000000}, {x: 11, y: 8200000}, {x: 12, y: 55500000}, {x: 13, y: 7000000}, {x: 14, y: 28000000}, {x: 15, y: 8200000}, {x: 16, y: 55500000}, {x: 17, y: 28000000} ];
+      all_s   = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000} ];
+      var _sleepData = [week_s, month_s, all_s];
+
+      week_a  = [{x: 1, c:1506874513000, y: 0.3}, {x: 2, c:1506960913000, y: 0.7}, {x: 3, c:1507047313000, y: 0.2}, {x: 4, c:1507133713000, y: 0.45} ];
+      month_a = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000}, {x: 5, y: 7000000}, {x: 6, y: 28000000}, {x: 7, y: 8200000}, {x: 8, y: 55500000},{x: 9, y: 7000000}, {x: 10, y: 28000000}, {x: 11, y: 8200000}, {x: 12, y: 55500000}, {x: 13, y: 7000000}, {x: 14, y: 28000000}, {x: 15, y: 8200000}, {x: 16, y: 55500000}, {x: 17, y: 28000000} ];
+      all_a   = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000} ];
+      var _sleepData = [week_a, month_a, all_a];
+              /////
 
         return(
             <Image style={styles.container} source={bground} >
@@ -103,7 +150,7 @@ class DashboardScreen extends Component {
                               style={{
                                 data: { stroke: "#969696", strokeWidth: hait*0.005 },
                               }}
-                              interpolation="natural"
+                              interpolation="cardinal"
                               data= {week_b}
                           />
                       </View>
@@ -135,7 +182,7 @@ class DashboardScreen extends Component {
 
                 <TouchableOpacity
                   style={[styles.touch1, {flexDirection: 'row'}]}
-                  onPress={ () => { this.props.navigation.navigateWithDebounce("activityScreen") } }
+                  onPress={ () => { this.props.navigation.navigateWithDebounce("activityScreen", {activityData: _activityData, objective: _objective}) } }
                 >
                     {runner}
                     <View style={styles.exercise}>

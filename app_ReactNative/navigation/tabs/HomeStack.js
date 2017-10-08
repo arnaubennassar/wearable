@@ -8,6 +8,7 @@ import { addNavigationHelpers, StackNavigator } from 'react-navigation'
 import DashboardScreen    from '../../components/DashboardScreen';
 import BBTScreen  from '../../components/BBTScreen';
 import sleepScreen  from '../../components/sleepScreen';
+import activityScreen  from '../../components/activityScreen';
 //import IconAnimation  from '../../components/IconAnimation';
 //import { BlueTooth } from '../../components/BlueTooth';
 // Icon
@@ -22,7 +23,7 @@ const routeConfiguration = {
   BBTScreen: { 
     screen: BBTScreen,
     navigationOptions:{
-      title: 'Basal body temperature',
+      title: 'Basal Body Temperature',
       headerStyle: { backgroundColor: "#F53B91" }, //Header color
       headerTintColor: "white", //Back arrow color
       headerPressColorAndroid: "pink", //Ripple effect
@@ -32,7 +33,7 @@ const routeConfiguration = {
   sleepScreen: { 
     screen: sleepScreen,
     navigationOptions:{
-      title: 'Detail',
+      title: 'Sleep',
       headerStyle: { backgroundColor: "#F53B91" }, //Header color
       headerTintColor: "white", //Back arrow color
       headerPressColorAndroid: "pink", //Ripple effect
@@ -40,9 +41,9 @@ const routeConfiguration = {
     }
   },
   activityScreen: { 
-    screen: BBTScreen,
+    screen: activityScreen,
     navigationOptions:{
-      title: 'Detail',
+      title: 'Activity',
       headerStyle: { backgroundColor: "#F53B91" }, //Header color
       headerTintColor: "white", //Back arrow color
       headerPressColorAndroid: "pink", //Ripple effect

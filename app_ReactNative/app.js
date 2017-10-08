@@ -159,6 +159,8 @@ var APP  = React.createClass({
   },
   BTDisconnected(){
 //    BT.disconnect();
+            //this.props.actions.user.logout();
+
     this.props.actions.BT.desconnected();
     console.log('BT DISConnected!!!!!')
     // getData_from('a', this.props.state.data.data.lastUpdate - 21600000, (_data) => {
@@ -218,7 +220,7 @@ var APP  = React.createClass({
     if (!waitingBTReq && !waitingBTData ){//WAITING ACK
 
 
-            this.props.actions.data.dataUpdated({lastUpdate: Date.parse(new Date()) -21600000});
+         //   this.props.actions.data.dataUpdated({lastUpdate: Date.parse(new Date()) -21600000});
 
 
 
