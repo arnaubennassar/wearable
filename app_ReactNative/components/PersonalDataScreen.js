@@ -5,9 +5,8 @@ import {
   Image,
   StyleSheet,
   StatusBar,
-  KeyboardAvoidingView,
-  Keyboard,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { Button, Form, Item, Input, InputGroup } from "native-base";
 import { NavigationActions } from 'react-navigation';
@@ -18,7 +17,10 @@ var weightInput = "";
 var ageInput = "";
 var actions;
 var tokenAWS;
-const backgra = require("../resources/images/B3.png");
+const backgra = require("../resources/images/ba3.png");
+
+const hait = Dimensions.get('window').height;
+const wiz = Dimensions.get('window').width;
 
 export default (PersonalDataScreen = React.createClass({
   componentWillMount () {
@@ -61,17 +63,16 @@ export default (PersonalDataScreen = React.createClass({
   render() {
     return (
       <Image style={styles.container} source={backgra}>
-      <KeyboardAvoidingView style={styles.super} behavior="position">
         <Text style={styles.text1}>Set up your profile...</Text>
         <Item
           rounded
           style={{
             justifyContent: "center",
             borderColor: "#F53B91",
-            marginTop: 57.5,
+            marginTop: 9,
             alignSelf: "center",
-            width: 243.3,
-            height: 41
+            width: wiz*0.6,
+            height: hait*0.06
           }}
         >
           <Input
@@ -92,7 +93,7 @@ export default (PersonalDataScreen = React.createClass({
               fontWeight: "900"
             }}
           />
-          <Text style={styles.textDetail}>cm</Text>
+          <Text style={styles.textDetail}>CM</Text>
         </Item>
         <Item
           rounded
@@ -101,8 +102,8 @@ export default (PersonalDataScreen = React.createClass({
             borderColor: "#F53B91",
             marginTop: 9,
             alignSelf: "center",
-            width: 243.3,
-            height: 41
+            width: wiz*0.6,
+            height: hait*0.06
           }}
         >
           <Input
@@ -124,7 +125,7 @@ export default (PersonalDataScreen = React.createClass({
             }}
             ref= 'weight'
           />
-          <Text style={styles.textDetail}>kg</Text>
+          <Text style={styles.textDetail}>KG</Text>
         </Item>
         <Item
           rounded
@@ -133,8 +134,8 @@ export default (PersonalDataScreen = React.createClass({
             borderColor: "#F53B91",
             marginTop: 9,
             alignSelf: "center",
-            width: 243.3,
-            height: 41
+            width: wiz*0.6,
+            height: hait*0.06
           }}
         >
           <Input
@@ -155,18 +156,18 @@ export default (PersonalDataScreen = React.createClass({
             }}
             ref= 'age'
           />
-          <Text style={styles.textDetail}>years</Text>
+          <Text style={styles.textDetail}>yrs</Text>
         </Item>
         <Button
           rounded
           rounded
           style={{
             justifyContent: "center",
-            marginTop: 57,
+            marginTop: '15%',
             alignSelf: "center",
             backgroundColor: "#F53B91",
-            width: 243.3,
-            height: 41
+            width: wiz*0.6,
+            height: hait*0.06
           }}
           onPress={this.onNextButtonPress}
         >
@@ -190,14 +191,12 @@ export default (PersonalDataScreen = React.createClass({
             </TouchableOpacity>
         ) : null }
         <StatusBar backgroundColor="#F53B91" />
-      </KeyboardAvoidingView>
       </Image>
     );
   }
 }));
 
 const styles = StyleSheet.create({
-  super: {},
   container: {
     flex: 1,
     alignSelf: "stretch",
@@ -206,13 +205,13 @@ const styles = StyleSheet.create({
     resizeMode: "cover"
   },
   text1: {
-    marginTop: 164,
-    marginLeft: 90,
-    marginRight: 90,
+    marginTop: '25%',
+    marginBottom: '20%',
     textAlign: "center",
     fontFamily: "System",
     fontWeight: "100",
-    fontSize: 14
+    fontSize: 14,
+    backgroundColor: 'transparent'
   },
   textDetail: {
     marginRight: 8,
@@ -225,7 +224,8 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     fontFamily: "System",
     fontWeight: "100",
-    fontSize: 14
+    fontSize: 14,
+    backgroundColor: 'transparent'
   },
-  skipTouch: { marginTop: 60, marginLeft: 90, marginRight: 90 }
+  skipTouch: { marginTop: 60, marginLeft: 90, marginRight: 90 },
 });

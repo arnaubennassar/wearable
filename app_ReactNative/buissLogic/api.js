@@ -19,11 +19,7 @@ export function postOSID (AWS: string, OS: string){
 	    OSID: OS,
 	  })
 	}).then(function (response){
-		//console.log(response);
-		if(response.status == 401){
-			unauthHandle('postOSID', {'OS': OS});
-			return;
-		}
+		console.log(response)
 	});
 }
 

@@ -1,5 +1,5 @@
 /*@flow*/
-
+import {sendNotification} from '../../buissLogic/api'
 let cloneObject = function (obj){
   return JSON.parse(JSON.stringify(obj));
 }
@@ -11,7 +11,8 @@ export const dataDefault: DataState =
     sleep: [], 
     dailyActivity: [],
     activityObjective: 100000,
-    lastUpdate: 0
+    lastUpdate: 0,
+    lastFertility: 0
   }, 
 };
 
@@ -30,7 +31,8 @@ type DataState = {
       c: number
     }],
     activityObjective: number,
-    lastUpdate: number
+    lastUpdate: number,
+    lastFertility: number
   }
 }
 
@@ -63,7 +65,6 @@ export const dataReducer = (state: DataState, action: Object) => {
         }
         else {
           var newActivityData = [];
-          console.log('REDUCING ACTIVITY')
           console.log(new Date(newState.data.dailyActivity[newState.data.dailyActivity.length - 1].c).getDate())
           console.log(new Date(action.payload.activity[0][0].c).getDate())
           for(i = 0; i < action.payload.activity.length; ++i){
@@ -75,11 +76,20 @@ export const dataReducer = (state: DataState, action: Object) => {
               newState.data.dailyActivity[newState.data.dailyActivity.length] = {c: action.payload.activity[i][0].c, v: totalActivity}
             }
           }
+          if(newState.data.dailyActivity[newState.data.dailyActivity.length -1].v > newState.data.activityObjective && action.payload.token !== false){
+            newState.data.activityObjective = newState.data.dailyActivity[newState.data.dailyActivity.length -1].v * 1.2;
+            sendNotification ('Activity', 
+              'New activity objective completed!', 
+              'runner', 
+              {fullDescription: 'You have completed the current daily activity objective, congratulations. Since it seems easy to you, we have increased the dificulty of the daily activity objective'}, 
+              action.payload.token, 
+              (ans) => console.log(ans)
+            );
+          }
         }
       }
 //BBT
       if (action.payload.BBT != null){
-        console.log(action.payload.BBT)
         if(newState.data.BBT.length === 0){//First sample
           for (var i = 0; i < action.payload.BBT.length; i++) {
             newState.data.BBT[i] = action.payload.BBT[i][0];
@@ -87,7 +97,10 @@ export const dataReducer = (state: DataState, action: Object) => {
         }
         else {
           for (var i = 0; i < action.payload.BBT.length; i++) {
-            if (i == 0 && new Date(newState.data.sleep[newState.data.sleep.length - 1].c).getDate() == new Date(action.payload.sleep[0][0].c).getDate()){//sample from the same day
+            console.log(newState.data.BBT)
+            console.log( new Date(newState.data.BBT[newState.data.BBT.length - 1].c).getDate())
+            console.log(new Date(action.payload.BBT[0][0].c).getDate())
+            if (i == 0 && new Date(newState.data.BBT[newState.data.BBT.length - 1].c).getDate() == new Date(action.payload.BBT[0][0].c).getDate()){//sample from the same day
               if ( newState.data.BBT[newState.data.BBT.length - 1].v > action.payload.BBT[0][0].v ){
                 newState.data.BBT[newState.data.BBT.length - 1] = action.payload.BBT[0][0];
               }
@@ -121,7 +134,23 @@ export const dataReducer = (state: DataState, action: Object) => {
         newState.data.lastUpdate = action.payload.lastUpdate;
       }
       return newState;
-
+    case "DATA_FERTILITY":
+      var newState: DataState = cloneObject(state);
+        var len = newState.data.BBT.length;
+        if(newState.data.BBT[len - 2].c > newState.data.lastFertility){
+          if(newState.data.BBT[len - 3].v > newState.data.BBT[len - 2].v && newState.data.BBT[len - 1].v > newState.data.BBT[len - 2].v){
+            newState.data.lastFertility = newState.data.BBT[len - 2].c;
+            sendNotification ('High fertility', 
+              'We have detected a high fertility state', 
+              'heart', 
+              {fullDescription: 'Based on the analisis of the data we have been colecting, we estimate that you are on high fertility period.'}, 
+              action.payload.token, 
+              (ans) => console.log(ans)
+            );
+          }
+        }
+        
+      return newState;
     case "LOGOUT":
       return dataDefault;
     default:

@@ -1,6 +1,6 @@
 /*@flow*/
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Button, Image, FlatList, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Platform, Text, StyleSheet, ActivityIndicator, Button, Image, FlatList, StatusBar, TouchableOpacity, Dimensions } from 'react-native';
 
 import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
@@ -27,36 +27,49 @@ function mapDispatchToProps(dispatch){return {
 }};
 
 
-const heart   = (<View style={{width: 55}}><Image style={{marginLeft: 15, marginTop:10, width:20, height:48, marginTop:10, marginRight:5}} resizeMode='stretch' source={require('../resources/images/termometer.png')}/></View>)
-const moon    = (<View style={{width: 55}}><Icon style={{marginLeft: 5, marginTop: 15}} size={ 48 } name={ "moon-o" } color={ '#979797' }/></View>)
-const runner  = (<View style={{width: 55}}><Image style={{marginLeft: 5, marginTop:10, width:40, height:48, marginTop:10}} resizeMode='stretch' source={require('../resources/images/runner.png')}/></View>)
-const bground = require('../resources/images/B1.png');
+const hait = Dimensions.get('window').height;
+const wiz = Dimensions.get('window').width;
+var iosMargin = 0;
+if(Platform.OS === 'ios') {
+  iosMargin = hait*0.1;
+}
+const moon =      (<Icon style={{backgroundColor: 'transparent', marginLeft: 5, marginTop: 15}} size={ wiz*0.14 } name={ "moon-o" } color={ '#979797' }/>)
+const heart =     (<Icon style={{backgroundColor: 'transparent', marginBottom: hait*0.01}} size={ wiz*0.12 } name={ "heart" } color={ '#979797' }/>)
+const user =      (<Icon style={{backgroundColor:'transparent'}} size={ wiz*0.14 } name={ "user" } color={ '#979797' }/>)
+const bluetooth = (<Icon style={{backgroundColor:'transparent'}} size={ wiz*0.14 } name={ "bluetooth-b" } color={ '#979797' }/>)
+const runner = (<Image style={{backgroundColor:'transparent', width:wiz*0.12, height:wiz*0.14}} resizeMode='stretch' source={require('../resources/images/runner.png')}/>)
+const bground = require('../resources/images/ba1.png');
 class MainScreen extends Component {
     render() {
         return (
             <Image style={styles.container} source={bground} >
+                <View style={{height: iosMargin}} />
                 <FlatList
                   data={ this.props.state.notifications }
                   keyExtractor={item => item.timeStamp }  //Piece of data that its unique for each element on the list!!!
                   renderItem={ ({ item }) => (
-                    <TouchableOpacity
-                      style={[styles.itemContainerRow, {height: 132, width:'80%', alignSelf:'center'}]}
-                      onPress={ () => {  this.props.navigation.navigateWithDebounce("DetailScreen", {title: item.notification.headings.en, subtitle: item.notification.contents.en, fullDescription: item.notification.data.data.fullDescription, date:item.timeStamp})   } }
-                    >
-                      <View style={styles.itemContainerCol}>
-                            {item.notification.data.icon == 'heart' ? heart : null}
-                            {item.notification.data.icon == 'moon' ? moon : null}
-                            {item.notification.data.icon == 'runner' ? runner : null}
-                            <Text style={styles.itemDate}>{item.timeStamp}</Text>
+                        <TouchableOpacity
+                          style={styles.itemContainerRow}
+                          onPress={ () => {  this.props.navigation.navigateWithDebounce("DetailScreen", {title: item.notification.headings.en, subtitle: item.notification.contents.en, fullDescription: item.notification.data.data.fullDescription, date:item.timeStamp})   } }
+                        >
+                          <View style={styles.itemContainerCol1}>
+                                {item.notification.data.icon == 'heart' ? heart : null}
+                                {item.notification.data.icon == 'moon' ? moon : null}
+                                {item.notification.data.icon == 'user' ? user : null}
+                                {item.notification.data.icon == 'runner' ? runner : null}
+                                {item.notification.data.icon == 'bluetooth' ? bluetooth : null}
+                                <Text style={styles.itemDate}>{item.timeStamp}</Text>
                           </View>
-                          
-                          <View style={styles.itemContainerCol}>
-                            <Text style={styles.itemTitle}>{item.notification.headings.en}</Text>
-                            <Text style={styles.itemBody}>{item.notification.contents.en}</Text>
+                              
+                          <View style={styles.itemContainerCol2}>
+                                <Text style={styles.itemTitle}>{item.notification.headings.en}</Text>
+                                <Text style={styles.itemBody}>{item.notification.contents.en}</Text>
                           </View>
-                    </TouchableOpacity>
+
+                        </TouchableOpacity>
                   )}
                 />
+                <StatusBar backgroundColor="#F53B91" />
             </Image>
         )
     }
@@ -64,48 +77,55 @@ class MainScreen extends Component {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
       alignSelf: 'stretch',
-      width: undefined,
-      height: undefined,
+      width: '100%',
+      height: '100%',
       resizeMode: 'cover',
-      justifyContent: 'center',
-      alignItems: 'center',
     },
     itemContainerRow:{
       flexDirection: 'row',
-      marginTop: 4,
-      height:100,
+      width:'70%', 
+      alignSelf:'center',
+      marginTop: '1%',
+      height:hait*0.21,
       borderBottomWidth: 2,
       borderBottomColor: '#979797',
     },
-    itemContainerCol:{
+    itemContainerCol1:{
       flexDirection: 'column',
+      width: '20%',
+      alignItems:'center',
+      marginTop:'5%'
     },
-    itemImage:{
-      height:80,
-      width:80,
-      margin:10
+    itemContainerCol2:{
+      flexDirection: 'column',
+      width: '70%',
+      marginLeft: '7%',
     },
     itemTitle:{
+      backgroundColor: 'transparent',
       fontFamily: "System",
-      fontSize: 24,
+      fontSize: hait*0.04,
       color: '#B5B2B2',
       fontWeight:'900'
     },
     itemBody:{
+      backgroundColor: 'transparent',
       fontFamily: "System",
-      fontSize: 14,
+      fontSize: hait*0.02,
       color: '#B5B2B2',
-      fontWeight:'100'
+      fontWeight:'100',
+      marginTop:'5%'
     },
     itemDate:{
-      width: 60,
+      backgroundColor: 'transparent',
+      height:'100%',
+      width: '100%',
       marginTop:30,
       fontFamily: "System",
-      fontSize: 12,
+      fontSize: hait*0.015,
       color: '#B5B2B2',
-      fontWeight:'100'
+      fontWeight:'100',
     }
 });
 

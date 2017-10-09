@@ -1,6 +1,6 @@
 /*@flow*/
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Button, Image, StatusBar, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Button, Image, StatusBar, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import { VictoryChart, VictoryLine, VictoryTheme, VictoryAxis, VictoryPie, VictoryAnimation, VictoryLabel } from 'victory-native';
 
 import {bindActionCreators} from 'redux';
@@ -23,9 +23,14 @@ function mapDispatchToProps(dispatch){return {
     }    
 }};
 
-const bground = require('../resources/images/B2.png');
+
+const bground = require('../resources/images/ba2.png');
 const hait = Dimensions.get('window').height;
 const wiz = Dimensions.get('window').width;
+var iosMargin = 0;
+if(Platform.OS === 'ios') {
+  iosMargin = hait*0.1;
+}
 const termometer = <Image style={{width:wiz*0.05, height:hait*0.08, marginTop:hait*0.0225, marginLeft: wiz*0.0625, resizeMode:'stretch'}}  source={require('../resources/images/termometer.png')} ></Image>;
 const moon = (<Image style={{width:wiz*0.4, height:hait*0.106, marginTop:hait*0.03, resizeMode:'stretch'}}  source={require('../resources/images/moon.png')} ></Image> );
 const runner = (<Image style={{width:wiz*0.1123, height:hait*0.0925, marginTop:10, resizeMode:'stretch'}}  source={require('../resources/images/runner.png')} ></Image>);
@@ -35,7 +40,7 @@ class DashboardScreen extends Component {
     //BBT
       var len = 0;
       var temp = '-';
-      var acti = 75;
+      var acti = 0;
       var week_b = [];
       var month_b = [];
       var all_b = [];
@@ -99,42 +104,35 @@ class DashboardScreen extends Component {
         }
       };
       var _activityData = [week_a, month_a, all_a];
-
-      console.log(_BBTData);
-      console.log(_sleepData);
-      console.log(_activityData);
       var sleepHours = 0; 
       var sleepMinutes = 0;
       if(week_s[0] != undefined){
         sleepHours = Math.floor(week_s[week_s.length-1].y /(60*60*1000)); 
-        sleepMinutes = Math.floor((week_s[week_s.length-1].y - sleepHours)/(60*1000));
+        sleepMinutes = Math.floor(((week_s[week_s.length-1].y-(Math.floor(week_s[week_s.length-1].y/3600000)/1000))%60));
       }
       if (week_b.length > 0){
         temp = week_b[week_b.length -1].y;
       }
       if (week_a.length > 0){
-        acti = (week_a[week_a.length -1].y / this.props.state.data.activityObjective)*100;
+        acti = week_a[week_a.length -1].y *100;
         acti = Math.floor(acti);
       }
   //////      FAKE DATA   ////
-      week_b = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
-      month_b = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
-      all_b   = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
-      var _BBTData = [week_b, month_b, all_b];
+      // week_b = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
+      // month_b = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
+      // all_b   = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
+      // var _BBTData = [week_b, month_b, all_b];
 
-      week_s  = [{x: 1, c:1506874513000, y: 7000000}, {x: 2, c:1506960913000, y: 28000000}, {x: 3, c:1507047313000, y: 8200000}, {x: 4, c:1507133713000, y: 55500000} ];
-      month_s = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000}, {x: 5, y: 7000000}, {x: 6, y: 28000000}, {x: 7, y: 8200000}, {x: 8, y: 55500000},{x: 9, y: 7000000}, {x: 10, y: 28000000}, {x: 11, y: 8200000}, {x: 12, y: 55500000}, {x: 13, y: 7000000}, {x: 14, y: 28000000}, {x: 15, y: 8200000}, {x: 16, y: 55500000}, {x: 17, y: 28000000} ];
-      all_s   = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000} ];
-      var _sleepData = [week_s, month_s, all_s];
+      // week_s  = [{x: 1, c:1506874513000, y: 7000000}, {x: 2, c:1506960913000, y: 28000000}, {x: 3, c:1507047313000, y: 8200000}, {x: 4, c:1507133713000, y: 55500000} ];
+      // month_s = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000}, {x: 5, y: 7000000}, {x: 6, y: 28000000}, {x: 7, y: 8200000}, {x: 8, y: 55500000},{x: 9, y: 7000000}, {x: 10, y: 28000000}, {x: 11, y: 8200000}, {x: 12, y: 55500000}, {x: 13, y: 7000000}, {x: 14, y: 28000000}, {x: 15, y: 8200000}, {x: 16, y: 55500000}, {x: 17, y: 28000000} ];
+      // all_s   = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000} ];
+      // var _sleepData = [week_s, month_s, all_s];
 
-      week_a  = [{x: 1, c:1506874513000, y: 0.3}, {x: 2, c:1506960913000, y: 0.7}, {x: 3, c:1507047313000, y: 0.2}, {x: 4, c:1507133713000, y: 0.45} ];
-      month_a = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000}, {x: 5, y: 7000000}, {x: 6, y: 28000000}, {x: 7, y: 8200000}, {x: 8, y: 55500000},{x: 9, y: 7000000}, {x: 10, y: 28000000}, {x: 11, y: 8200000}, {x: 12, y: 55500000}, {x: 13, y: 7000000}, {x: 14, y: 28000000}, {x: 15, y: 8200000}, {x: 16, y: 55500000}, {x: 17, y: 28000000} ];
-      all_a   = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000} ];
-      var _sleepData = [week_a, month_a, all_a];
               /////
 
         return(
             <Image style={styles.container} source={bground} >
+                <View style={{height: iosMargin}} />
                 <TouchableOpacity
                   style={[styles.touch1, {flexDirection: 'row'}]}
                   onPress={ () => { this.props.navigation.navigateWithDebounce("BBTScreen", {BBTData: _BBTData}) } }
@@ -205,6 +203,7 @@ class DashboardScreen extends Component {
                     </View>
                     <View style={styles.percent}><Text style={[styles.t2, {fontWeight:'bold'}]}>{acti}%</Text></View>
                 </TouchableOpacity>
+                <StatusBar backgroundColor="#F53B91" />
             </Image>
             
         )
@@ -220,11 +219,13 @@ const styles = StyleSheet.create({
       resizeMode: 'cover',
     },
     col: {
+      backgroundColor: 'transparent',
       flex: 1,
       flexDirection: 'row',
       alignItems: 'flex-end' 
     },
     touch1: {
+      backgroundColor: 'transparent',
       height:'27%',
       marginTop: '0.3%',
       marginHorizontal: '15%',
@@ -232,6 +233,7 @@ const styles = StyleSheet.create({
       borderBottomColor: '#979797',
     },
     t1: {
+      backgroundColor: 'transparent',
       width:'25%',
       textAlign: "left",
       fontFamily: "System",
@@ -240,27 +242,32 @@ const styles = StyleSheet.create({
       color: '#B5B2B2'
     },
     t2: {
+      backgroundColor: 'transparent',
       textAlign: "center",
       fontFamily: "System",
       fontSize: hait*0.04,
       color: '#B5B2B2'
     },
     t2View: {
+      backgroundColor: 'transparent',
       height:'35%',
       marginTop:'5%',
     },
     t3: {
+      backgroundColor: 'transparent',
       textAlign: "center",
       fontFamily: "System",
       fontSize: hait*0.04,
       color: '#B5B2B2'
     },
     t4: {
+      backgroundColor: 'transparent',
       fontFamily: "System",
       fontSize: hait*0.02,
       color: '#B5B2B2'
     },
     t5: {
+      backgroundColor: 'transparent',
       textAlign: "center",
       fontFamily: "System",
       fontSize: hait*0.018,
@@ -268,15 +275,18 @@ const styles = StyleSheet.create({
       marginTop: '3%'
     },
     BBTView:{
+      backgroundColor: 'transparent',
       flexDirection: 'column',
       width: '50%',       //130
       height:'100%', 
     },
     BBTChartContainer: {
+      backgroundColor: 'transparent',
       width: '100%',       //130
       height:'50%',        //50
     },
     BBTChart: {
+      backgroundColor: 'transparent',
       width: "auto",       //130
       height:"auto" ,       //50
       padding:1000
@@ -284,21 +294,25 @@ const styles = StyleSheet.create({
     diferente: {
     },
     moon:{
+      backgroundColor: 'transparent',
       width: '60%',
       height: '100%',
     },
     sleep:{
+      backgroundColor: 'transparent',
       width: '40%',
       height: '100%',
       marginTop: hait*0.05,
     },
     exercise: { 
+      backgroundColor: 'transparent',
       flexDirection: 'column',
       alignItems:'center',
       marginTop:'4%',
       width:wiz*0.48,
     },
     percent: { 
+      backgroundColor: 'transparent',
       position: 'absolute',
       alignSelf:'center',
       width: '100%',

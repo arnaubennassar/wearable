@@ -156,6 +156,9 @@ export const userReducer = (state: UserState, action: Object) => {
       newState.user.loadingLogin = false;
       newState.user.validCredentials = true;
       newState.user.tokenAWS = action.payload.tokenAWS;
+      if (newState.user.tokenOS != undefined){
+        postOSID(newState.user.tokenAWS, newState.user.tokenOS);
+      }
       return newState;
     case "LOGIN_FAIL":
       var newState: UserState = cloneObject(state);
@@ -174,6 +177,7 @@ export const userReducer = (state: UserState, action: Object) => {
     case "LOGOUT":
       var newState = userDefault;
       newState.user.appInitialized = true;
+      newState.user.tokenOS = state.user.tokenOS;
       return newState;
     case "OS_SUCCESS":
       if (action.payload.tokenOS != state.user.tokenOS){

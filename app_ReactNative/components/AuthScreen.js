@@ -7,17 +7,20 @@ import {
   TextInput,
   StyleSheet,
   StatusBar,
-  KeyboardAvoidingView,
-  Keyboard,
+  Dimensions,
   TouchableOpacity
 } from "react-native";
-import { login, register, verify } from "../buissLogic/AWSLogin";
-import { getPersonalData, getAllData } from "../buissLogic/api";
+import { login, register, verify, silentLogin } from "../buissLogic/AWSLogin";
+import { getPersonalData, getAllData, sendNotification, getNotifications } from "../buissLogic/api";
 import { storeData_i, storeData_i_last } from "../buissLogic/storage";
 import Swiper from "react-native-swiper";
 import { Button, Form, Item, Input, InputGroup } from "native-base";
 import {processData} from '../buissLogic/dataProcessor';
 import Icon from "react-native-vector-icons/FontAwesome";
+
+
+const hait = Dimensions.get('window').height;
+const wiz = Dimensions.get('window').width;
 
 var userInput = "";
 var emailInput = "";
@@ -42,25 +45,6 @@ export default (AuthScreen = React.createClass({
     } else {
       currentScreen = 0;
     }
-    this.keyboardWillShowSub = Keyboard.addListener(
-      "keyboardDidShow",
-      this.keyboardWillShow
-    );
-    this.keyboardWillHideSub = Keyboard.addListener(
-      "keyboardDidHide",
-      this.keyboardWillHide
-    );
-  },
-  componentWillUnmount() {
-    this.keyboardWillShowSub.remove();
-    this.keyboardWillHideSub.remove();
-  },
-  keyboardWillShow(event) {
-  //  mTop = 407.5;
-  },
-
-  keyboardWillHide(event) {
-  //  mTop = 307.5;
   },
 
   componentWillUpdate(nextProps) {
@@ -121,9 +105,12 @@ export default (AuthScreen = React.createClass({
   handlerLogin(res) {
     if (res.success) {
       this.tokenAWS = res.message
-      getPersonalData(this.tokenAWS, this.handlerPersonalData);
       ////// LOAD USER DATA //////
-
+      getPersonalData(this.tokenAWS, this.handlerPersonalData);
+      getNotifications(this.tokenAWS, null, (res) => {
+        this.props.notificationsActions.notificationsUpdated(res.data.Items);
+        this.completeLogin();
+      });
       this._getAllData('ACTIVITY', 'a', (ans) => { 
         if(ans != false){
           processData({a: ans}, 0, false); 
@@ -189,8 +176,8 @@ export default (AuthScreen = React.createClass({
   },
   completeLogin(){
     ++completedLogin;
-    console.log('login completed : ' + completedLogin + ' / 6' )
-    if (completedLogin == 6){
+    console.log('login completed : ' + completedLogin + ' / 7' )
+    if (completedLogin == 7){
       completedLogin = 0;
       this.props.actions.loginSuccess(this.tokenAWS);
     }
@@ -206,6 +193,16 @@ export default (AuthScreen = React.createClass({
   //HANDLE VALIDATION RESPONSE
   handlerValidation(res) {
     if (res.success) {
+      silentLogin(this.userInput, this.passInput, (token) => {
+          this.props.actions.loginSuccess(token);
+          sendNotification ('Welocme!', 
+            'Welcome to Womba, tap this message to know more about this app.', 
+            'user', 
+            {fullDescription: 'README comming soon!'}, 
+            token, 
+            (ans) => console.log(ans)
+          );
+      })
       this.props.actions.validationSuccess();
     } else {
       this.props.actions.validationFail(res.message);
@@ -220,7 +217,6 @@ export default (AuthScreen = React.createClass({
   //RENDER THE UI
   render() {
     return (
-      <KeyboardAvoidingView style={styles.super} behavior="position">
         <Swiper
           scrollEnabled={false}
           pagingEnabled={false}
@@ -234,10 +230,10 @@ export default (AuthScreen = React.createClass({
               style={{
                 justifyContent: "center",
                 borderColor: "#F53B91",
-                marginTop: 307.5,
+                marginTop: hait*0.4,
                 alignSelf: "center",
-                width: 243.3,
-                height: 41
+                width: wiz*0.6,
+                height: hait*0.06
               }}
             >
               <Input
@@ -252,7 +248,7 @@ export default (AuthScreen = React.createClass({
                 style={{
                   textAlign: "center",
                   fontFamily: "System",
-                  fontSize: 14,
+                  fontSize: hait*0.02,
                   fontWeight: "900"
                 }}
               />
@@ -262,10 +258,10 @@ export default (AuthScreen = React.createClass({
               style={{
                 justifyContent: "center",
                 alignSelf: "center",
-                width: 243.3,
-                height: 41,
+                width: wiz*0.6,
+                height: hait*0.06,
                 borderColor: "#F53B91",
-                marginTop: 9
+                marginTop: hait*0.01
               }}
             >
               <Input
@@ -281,7 +277,7 @@ export default (AuthScreen = React.createClass({
                 style={{
                   textAlign: "center",
                   fontFamily: "System",
-                  fontSize: 14,
+                  fontSize: hait*0.02,
                   fontWeight: "900"
                 }}
               />
@@ -291,11 +287,11 @@ export default (AuthScreen = React.createClass({
               rounded
               style={{
                 justifyContent: "center",
-                marginTop: 9,
+                marginTop: hait*0.01,
                 alignSelf: "center",
                 backgroundColor: "#F53B91",
-                width: 243.3,
-                height: 41
+                width: wiz*0.6,
+                height: hait*0.06
               }}
               onPress={this.onLoginButtonPress}
             >
@@ -303,7 +299,8 @@ export default (AuthScreen = React.createClass({
                 style={{
                   color: "white",
                   fontFamily: "System",
-                  fontWeight: "100"
+                  fontWeight: "100",
+                  fontSize: hait*0.02
                 }}
               >
                 Log in
@@ -344,13 +341,13 @@ export default (AuthScreen = React.createClass({
             </TouchableOpacity>
             <Text
               style={{
-                marginTop: 85,
+                marginTop: hait*0.1,
                 marginLeft: 70,
                 marginRight: 70,
                 textAlign: "center",
                 fontFamily: "System",
                 fontWeight: "100",
-                fontSize: 14
+                fontSize: hait*0.02
               }}
             >
               Supply the following information to start using Womba...
@@ -360,10 +357,10 @@ export default (AuthScreen = React.createClass({
               style={{
                 justifyContent: "center",
                 borderColor: "#F53B91",
-                marginTop: 53.5,
+                marginTop: hait*0.2,
                 alignSelf: "center",
-                width: 243.3,
-                height: 41
+                width: wiz*0.6,
+                height: hait*0.06
               }}
             >
               <Input
@@ -378,7 +375,7 @@ export default (AuthScreen = React.createClass({
                 style={{
                   textAlign: "center",
                   fontFamily: "System",
-                  fontSize: 14,
+                  fontSize: hait*0.02,
                   fontWeight: "900"
                 }}
               />
@@ -388,10 +385,10 @@ export default (AuthScreen = React.createClass({
               style={{
                 justifyContent: "center",
                 borderColor: "#F53B91",
-                marginTop: 9,
+                marginTop: hait*0.01,
                 alignSelf: "center",
-                width: 243.3,
-                height: 41
+                width: wiz*0.6,
+                height: hait*0.06
               }}
             >
               <Input
@@ -407,7 +404,7 @@ export default (AuthScreen = React.createClass({
                 style={{
                   textAlign: "center",
                   fontFamily: "System",
-                  fontSize: 14,
+                  fontSize: hait*0.02,
                   fontWeight: "900"
                 }}
               />
@@ -417,10 +414,10 @@ export default (AuthScreen = React.createClass({
               style={{
                 justifyContent: "center",
                 alignSelf: "center",
-                width: 243.3,
-                height: 41,
+                width: wiz*0.6,
+                height: hait*0.06,
                 borderColor: "#F53B91",
-                marginTop: 9
+                marginTop: hait*0.01
               }}
             >
               <Input
@@ -436,7 +433,7 @@ export default (AuthScreen = React.createClass({
                 style={{
                   textAlign: "center",
                   fontFamily: "System",
-                  fontSize: 14,
+                  fontSize: hait*0.02,
                   fontWeight: "900"
                 }}
               />
@@ -446,11 +443,11 @@ export default (AuthScreen = React.createClass({
               rounded
               style={{
                 justifyContent: "center",
-                marginTop: 57,
+                marginTop: hait*0.15,
                 alignSelf: "center",
                 backgroundColor: "#F53B91",
-                width: 243.3,
-                height: 41
+                width: wiz*0.6,
+                height: hait*0.06
               }}
               onPress={this.onRegisterButtonPress}
             >
@@ -458,7 +455,8 @@ export default (AuthScreen = React.createClass({
                 style={{
                   color: "white",
                   fontFamily: "System",
-                  fontWeight: "100"
+                  fontWeight: "100",
+                  fontSize: hait*0.02
                 }}
               >
                 Register
@@ -492,13 +490,13 @@ export default (AuthScreen = React.createClass({
             </TouchableOpacity>
             <Text
               style={{
-                marginTop: 85,
+                marginTop: hait*0.1,
                 marginLeft: 70,
                 marginRight: 70,
                 textAlign: "center",
                 fontFamily: "System",
                 fontWeight: "100",
-                fontSize: 14
+                fontSize: hait*0.02
               }}
             >
               We have sent you a code to your email address. Make sure you
@@ -509,10 +507,10 @@ export default (AuthScreen = React.createClass({
               style={{
                 justifyContent: "center",
                 borderColor: "#F53B91",
-                marginTop: 85.5,
+                marginTop: hait*0.2,
                 alignSelf: "center",
-                width: 243.3,
-                height: 41
+                width: wiz*0.6,
+                height: hait*0.06
               }}
             >
               <Input
@@ -526,7 +524,7 @@ export default (AuthScreen = React.createClass({
                 style={{
                   textAlign: "center",
                   fontFamily: "System",
-                  fontSize: 14,
+                  fontSize: hait*0.02,
                   fontWeight: "900"
                 }}
               />
@@ -536,11 +534,11 @@ export default (AuthScreen = React.createClass({
               rounded
               style={{
                 justifyContent: "center",
-                marginTop: 9,
+                marginTop: hait*0.01,
                 alignSelf: "center",
                 backgroundColor: "#F53B91",
-                width: 243.3,
-                height: 41
+                width: wiz*0.6,
+                height: hait*0.06
               }}
               onPress={this.onValidateButtonPress}
             >
@@ -548,7 +546,8 @@ export default (AuthScreen = React.createClass({
                 style={{
                   color: "white",
                   fontFamily: "System",
-                  fontWeight: "100"
+                  fontWeight: "100",
+                  fontSize: hait*0.02
                 }}
               >
                 Validate
@@ -573,13 +572,11 @@ export default (AuthScreen = React.createClass({
           </Image>
           <StatusBar translucent backgroundColor="transparent" />
         </Swiper>
-      </KeyboardAvoidingView>
     );
   }
 }));
 //"CSS"
 const styles = StyleSheet.create({
-  super: {},
   container: {
     flex: 1,
     alignSelf: "stretch",
@@ -588,33 +585,39 @@ const styles = StyleSheet.create({
     resizeMode: "cover"
   },
   boldText: {
+    backgroundColor:'transparent',
     textAlign: "center",
     fontFamily: "System",
     fontWeight: "900",
-    fontSize: 14
+    fontSize: hait*0.02
   },
   lightText: {
+    backgroundColor:'transparent',
     textAlign: "center",
     fontFamily: "System",
     fontWeight: "100",
-    fontSize: 14
+    fontSize: hait*0.02
   },
   arrowTouch: { marginTop: 67, marginLeft: 67, width: 20, height: 20 },
   registerTouch: {
+    backgroundColor:'transparent',
     marginTop: 33.5,
     marginBottom: 186.5,
     marginLeft: 90,
     marginRight: 90
   },
   registerText: {
+    backgroundColor:'transparent',
     textAlign: "center",
     textDecorationLine: "underline",
     fontFamily: "System",
     fontWeight: "100",
-    fontSize: 14
+    marginTop:hait*0.2,
+    fontSize: hait*0.02
   },
   button: { flex: 1, width: 300 },
   textInput: {
+    backgroundColor:'transparent',
     justifyContent: "center",
     marginTop: 9,
     alignSelf: "center",
@@ -623,6 +626,7 @@ const styles = StyleSheet.create({
     height: 50
   },
   textError: {
+    backgroundColor:'transparent',
     position: "absolute",
     bottom: 100,
     textAlign: "center",
@@ -630,7 +634,7 @@ const styles = StyleSheet.create({
     right: 60,
     fontFamily: "System",
     fontWeight: "100",
-    fontSize: 14,
+    fontSize: hait*0.02,
     color: "red"
   }
 });

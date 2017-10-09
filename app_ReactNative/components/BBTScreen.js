@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Dimensions, ScrollView, StyleSheet} from 'react-native';
+import { View, Text, Dimensions, ScrollView, StyleSheet, StatusBar} from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import { VictoryChart, VictoryLine, VictoryTheme, VictoryAxis } from 'victory-native';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
@@ -68,6 +68,7 @@ export default class BBTScreen extends Component {
               <Text style={styles.body}>{lorem}</Text>
             </ScrollView> 
           </View>
+          <StatusBar backgroundColor="#F53B91" />
         </View>
       )
   }

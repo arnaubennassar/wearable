@@ -15,7 +15,7 @@ import { dispatch } from 'redux';
 var email = '';
 var password = '';
 const totalSteps = 4;
-export function processData(data, timeStamp, isNew){
+export function processData(data, timeStamp, isNew, token){
   var arduino_c = 0;
   if (isNew){
     arduino_c = data.c;
@@ -87,14 +87,14 @@ export function processData(data, timeStamp, isNew){
     storeData_multiSample(dataTypes.BBT, processedBBTData);
   }
 //____________________//
-
-  console.log('processedBBTData:')
-  console.log(processedBBTData)
+  if (!isNew){
+    token = false;
+  }
   store.dispatch(dataActions.dataUpdated({
     activity: processedActivityData,
     BBT: processedBBTData,
     sleep: processedSleepData,
-    lastUpdate: isNew? null : maxTime
+    token: token
   }));
   return maxTime;
 }

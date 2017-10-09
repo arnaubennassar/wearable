@@ -165,8 +165,8 @@ function getData (dataType, from, to, handler) {
 }
 
 export function clearData (){
-    // for (i = 0; i < dataTypes.dataTypes.length; ++i){
-    //   AsyncStorage.setItem(dataTypes.dataTypes[i] + '_TOTAL_SAMPLES', '0');
-    //   AsyncStorage.setItem(dataTypes.dataTypes[i] + '0', 'damm');
-    // }
+    for (i = 0; i < dataTypes.dataTypes.length; ++i){
+      AsyncStorage.setItem(dataTypes.dataTypes[i] + '_TOTAL_SAMPLES', '0');
+      AsyncStorage.setItem(dataTypes.dataTypes[i] + '0', 'damm');
+    }
 }
