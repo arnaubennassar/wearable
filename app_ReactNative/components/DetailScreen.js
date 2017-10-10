@@ -3,7 +3,7 @@ import { View, Image, Text, ScrollView, Dimensions, StyleSheet, StatusBar} from 
 import { NavigationActions } from 'react-navigation';
 
 
-const bground = require('../resources/images/B1.png');
+const bground = require('../resources/images/ba1.png');
 
 const hait = Dimensions.get('window').height;
 const wiz = Dimensions.get('window').width;
