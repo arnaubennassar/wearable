@@ -78,9 +78,9 @@ var iosMargin = 0;
 if(Platform.OS === 'ios') {
   iosMargin = hait*0.1;
 }
-const personalDataIcon = (<Icon style={{marginTop: hait*0.07º, backgroundColor:'transparent'}} size={ wiz*0.3 } name={ "cog" } color={ '#B5B2B2' }/>);
-const wearableIcon = (<Icon style={{marginTop: hait*0.07º, backgroundColor:'transparent'}} size={ wiz*0.3 } name={ "bluetooth-b" } color={ '#B5B2B2' }/>);
-const logoutIcon = (<Icon style={{marginTop: hait*0.07º, backgroundColor:'transparent'}} size={ wiz*0.3 } name={ "power-off" } color={ '#B5B2B2' }/>);
+const personalDataIcon = (<Icon style={{marginTop: hait*0.07, backgroundColor:'transparent'}} size={ wiz*0.3 } name={ "cog" } color={ '#B5B2B2' }/>);
+const wearableIcon = (<Icon style={{marginTop: hait*0.07, backgroundColor:'transparent'}} size={ wiz*0.3 } name={ "bluetooth-b" } color={ '#B5B2B2' }/>);
+const logoutIcon = (<Icon style={{marginTop: hait*0.07, backgroundColor:'transparent'}} size={ wiz*0.3 } name={ "power-off" } color={ '#B5B2B2' }/>);
 const styles = StyleSheet.create({
     container: {
       flex: 1,
