@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, Dimensions, ScrollView, StyleSheet, StatusBar} from 'react-native';
+import { Image, View, Text, Dimensions, ScrollView, StyleSheet, StatusBar} from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import { VictoryChart, VictoryBar, VictoryTheme, VictoryAxis } from 'victory-native';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
+const bground = require('../resources/images/ba2.png');
 var rangeSelector = [
   {label: 'Last week',  value: 0 },
   {label: 'Last month', value: 1 },
@@ -43,7 +44,7 @@ export default class sleepScreen extends Component {
         ticks[2][i] = this.props.navigation.state.params.sleepData[0][i].c;
       };
       return (
-        <View style={styles.container}>
+        <Image style={styles.container} source={bground}>
            <View style={styles.chartContainer}>
             <VictoryChart
               theme={VictoryTheme.material}
@@ -89,10 +90,11 @@ export default class sleepScreen extends Component {
               formHorizontal={true}
               labelHorizontal={false}
               buttonColor={"#F53B91"}
-              labelColor={'#B5B2B2'}
+              labelColor={'#686464'}
               animation={true}
               buttonSize={5}
               buttonOuterSize={20}
+              style={{backgroundColor: 'transparent'}}
             />
           </View>
           <View style={styles.scroll}>
@@ -101,35 +103,40 @@ export default class sleepScreen extends Component {
             </ScrollView> 
           </View>
           <StatusBar backgroundColor="#F53B91" />
-        </View>
+        </Image>
       )
   }
 }
 
 const styles = StyleSheet.create({
     container: {
-      width:'100%',
-      height:'100%'
+      flex: 1,
+      alignSelf: 'stretch',
+      width: undefined,
+      height: undefined,
+      resizeMode: 'cover',
     },
     chartContainer: {
+      backgroundColor: 'transparent',
         marginTop: 0,
         width:'100%',
         height: hait
     },
 
     scroll: {
+      backgroundColor: 'transparent',
         marginTop: '5%',
         height: '45%',
     },
     body:{
+      backgroundColor: 'transparent',
       marginHorizontal:'10%',
       fontFamily: "System",
       fontSize: 18,
-      color: '#B5B2B2',
+      color: '#686464',
       fontWeight:'100'
     }
 });
 
-const _lorem = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.  Expetenda tincidunt in sed, ex partem placerat sea, porro commodo ex eam. His putant aeterno interesset at. Usu ea mundi tincidunt, omnium virtute aliquando ius ex. Ea aperiri sententiae duo. Usu nullam dolorum quaestio ei, sit vidit facilisis ea. Per ne impedit iracundia neglegentur. Consetetur neglegentur eum ut, vis animal legimus inimicus id.  His audiam deserunt in, eum ubique voluptatibus te. In reque dicta usu. Ne rebum dissentiet eam, vim omnis deseruisse id. Ullum deleniti vituperata at quo, insolens complectitur te eos, ea pri dico munere propriae. Vel ferri facilis ut, qui paulo ridens praesent ad. Possim alterum qui cu. Accusamus consulatu ius te, cu decore soleat appareat usu.  Est ei erat mucius quaeque. Ei his quas phaedrum, efficiantur mediocritatem ne sed, hinc oratio blandit ei sed. Blandit gloriatur eam et. Brute noluisse per et, verear disputando neglegentur at quo. Sea quem legere ei, unum soluta ne duo. Ludus complectitur quo te, ut vide autem homero pro.  Vis id minim dicant sensibus. Pri aliquip conclusionemque ad, ad malis evertitur torquatos his. Has ei solum harum reprimique, id illum saperet tractatos his. Ei omnis soleat antiopam quo. Ad augue inani postulant mel, mel ea qualisque forensibus.';
-const lorem = _lorem + _lorem + _lorem;
+const lorem = "The healthy amount of sleep for the average adult is around seven to eight hours each night.  Researchers in the United Kingdom and Italy analyzed data from 16 separate studies conducted over 25 years, covering more than 1.3 million people and more than 100,000 deaths. They published their findings in the journal Sleep. Those who generally slept for less than six hours a night were 12 percent more likely to experience a premature death. People who slept more than eight to nine hours per night had an even higher risk, at 30 percent.  Researchers also found that people who reduced their sleep time from seven hours to five hours or less had 1.7 times the risk of death from all causes.";
 //NavigationActions.reset({ index: 0, actions: [{type: NavigationActions.NAVIGATE, routeName: 'Login'}], key: null })

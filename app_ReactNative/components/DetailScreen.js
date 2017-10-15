@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
       marginHorizontal:'10%',
       fontFamily: "System",
       fontSize: hait*0.025,
-      color: '#B5B2B2',
+      color: '#686464',
       fontWeight:'900'
     },
     date:{
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
       marginTop:30,
       fontFamily: "System",
       fontSize: hait*0.025,
-      color: '#B5B2B2',
+      color: '#686464',
       fontWeight:'100',
     },
     body:{
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
       marginTop:30,
       fontFamily: "System",
       fontSize: hait*0.025,
-      color: '#B5B2B2',
+      color: '#686464',
       fontWeight:'100'
     },
     margi:{

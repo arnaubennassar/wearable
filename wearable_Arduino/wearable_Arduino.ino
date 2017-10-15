@@ -1,6 +1,6 @@
 //#include <Software//Serial.h>
 //SoftwareSerial bluetooth(2, 3); // RX, TX
-                          //LIBRARIES
+//LIBRARIES
 #define bluetooth Serial1
 //#include <Wire.h>
 #include <DateTime.h>
@@ -11,13 +11,13 @@
 uint32_t tsLastReport = 0;
 uint32_t btLastReport = 0;
 float maxim = 0;
-                  //SENSORS
+//SENSORS
 int ledPin = 6;
 int tmpPin = 45;
 char val;
 GY80 IMUSensor = GY80();
 PulseOximeter HeartSensor;
-                            //DATA STRUCTURES
+//DATA STRUCTURES
 struct temperatureSample {
   float temperature;
   time_t timeStamp;
@@ -45,7 +45,7 @@ int temperatureSampleRate = temperatureOriginalSampleRate;
 int activitySampleRateIndex = 0;
 int heartSampleRateIndex = 0;
 int temperatureSampleRateIndex = 0;
-                                      
+
 const int activitySamplesLength = 150;
 const int heartSamplesLength = 150;
 const int temperatureSamplesLength = 150;
@@ -68,41 +68,41 @@ int indexBufferTemperature = 0;
 
 
 bool sendingDataRequestACK = true;
-              //SETUP
+//SETUP
 void setup() {
   Serial.write("BOOT");
   //Serial.begin(9600);
-//  pinMode(ledPin, OUTPUT); // for LED status
-//  pinMode(tmpPin, INPUT); // for temperature sensor
+  //  pinMode(ledPin, OUTPUT); // for LED status
+  //  pinMode(tmpPin, INPUT); // for temperature sensor
   bluetooth.begin(9600);
   if (!HeartSensor.begin()) {
-      //Serial.println("FAILED");
-      for(;;);
+    //Serial.println("FAILED");
+    for (;;);
   } else {
-      //Serial.println("SUCCESS");
+    //Serial.println("SUCCESS");
   }
   IMUSensor = GY80();
   IMUSensor.begin();
 }
-              //LOOP
+//LOOP
 void loop() {
   //delay(100);
-//RECIEVE FROM BLUETOOTH
+  //RECIEVE FROM BLUETOOTH
   listenBT();
-//TEMPERATURE SENSOR
+  //TEMPERATURE SENSOR
   bool isValid = readTemperatureSensor();
-//IMU SENSOR
+  //IMU SENSOR
   //if (isValid){
-    readIMUSensor();
+  readIMUSensor();
   //}
-//HEART SENSOR
+  //HEART SENSOR
   HeartSensor.update();
   readHeartSensor();
-//SEND BLUETOOTH    
-  if (indexActivity > 50 || indexHeart > 50 || indexTemperature > 50  ){
+  //SEND BLUETOOTH
+  if (indexActivity > 50 || indexHeart > 50 || indexTemperature > 50  ) {
     if (millis() - btLastReport > REPORTING_PERIOD_MS) {
       btLastReport = millis();
-      if (sendingDataRequestACK == true){
+      if (sendingDataRequestACK == true) {
         requestSendBT();
       }
       else {
@@ -111,44 +111,44 @@ void loop() {
     }
   }
   else {
- //   Serial.println("  data NOT ready");
- //   Serial.print("  indexTemperature = ");
- //   Serial.println(indexTemperature);
+    //   Serial.println("  data NOT ready");
+    //   Serial.print("  indexTemperature = ");
+    //   Serial.println(indexTemperature);
   }
-}  
+}
 
-                        //READ SENSORS   
+//READ SENSORS
 //HEART
-void readHeartSensor(){
-  if (indexBufferHeart == heartBufferLength){
+void readHeartSensor() {
+  if (indexBufferHeart == heartBufferLength) {
     indexBufferHeart = 0;
-    
+
     //SAMPLES IS FULL
-    if (indexHeart == heartSamplesLength){
+    if (indexHeart == heartSamplesLength) {
       //Serial.println("--COMPRESSING DATAAAAAAAAAAAAAAAAAAAAAAA");
       //compress SAMPLES data
       int steps = 0;
-      for (int i = 0; i < heartSamplesLength; i += 2){
-        heartSamples[i - steps].heart = ((heartSamples[i + 1].heart + heartSamples[i].heart)/2);
-        heartSamples[i - steps].timeStamp = heartSamples[i].timeStamp + ((heartSamples[i + 1].timeStamp - heartSamples[i].timeStamp)/2);
+      for (int i = 0; i < heartSamplesLength; i += 2) {
+        heartSamples[i - steps].heart = ((heartSamples[i + 1].heart + heartSamples[i].heart) / 2);
+        heartSamples[i - steps].timeStamp = heartSamples[i].timeStamp + ((heartSamples[i + 1].timeStamp - heartSamples[i].timeStamp) / 2);
         ++steps;
       }
-      indexHeart = heartSamplesLength/2;
+      indexHeart = heartSamplesLength / 2;
       heartSampleRate *= 2;
     }
-    
+
     //add data BUFFER => SAMPLES
     float sum = 0;
-    for (int i = 0; i < heartBufferLength; ++i){
+    for (int i = 0; i < heartBufferLength; ++i) {
       sum += heartBuffer[i].heart;
     }
     heartSamples[indexHeart].heart = sum / (float)heartBufferLength;
-    heartSamples[indexHeart].timeStamp = heartBuffer[0].timeStamp + ((heartBuffer[heartBufferLength - 1].timeStamp - heartBuffer[0].timeStamp)/2);
+    heartSamples[indexHeart].timeStamp = heartBuffer[0].timeStamp + ((heartBuffer[heartBufferLength - 1].timeStamp - heartBuffer[0].timeStamp) / 2);
     ++ indexHeart;
   }
   if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
     float bpm = HeartSensor.getHeartRate();
-    if (bpm > 40 && bpm < 220){
+    if (bpm > 40 && bpm < 220) {
       heartSampleRateIndex = 0;
       heartBuffer[indexBufferHeart].timeStamp = DateTime.now();
       heartBuffer[indexBufferHeart].heart = bpm;
@@ -164,52 +164,52 @@ void readHeartSensor(){
 }
 
 //ACTIVITY
-void readIMUSensor(){
+void readIMUSensor() {
   //BUFFER IS FULL
-  if (indexBufferActivity == activityBufferLength){
+  if (indexBufferActivity == activityBufferLength) {
     indexBufferActivity = 0;
     //SAMPLES IS FULL
-    if (indexActivity == activitySamplesLength){
+    if (indexActivity == activitySamplesLength) {
       //Serial.println("--COMPRESSING DATAAAAAAAAAAAAAAAAAAAAAAA");
       //compress SAMPLES data
       int steps = 0;
-      for (int i = 0; i < activitySamplesLength; i += 2){
-        time_t aux = activitySamples[i].timeStamp + ((activitySamples[i + 1].timeStamp - activitySamples[i].timeStamp)/2);
+      for (int i = 0; i < activitySamplesLength; i += 2) {
+        time_t aux = activitySamples[i].timeStamp + ((activitySamples[i + 1].timeStamp - activitySamples[i].timeStamp) / 2);
         activitySamples[i - steps] = sumActivitySamples(false, activitySamples[i + 1], activitySamples[i], aux);
         ++steps;
       }
-      indexActivity = activitySamplesLength/2;
-    //  activitySampleRate *= 2;
+      indexActivity = activitySamplesLength / 2;
+      //  activitySampleRate *= 2;
     }
-    activitySample sum = {0,0,0,0,0,0, DateTime.now()};
-    time_t timeStampActivity = activityBuffer[0].timeStamp + ((activityBuffer[activityBufferLength - 1].timeStamp - activityBuffer[0].timeStamp)/2);
-    for (int i = 0; i < activityBufferLength; ++i){
+    activitySample sum = {0, 0, 0, 0, 0, 0, DateTime.now()};
+    time_t timeStampActivity = activityBuffer[0].timeStamp + ((activityBuffer[activityBufferLength - 1].timeStamp - activityBuffer[0].timeStamp) / 2);
+    for (int i = 0; i < activityBufferLength; ++i) {
       sum = sumActivitySamples(false, sum, activityBuffer[i], timeStampActivity);
     }
     activitySamples[indexActivity] = sum;
     ++ indexActivity;
   }
   //SAMPLE RATE
-  if (activitySampleRateIndex >= activitySampleRate){
+  if (activitySampleRateIndex >= activitySampleRate) {
     //READ DATA
     Serial.println("reading activity");
     activitySampleRateIndex = 0;
     GY80_scaled IMUValues = IMUSensor.read_scaled();
     activityBuffer[indexBufferActivity] = {
       min(100,  abs(IMUValues.a_x)),
-      min(100,  abs(IMUValues.a_y)), 
+      min(100,  abs(IMUValues.a_y)),
       min(100,  abs(IMUValues.a_z)),         //INVERTIT!!!!!!!!!!!!!!
       abs(IMUValues.g_x),
       abs(IMUValues.g_y),
       abs(IMUValues.g_x),
       DateTime.now(),
     };
-    maxim = max( maxim, max( abs(IMUValues.g_x), max(abs(IMUValues.g_y), abs(IMUValues.g_z))) ); 
+    maxim = max( maxim, max( abs(IMUValues.g_x), max(abs(IMUValues.g_y), abs(IMUValues.g_z))) );
     ++indexBufferActivity;
     //Serial.println(' ');
     //Serial.println(max( 0, max( abs(IMUValues.g_x), max(abs(IMUValues.g_y), abs(IMUValues.g_z))) ));
-   // Serial.println(' ');
-  
+    // Serial.println(' ');
+
     //Serial.println("  MAG");
     //Serial.println(IMUValues.m_x);
     //Serial.println(IMUValues.m_y);
@@ -220,8 +220,8 @@ void readIMUSensor(){
   }
 }
 
-activitySample sumActivitySamples (bool sub, activitySample a, activitySample b, time_t clk){
-  if (sub){
+activitySample sumActivitySamples (bool sub, activitySample a, activitySample b, time_t clk) {
+  if (sub) {
     b.accX *= -1;
     b.accY *= -1;
     b.accZ *= -1;
@@ -242,34 +242,34 @@ activitySample sumActivitySamples (bool sub, activitySample a, activitySample b,
 }
 
 //TEMPERATURE
-bool readTemperatureSensor(){
-    //BUFFER IS FULL
-  if (indexBufferTemperature == temperatureBufferLength){
+bool readTemperatureSensor() {
+  //BUFFER IS FULL
+  if (indexBufferTemperature == temperatureBufferLength) {
     indexBufferTemperature = 0;
     //SAMPLES IS FULL
-    if (indexTemperature == temperatureSamplesLength){
+    if (indexTemperature == temperatureSamplesLength) {
       int steps = 0;
-      for (int i = 0; i < temperatureSamplesLength; i += 2){
-        temperatureSamples[i - steps].temperature = (temperatureSamples[i + 1].temperature + temperatureSamples[i].temperature)/2;
-        temperatureSamples[i - steps].timeStamp = temperatureSamples[i].timeStamp + ((temperatureSamples[i + 1].timeStamp - temperatureSamples[i].timeStamp)/2);
+      for (int i = 0; i < temperatureSamplesLength; i += 2) {
+        temperatureSamples[i - steps].temperature = (temperatureSamples[i + 1].temperature + temperatureSamples[i].temperature) / 2;
+        temperatureSamples[i - steps].timeStamp = temperatureSamples[i].timeStamp + ((temperatureSamples[i + 1].timeStamp - temperatureSamples[i].timeStamp) / 2);
         ++steps;
       }
-      indexTemperature = temperatureSamplesLength/2;
+      indexTemperature = temperatureSamplesLength / 2;
       temperatureSampleRate *= 2;
     }
-    
+
     //add data BUFFER => SAMPLES
     float sum = 0;
-    for (int i = 0; i < temperatureBufferLength; ++i){
+    for (int i = 0; i < temperatureBufferLength; ++i) {
       sum += temperatureBuffer[i].temperature;
     }
     temperatureSamples[indexTemperature].temperature = sum / (float)temperatureBufferLength;
-    temperatureSamples[indexTemperature].timeStamp = temperatureBuffer[0].timeStamp + ((temperatureBuffer[temperatureBufferLength - 1].timeStamp - temperatureBuffer[0].timeStamp)/2);
-     ++ indexTemperature;
+    temperatureSamples[indexTemperature].timeStamp = temperatureBuffer[0].timeStamp + ((temperatureBuffer[temperatureBufferLength - 1].timeStamp - temperatureBuffer[0].timeStamp) / 2);
+    ++ indexTemperature;
   }
-  if (temperatureSampleRateIndex >= temperatureSampleRate){
+  if (temperatureSampleRateIndex >= temperatureSampleRate) {
     float _temperature = (5.0 * analogRead(tmpPin) * 100.0) / 1024;
-    if (_temperature > 34 && _temperature < 42){
+    if (_temperature > 34 && _temperature < 42) {
       temperatureSampleRateIndex = 0;
       temperatureBuffer[indexBufferTemperature].timeStamp = DateTime.now();
       temperatureBuffer[indexBufferTemperature].temperature = _temperature;
@@ -286,34 +286,34 @@ bool readTemperatureSensor(){
   }
 }
 
-                //GET BLUETOOTH
-void listenBT(){
+//GET BLUETOOTH
+void listenBT() {
   ////BT
-  if( bluetooth.available() > 0 )       
+  if ( bluetooth.available() > 0 )
   {
     val = bluetooth.read();
     //Serial.println(val);
-    if(!sendingDataRequestACK){
+    if (!sendingDataRequestACK) {
       //Serial.println("current state => send DATA");
-    }else {
+    } else {
       //Serial.println("current state => send ACK");
     }
-    
-    if ( val == 'N' ){
-     // Serial.println("=== sync time RECEIVED ===>");
-    //  DateTime.sync(0000000000L);
+
+    if ( val == 'N' ) {
+      // Serial.println("=== sync time RECEIVED ===>");
+      //  DateTime.sync(0000000000L);
     }
-    if( val == '@' ){/////REQ ACK recieved
+    if ( val == '@' ) { /////REQ ACK recieved
       Serial.println("=== REQUEST/RESET ACK RECEIVED ===>");
       sendingDataRequestACK = !sendingDataRequestACK;
-      if(!sendingDataRequestACK){
+      if (!sendingDataRequestACK) {
         //Serial.println(", next state => send DATA");
-      }else {
+      } else {
         //Serial.println(", next state => send ACK");
       }
-    }    
-    if ( val == 'B'){/////DATA ACK recieved
-      if(!sendingDataRequestACK){
+    }
+    if ( val == 'B') { /////DATA ACK recieved
+      if (!sendingDataRequestACK) {
         Serial.println("=== DATA ACK RECEIVED ===>");
         //Serial.println("DATA ACK, next state => waiting data to be ready => send ACK");
         sendingDataRequestACK = true;
@@ -325,16 +325,16 @@ void listenBT(){
         temperatureSampleRate = temperatureOriginalSampleRate;
       }
     }
-    val = '0'; 
+    val = '0';
   }
 }
 
-                //SEND BLUETOOTH
-void requestSendBT(){
+//SEND BLUETOOTH
+void requestSendBT() {
   Serial.println("<=== SENDING DATA REQUEST ===");
   bluetooth.println( 'r' );
 }
-void sendBT (){
+void sendBT () {
   Serial.println("<=== SENDING DATA ===");
   bluetooth.print( "{\"t\":[" );
   sendTemperature();
@@ -345,35 +345,35 @@ void sendBT (){
   bluetooth.print( "],\"c\":" );
   bluetooth.print( DateTime.now() );
   bluetooth.println( "}" );
-//  //Serial.println("sent");
+  //  //Serial.println("sent");
 
 }
-void sendTemperature (){
-  for (int i = 0; i < indexTemperature; ++i){
+void sendTemperature () {
+  for (int i = 0; i < indexTemperature; ++i) {
     bluetooth.print( "{\"v\":" );
     bluetooth.print( temperatureSamples[i].temperature );
     bluetooth.print( ",\"c\":" );
     bluetooth.print( temperatureSamples[i].timeStamp );
     bluetooth.print( "}" );
-    if(i < indexTemperature - 1) {
+    if (i < indexTemperature - 1) {
       bluetooth.print( "," );
     }
   }
 }
-void sendHeart (){
-  for (int i = 0; i < indexHeart; ++i){
+void sendHeart () {
+  for (int i = 0; i < indexHeart; ++i) {
     bluetooth.print( "{\"v\":" );
     bluetooth.print( heartSamples[i].heart );
     bluetooth.print( ",\"c\":" );
     bluetooth.print( heartSamples[i].timeStamp );
     bluetooth.print( "}" );
-    if(i < indexHeart - 1) {
+    if (i < indexHeart - 1) {
       bluetooth.print( "," );
     }
   }
 }
-void sendActivity (){
-  for (int i = 0; i < indexActivity; ++i){
+void sendActivity () {
+  for (int i = 0; i < indexActivity; ++i) {
     bluetooth.print( "{\"aX\":" );
     bluetooth.print( activitySamples[i].accX );
     bluetooth.print( ",\"aY\":" );
@@ -389,7 +389,7 @@ void sendActivity (){
     bluetooth.print( ",\"c\":" );
     bluetooth.print( activitySamples[i].timeStamp );
     bluetooth.print( "}" );
-    if(i < indexActivity - 1) {
+    if (i < indexActivity - 1) {
       bluetooth.print( "," );
     }
   }
@@ -397,5 +397,5 @@ void sendActivity (){
 
 
 
-             
+
 

@@ -220,7 +220,7 @@ const hait = Dimensions.get('window').height;
 const wiz = Dimensions.get('window').width;
 const wearable = (<Image style={{position: 'absolute', resizeMode:'stretch', alignSelf: 'center', marginTop:hait*0.22, height:hait*0.4, width:hait*0.4*0.7}} source={require("../resources/images/smartwatch.png")}></Image>)
 const back = require("../resources/images/loadBT.gif");
-const oka = require("../resources/images/backup.png");
+const oka = require("../resources/images/ba3.png");
 const styles = StyleSheet.create({
   loader: {
     flex: 1,
@@ -228,30 +228,37 @@ const styles = StyleSheet.create({
     width: undefined,
     height: undefined,
     resizeMode: "cover"
-  },container: {
-    width: '100%',
-    height: '100%',
-    backgroundColor:'white'
   },
+    container: {
+      flex: 1,
+      alignSelf: 'stretch',
+      width: undefined,
+      height: undefined,
+      resizeMode: 'cover',
+    },
   text1: {
+      backgroundColor: 'transparent',
     position: 'absolute',
     marginTop: '8%',
     width: '100%',
     height: '10%',
   },
   t1: {
+      backgroundColor: 'transparent',
     textAlign: "center",
     fontFamily: "System",
     fontWeight: "100",
     fontSize: hait*0.02
   },
   t2: {
+      backgroundColor: 'transparent',
     textAlign: "center",
     fontFamily: "System",
     fontWeight: "100",
     fontSize: hait*0.02
   },
   t3: {
+      backgroundColor: 'transparent',
     position: 'absolute',
     width: '100%',
     height: hait*0.1,
@@ -263,12 +270,14 @@ const styles = StyleSheet.create({
     fontSize: hait*0.022,
   },
   retryTouch: {
+      backgroundColor: 'transparent',
     position: 'absolute',
     width: '100%',
     height: hait*0.1,
     marginTop: hait*0.73,
   },
   statusText: {
+      backgroundColor: 'transparent',
     textAlign: "center",
     textDecorationLine: "underline",
     fontFamily: "System",
@@ -276,10 +285,10 @@ const styles = StyleSheet.create({
     fontSize: hait*0.022
   },  
   skipText: {
+      backgroundColor: 'transparent',
     position: 'absolute',
     marginTop: '80%',
     width: '40%',
-    backgroundColor: 'green',
     alignSelf: 'center',
     height: 1
   },

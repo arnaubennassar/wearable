@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, Dimensions, ScrollView, StyleSheet, StatusBar} from 'react-native';
+import { Image, View, Text, Dimensions, ScrollView, StyleSheet, StatusBar} from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import { VictoryChart, VictoryBar, VictoryTheme, VictoryAxis } from 'victory-native';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
+const bground = require('../resources/images/ba2.png');
 var rangeSelector = [
   {label: 'Last week',  value: 0 },
   {label: 'Last month', value: 1 },
@@ -43,7 +44,7 @@ export default class activityScreen extends Component {
         ticks[2][i] = this.props.navigation.state.params.activityData[0][i].c;
       };
       return (
-         <View style={styles.container}>
+         <Image style={styles.container} source={bground}>
            <View style={styles.chartContainer}>
             <VictoryChart
               theme={VictoryTheme.material}
@@ -82,10 +83,11 @@ export default class activityScreen extends Component {
               formHorizontal={true}
               labelHorizontal={false}
               buttonColor={"#F53B91"}
-              labelColor={'#B5B2B2'}
+              labelColor={'#686464'}
               animation={true}
               buttonSize={5}
               buttonOuterSize={20}
+              style={{backgroundColor: 'transparent'}}
             />
           </View>
           <View style={styles.scroll}>
@@ -94,35 +96,40 @@ export default class activityScreen extends Component {
             </ScrollView> 
           </View>
           <StatusBar backgroundColor="#F53B91" />
-        </View>
+        </Image>
       )
   }
 }
 
 const styles = StyleSheet.create({
     container: {
-      width:'100%',
-      height:'100%'
+      flex: 1,
+      alignSelf: 'stretch',
+      width: undefined,
+      height: undefined,
+      resizeMode: 'cover',
     },
     chartContainer: {
+      backgroundColor: 'transparent',
         marginTop: 0,
         width:'100%',
         height: hait
     },
 
     scroll: {
+      backgroundColor: 'transparent',
         marginTop: '5%',
         height: '45%',
     },
     body:{
+      backgroundColor: 'transparent',
       marginHorizontal:'10%',
       fontFamily: "System",
       fontSize: 18,
-      color: '#B5B2B2',
+      color: '#686464',
       fontWeight:'100'
     }
 });
 
-const _lorem = 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.  Expetenda tincidunt in sed, ex partem placerat sea, porro commodo ex eam. His putant aeterno interesset at. Usu ea mundi tincidunt, omnium virtute aliquando ius ex. Ea aperiri sententiae duo. Usu nullam dolorum quaestio ei, sit vidit facilisis ea. Per ne impedit iracundia neglegentur. Consetetur neglegentur eum ut, vis animal legimus inimicus id.  His audiam deserunt in, eum ubique voluptatibus te. In reque dicta usu. Ne rebum dissentiet eam, vim omnis deseruisse id. Ullum deleniti vituperata at quo, insolens complectitur te eos, ea pri dico munere propriae. Vel ferri facilis ut, qui paulo ridens praesent ad. Possim alterum qui cu. Accusamus consulatu ius te, cu decore soleat appareat usu.  Est ei erat mucius quaeque. Ei his quas phaedrum, efficiantur mediocritatem ne sed, hinc oratio blandit ei sed. Blandit gloriatur eam et. Brute noluisse per et, verear disputando neglegentur at quo. Sea quem legere ei, unum soluta ne duo. Ludus complectitur quo te, ut vide autem homero pro.  Vis id minim dicant sensibus. Pri aliquip conclusionemque ad, ad malis evertitur torquatos his. Has ei solum harum reprimique, id illum saperet tractatos his. Ei omnis soleat antiopam quo. Ad augue inani postulant mel, mel ea qualisque forensibus.';
-const lorem = _lorem + _lorem + _lorem;
+const lorem = "For most healthy adults, the Department of Health and Human Services recommends these exercise guidelines:  Aerobic activity. Get at least 150 minutes of moderate aerobic activity or 75 minutes of vigorous aerobic activity a week, or a combination of moderate and vigorous activity. The guidelines suggest that you spread out this exercise during the course of a week. Strength training. Do strength training exercises for all major muscle groups at least two times a week. Aim to do a single set of each exercise, using a weight or resistance level heavy enough to tire your muscles after about 12 to 15 repetitions. Moderate aerobic exercise includes activities such as brisk walking, swimming and mowing the lawn. Vigorous aerobic exercise includes activities such as running and aerobic dancing. Strength training can include use of weight machines, your own body weight, resistance tubing, resistance paddles in the water, or activities such as rock climbing.  As a general goal, aim for at least 30 minutes of physical activity every day. If you want to lose weight or meet specific fitness goals, you may need to exercise more. Want to aim even higher? You can achieve more health benefits, including increased weight loss, if you ramp up your exercise to 300 minutes a week.  Reducing sitting time is important, too. The more hours you sit each day, the higher your risk of metabolic problems, even if you achieve the recommended amount of daily physical activity.  Short on long chunks of time? Even brief bouts of activity offer benefits. For instance, if you can't fit in one 30-minute walk, try three 10-minute walks instead. What's most important is making regular physical activity part of your lifestyle.";
 //NavigationActions.reset({ index: 0, actions: [{type: NavigationActions.NAVIGATE, routeName: 'Login'}], key: null })
