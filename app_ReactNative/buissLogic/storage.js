@@ -38,12 +38,12 @@ export function checkDay(dataType){
           for (var j = 0; j < ans.length; j++) {
             _day = new Date(ans[j].c).getDate();
             if (_day != day){
-              console.log('not same day: ' + day + ' vs ' + _day);
+        //      console.log('not same day: ' + day + ' vs ' + _day);
               totOK = false;
             }
           };
           if (totOK){
-            console.log('CORRECT DAY ' + day);
+        //    console.log('CORRECT DAY ' + day);
           }
         });
     };
@@ -122,6 +122,7 @@ export function getData_from (dataType, from_c, handler) {
         var ans = [];
         var completed = totalSamples - from_i;
         for (var i = from_i; i < totalSamples; i++) {
+        //  console.log('getin data')
           AsyncStorage.getItem(dataType + i.toString()).then((sample)=>{
             ans[i - completed - from_i] = JSON.parse(sample);
             --completed;

@@ -36,9 +36,9 @@ struct activitySample {
   time_t timeStamp;
 };
 
-const int activityOriginalSampleRate = 5000;
+const int activityOriginalSampleRate = 100;
 const int heartOriginalSampleRate = 10;
-const int temperatureOriginalSampleRate = 5000;                                //DATA ARRAYS
+const int temperatureOriginalSampleRate = 100;                                //DATA ARRAYS
 int activitySampleRate = activityOriginalSampleRate;
 int heartSampleRate = heartOriginalSampleRate;
 int temperatureSampleRate = temperatureOriginalSampleRate;
@@ -99,22 +99,13 @@ void loop() {
   HeartSensor.update();
   readHeartSensor();
   //SEND BLUETOOTH
-  if (indexActivity > 50 || indexHeart > 50 || indexTemperature > 50  ) {
-    if (millis() - btLastReport > REPORTING_PERIOD_MS) {
-      btLastReport = millis();
+  
       if (sendingDataRequestACK == true) {
         requestSendBT();
       }
       else {
         sendBT();
       }
-    }
-  }
-  else {
-    //   Serial.println("  data NOT ready");
-    //   Serial.print("  indexTemperature = ");
-    //   Serial.println(indexTemperature);
-  }
 }
 
 //READ SENSORS
@@ -313,7 +304,7 @@ void listenBT() {
       }
     }
     if ( val == 'B') { /////DATA ACK recieved
-      if (!sendingDataRequestACK) {
+    //  if (!sendingDataRequestACK) {
         Serial.println("=== DATA ACK RECEIVED ===>");
         //Serial.println("DATA ACK, next state => waiting data to be ready => send ACK");
         sendingDataRequestACK = true;
@@ -323,7 +314,7 @@ void listenBT() {
         activitySampleRate = activityOriginalSampleRate;
         heartSampleRate = heartOriginalSampleRate;
         temperatureSampleRate = temperatureOriginalSampleRate;
-      }
+    //  }
     }
     val = '0';
   }

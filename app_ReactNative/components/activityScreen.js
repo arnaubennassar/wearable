@@ -28,20 +28,21 @@ export default class activityScreen extends Component {
 
   render() {
 //    
+      var posCount = 0;
+
       var ticks = []
       ticks[0] = []
       ticks[1] = []
       ticks[2] = []
       for (var i = 0; i < this.props.navigation.state.params.activityData[0].length; i++) {
-        ticks[0][i] = this.props.navigation.state.params.activityData[0][i].c;
-        console.log(this.props.navigation.state.params.activityData[0][i])
+        ticks[0][this.props.navigation.state.params.activityData[0][i].x -1] = this.props.navigation.state.params.activityData[0][i].c;
       };
-      console.log(ticks)
+    //  console.log(ticks)
       for (var i = 0; i < this.props.navigation.state.params.activityData[1].length; i++) {
-        ticks[1][i] = this.props.navigation.state.params.activityData[0][i].c;
+        ticks[1][this.props.navigation.state.params.activityData[1][i].x -1] = this.props.navigation.state.params.activityData[1][i].c;
       };
       for (var i = 0; i < this.props.navigation.state.params.activityData[2].length; i++) {
-        ticks[2][i] = this.props.navigation.state.params.activityData[0][i].c;
+        ticks[2][i] = this.props.navigation.state.params.activityData[2][i].c;
       };
       return (
          <Image style={styles.container} source={bground}>
@@ -54,7 +55,7 @@ export default class activityScreen extends Component {
             >
               <VictoryAxis 
                 tickCount={Math.min(8, this.props.navigation.state.params.activityData[rangeSelected].length)} 
-                tickFormat={(t) => new Date(ticks[rangeSelected][t-1]).getDate() + '/' + (new Date(ticks[rangeSelected][t-1]).getMonth()+1)} 
+                tickFormat={(t) => new Date(ticks[rangeSelected][t -1]).getDate() + '/' + (new Date(ticks[rangeSelected][t -1]).getMonth()+1)} 
               />
               <VictoryBar
                 domain={{y: [0, 1]}}//86400000 = 16*60*60*1000 = 16h

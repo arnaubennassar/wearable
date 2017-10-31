@@ -1,6 +1,6 @@
 /*@flow*/
 export function activityProcessor(data){
-  console.log(data)
+ // console.log(data)
   var response = [];
   for (var i = 0; i < data.length; i++) {
     response[i] = [];

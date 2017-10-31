@@ -5,7 +5,7 @@ export function BBTProcessor(data){
   	response[i] = [];
     response[i][0] = {c: data[i][0].c, v: 50};
     for (var j = 0; j < data[i].length; j++) {
-    	console.log('i '+i+' j '+j)
+    //	console.log('i '+i+' j '+j)
       response[i][0].v = (response[i][0].v > data[i][j].v) ? data[i][j].v : response[i][0].v;
     };
   };

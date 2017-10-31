@@ -20,7 +20,7 @@ export default class DetailScreen extends Component {
     this.props.navigation.dispatch(setParamsAction);
   };
     render() {
-      console.log(this);
+    //  console.log(this);
         return (
             <Image style={styles.container} source={bground} >
               <View style={styles.margi}>

@@ -1,7 +1,7 @@
 /*@flow*/
 // REACT
 import React, { Component } from 'react';
-import { View, Text, Image, StatusBar, StyleSheet} from 'react-native';
+import { View, StyleSheet} from 'react-native';
 //
 // BUISSNESS LOGIC
 import {initStorage, getAllData} from '../buissLogic/storage';
@@ -42,15 +42,10 @@ export default SplashScreen = React.createClass({
 //RENDER THE UI
     render() {
         return (
-          <Image
+          <View
             style={styles.image}
-            source={require('../resources/images/splash.png')}
           >
-              <StatusBar
-               backgroundColor="#F53B91"
-               barStyle="light-content"
-             />
-          </Image >
+          </View >
         )
     }
 });
@@ -58,11 +53,7 @@ export default SplashScreen = React.createClass({
 //"CSS"
 const styles = StyleSheet.create({
   image: {
-    flex: 1,
-    alignSelf: 'stretch',
-    width: undefined,
-    height: undefined,
-    resizeMode: 'cover'
+    backgroundColor: 'transparent'
   }
 });
 //

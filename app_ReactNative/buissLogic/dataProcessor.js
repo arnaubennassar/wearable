@@ -21,7 +21,7 @@ export function processData(data, timeStamp, isNew, token){
     arduino_c = data.c;
   }
   //isNew = true;
-  console.log(data);
+//  console.log(data);
   var processedActivityData = null;
   var processedHeartData = null;
   var processedTemperatureData = null;

@@ -16,4 +16,4 @@ class IVF extends React.Component {
 	}
 }
 
-AppRegistry.registerComponent('save', () => IVF);
+AppRegistry.registerComponent('Womba', () => IVF);

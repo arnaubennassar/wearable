@@ -26,16 +26,16 @@ var counter = 0
 
 var Main = React.createClass({
   componentDidMount() {
-  	console.log('component did mount');
+  //	console.log('component did mount');
   },
   // componentWillUpdate(){
   // 	++counter;
   // }
   componentDidUpdate(){
-  	console.log('componentDidUpdate');
+  //	console.log('componentDidUpdate');
   	try {
 	  	if (this.props.state.user.user.hasPendings && this.props.state.user.user.validCredentials){
-	  		console.log('goin for the pendings ');
+	  	//	console.log('goin for the pendings ');
 	  		newStatePendings = this.props.state.user.user.pendingActions;
 	  		for (var i = 0; i < newStatePendings.length; i++) {
 	  			++counter;
@@ -59,11 +59,11 @@ var Main = React.createClass({
 	  	}
   	}
   	catch(e){
-  		console.log(e);
+  	//	console.log(e);
   	}
   },
   componentWillReciveProps(){
-  	console.log('componentWillReciveProps');
+  //	console.log('componentWillReciveProps');
   },
   onLoginButtonPress(){
     login('client1', '12345678');

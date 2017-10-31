@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-               BuildableName = "save-tvOS.app"
-               BlueprintName = "save-tvOS"
-               ReferencedContainer = "container:save.xcodeproj">
+               BuildableName = "Womba-tvOS.app"
+               BlueprintName = "Womba-tvOS"
+               ReferencedContainer = "container:Womba.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -43,9 +43,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
-               BuildableName = "save-tvOSTests.xctest"
-               BlueprintName = "save-tvOSTests"
-               ReferencedContainer = "container:save.xcodeproj">
+               BuildableName = "Womba-tvOSTests.xctest"
+               BlueprintName = "Womba-tvOSTests"
+               ReferencedContainer = "container:Womba.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -61,9 +61,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
-               BuildableName = "save-tvOSTests.xctest"
-               BlueprintName = "save-tvOSTests"
-               ReferencedContainer = "container:save.xcodeproj">
+               BuildableName = "Womba-tvOSTests.xctest"
+               BlueprintName = "Womba-tvOSTests"
+               ReferencedContainer = "container:Womba.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -71,9 +71,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "save-tvOS.app"
-            BlueprintName = "save-tvOS"
-            ReferencedContainer = "container:save.xcodeproj">
+            BuildableName = "Womba-tvOS.app"
+            BlueprintName = "Womba-tvOS"
+            ReferencedContainer = "container:Womba.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -94,9 +94,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "save-tvOS.app"
-            BlueprintName = "save-tvOS"
-            ReferencedContainer = "container:save.xcodeproj">
+            BuildableName = "Womba-tvOS.app"
+            BlueprintName = "Womba-tvOS"
+            ReferencedContainer = "container:Womba.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -105,7 +105,7 @@
    <ProfileAction
       buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      savedToolIdentifier = ""
+      WombadToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
       <BuildableProductRunnable
@@ -113,9 +113,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "save-tvOS.app"
-            BlueprintName = "save-tvOS"
-            ReferencedContainer = "container:save.xcodeproj">
+            BuildableName = "Womba-tvOS.app"
+            BlueprintName = "Womba-tvOS"
+            ReferencedContainer = "container:Womba.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

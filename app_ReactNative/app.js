@@ -74,7 +74,7 @@ var APP  = React.createClass({
   },
 
   onRegistered(notifData) {
-    console.log("Device had been registered for push notifications!", notifData);
+  //  console.log("Device had been registered for push notifications!", notifData);
   },
 
   onIds(device) {
@@ -86,19 +86,19 @@ var APP  = React.createClass({
   //RENDER SPLASHSCREEN (+ init app logic)
     if(!this.props.state.user.user.appInitialized)
     {
-      console.log('SPLASH')
+    //  console.log('SPLASH')
       return( <SplashScreen complete={this.props.actions.user.appInitialized} dataUpdated={this.props.actions.data.dataUpdated}/> );
     }
   //RENDER AUTHSCREEN (+ login/register logic)
     else if(!this.props.state.user.user.loggedIn)
     {
-      console.log('AUTH')
+     // console.log('AUTH')
       return( <AuthScreen actions={this.props.actions.user} state={this.props.state.user.user} notificationsActions={this.props.actions.notifications}/> );
     }
   //RENDER PERSONALDATASCREEN 
     else if(!this.props.state.user.user.skipPersonalData)
     {
-      console.log('PERSONALDATA')
+    //  console.log('PERSONALDATA')
       return( <PersonalDataScreen actions={this.props.actions.user} tokenAWS={this.props.state.user.user.tokenAWS}/> );
     }
   //RENDER TabNav (Top navigation ==> MainScreen)
@@ -122,12 +122,16 @@ var APP  = React.createClass({
       this.props.actions.BT.connected( Date.parse(new Date()) );
     }
     else{
-      console.log('why this')
+    //  console.log('why this')
       //BT.connect(this.BTConnected);
       //this.props.actions.BT.desconnected();
     }
   },
   BTDisconnected(){
+
+    /*
+    
+    */
 //    BT.disconnect();
             //this.props.actions.user.logout();
 
@@ -135,7 +139,7 @@ var APP  = React.createClass({
   //  this.props.actions.data.checkFertility(this.props.state.user.user.tokenAWS);
 
     this.props.actions.BT.desconnected();
-    console.log('BT DISConnected!!!!!')
+   // console.log('BT DISConnected!!!!!')
     // getAllData('a',(data)=>{
     //   console.log(data)
     // });
@@ -161,74 +165,74 @@ var APP  = React.createClass({
   BTGetData(data){
     //console.log(data);
     if (!waitingBTReq && !waitingBTData ){//WAITING ACK
-      console.log("WAITING DATA REQUEST");
+   //   console.log("WAITING DATA REQUEST");
       if (data.data == "r\r\n") {
-        console.log(" <===   DATA REQUEST RECEIVED   ===");
-        console.log("===   SENDING DATA REQUEST ACK   ===>");
+   //     console.log(" <===   DATA REQUEST RECEIVED   ===");
+    //    console.log("===   SENDING DATA REQUEST ACK   ===>");
         waitingBTData = true;
         BT.write(() => {}, 'a');
       }
       else{
-        console.log(" <===   UNECSPECTED MESSAGE RECEIVED   ===");
-        console.log("===   SENDING RESET REQUEST   ===>");
+    //    console.log(" <===   UNECSPECTED MESSAGE RECEIVED   ===");
+    //    console.log("===   SENDING RESET REQUEST   ===>");
         BT.write(() => {}, 'a');
       }
     }
     else if (!waitingBTReq && waitingBTData){//WAITING DATA
-      console.log("WAITING DATA");
+    //  console.log("WAITING DATA");
       if (data.data == "r\r\n") {
         BT.write(() => {}, 'a');
       }
       else{//DATA RECEIVED
-        console.log( " <===   DATA RECEIVED   ===");
-        console.log("===   SENDING DATA ACK   ===>");
+      //  console.log( " <===   DATA RECEIVED   ===");
+      //  console.log("===   SENDING DATA ACK   ===>");
           //check login
           silentLogin(this.props.state.user.user.email, this.props.state.user.user.password, (token) => {
             
             lastTimeStamp = processData(  JSON.parse( data.data.slice(0, -1) ),  Date.parse(new Date()), true, token);
-            if(new Date(lastTimeStamp).getDate() != new Date(this.props.state.data.data.lastUpdate).getDate()){
-
-              //get and post data
-              getData_from('a', this.props.state.data.data.lastUpdate, (_data) => {
-                console.log(_data)
-                if(_data !== false){
-                  for (var i = 0; i < _data.length; i++) {
-                    postData(_data[i], _data[i][0].c.toString(), token, 'ACTIVITY', (response)=>{})
-                  };
-                }
-              });
-              getData_from('h', this.props.state.data.data.lastUpdate, (_data) => {
-                console.log(_data)
-                if(_data !== false){
-                  for (var i = 0; i < _data.length; i++) {
-                    postData(_data[i], _data[i][0].c.toString(), token, 'HEART', (response)=>{})
-                  };
-                }
-              });
-              getData_from('t', this.props.state.data.data.lastUpdate, (_data) => {
-                console.log(_data)
-                if(_data !== false){
-                  for (var i = 0; i < _data.length; i++) {
-                    postData(_data[i], _data[i][0].c.toString(), token, 'TEMPERATURE', (response)=>{})
-                  };
-                }
-              });
-              getData_from('b', this.props.state.data.data.lastUpdate, (_data) => {
-                if(_data !== false){
-                  console.log(_data)
-                  for (var i = 0; i < _data.length; i++) {
-                    postData(_data[i], _data[i][0].c.toString(), token, 'BBT', (response)=>{console.log(response)})
-                  };
-                }
-              });
-              getData_from('s', this.props.state.data.data.lastUpdate, (_data) => {
-                console.log(_data)
-                if(_data !== false){
-                  for (var i = 0; i < _data.length; i++) {
-                    postData(_data[i], _data[i][0].c.toString(), token, 'SLEEP', (response)=>{})
-                  };
-                }
-              });
+             if(new Date(lastTimeStamp).getDate() != new Date(this.props.state.data.data.lastUpdate).getDate()){
+            //   console.log('hot')
+            //   //get and post data
+            //   getData_from('a', this.props.state.data.data.lastUpdate, (_data) => {
+            //     console.log(_data)
+            //     if(_data !== false){
+            //       for (var i = 0; i < _data.length; i++) {
+            //         postData(_data[i], _data[i][0].c.toString(), token, 'ACTIVITY', (response)=>{})
+            //       };
+            //     }
+            //   });
+            //   getData_from('h', this.props.state.data.data.lastUpdate, (_data) => {
+            //     console.log(_data)
+            //     if(_data !== false){
+            //       for (var i = 0; i < _data.length; i++) {
+            //         postData(_data[i], _data[i][0].c.toString(), token, 'HEART', (response)=>{})
+            //       };
+            //     }
+            //   });
+            //   getData_from('t', this.props.state.data.data.lastUpdate, (_data) => {
+            //     console.log(_data)
+            //     if(_data !== false){
+            //       for (var i = 0; i < _data.length; i++) {
+            //         postData(_data[i], _data[i][0].c.toString(), token, 'TEMPERATURE', (response)=>{})
+            //       };
+            //     }
+            //   });
+            //   getData_from('b', this.props.state.data.data.lastUpdate, (_data) => {
+            //     if(_data !== false){
+            //       console.log(_data)
+            //       for (var i = 0; i < _data.length; i++) {
+            //         postData(_data[i], _data[i][0].c.toString(), token, 'BBT', (response)=>{console.log(response)})
+            //       };
+            //     }
+            //   });
+            //   getData_from('s', this.props.state.data.data.lastUpdate, (_data) => {
+            //     console.log(_data)
+            //     if(_data !== false){
+            //       for (var i = 0; i < _data.length; i++) {
+            //         postData(_data[i], _data[i][0].c.toString(), token, 'SLEEP', (response)=>{})
+            //       };
+            //     }
+            //   });
               //dispatch new lastUpdate
               this.props.actions.data.checkFertility(token);
               this.props.actions.data.dataUpdated({lastUpdate: lastTimeStamp});
@@ -244,15 +248,15 @@ var APP  = React.createClass({
       }
     }
     else {//WAITING ACK
-      console.log("WAITING DATA REQUEST")
+    //  console.log("WAITING DATA REQUEST")
       if (data.data != "r\r\n") {
-        console.log(" <===   UNECSPECTED MESSAGE RECEIVED   ===");
-        console.log("===   SENDING RESET REQUEST   ===>");
+    //    console.log(" <===   UNECSPECTED MESSAGE RECEIVED   ===");
+    //    console.log("===   SENDING RESET REQUEST   ===>");
         BT.write(() => {}, 'k');
       }
       else{
-        console.log(" <===   DATA REQUEST RECEIVED   ===");
-        console.log("===   SENDING DATA REQUEST ACK   ===>");
+    //    console.log(" <===   DATA REQUEST RECEIVED   ===");
+    //    console.log("===   SENDING DATA REQUEST ACK   ===>");
         waitingBTData = true;
         petitionBTResponded = false;
         BT.write(() => {}, 'a');

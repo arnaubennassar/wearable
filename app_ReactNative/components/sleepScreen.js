@@ -28,20 +28,20 @@ export default class sleepScreen extends Component {
 
   render() {
 //    
+      var posCount = 0;
       var ticks = []
       ticks[0] = []
       ticks[1] = []
       ticks[2] = []
       for (var i = 0; i < this.props.navigation.state.params.sleepData[0].length; i++) {
-        ticks[0][i] = this.props.navigation.state.params.sleepData[0][i].c;
-        console.log(this.props.navigation.state.params.sleepData[0][i])
+        ticks[0][this.props.navigation.state.params.sleepData[0][i].x -1] = this.props.navigation.state.params.sleepData[0][i].c;
       };
-      console.log(ticks)
+   //   console.log(ticks)
       for (var i = 0; i < this.props.navigation.state.params.sleepData[1].length; i++) {
-        ticks[1][i] = this.props.navigation.state.params.sleepData[0][i].c;
+        ticks[1][this.props.navigation.state.params.sleepData[1][i].x -1] = this.props.navigation.state.params.sleepData[1][i].c;
       };
       for (var i = 0; i < this.props.navigation.state.params.sleepData[2].length; i++) {
-        ticks[2][i] = this.props.navigation.state.params.sleepData[0][i].c;
+        ticks[2][i] = this.props.navigation.state.params.sleepData[2][i].c;
       };
       return (
         <Image style={styles.container} source={bground}>
@@ -53,8 +53,8 @@ export default class sleepScreen extends Component {
               domainPadding={{x: (wiz*0.6)/this.props.navigation.state.params.sleepData[rangeSelected].length, y: hait*0.1}}
             >
               <VictoryAxis 
-                tickCount={Math.min(10, this.props.navigation.state.params.sleepData[rangeSelected].length)}
-                tickFormat={(t) => new Date(ticks[rangeSelected][t-1]).getDate() + '/' + (new Date(ticks[rangeSelected][t-1]).getMonth()+1)} 
+                tickCount={Math.min(8, this.props.navigation.state.params.sleepData[rangeSelected].length)}
+                tickFormat={(t) => new Date(ticks[rangeSelected][t-1]).getDate() + '/' + (new Date(ticks[rangeSelected][t -1]).getMonth()+1)} 
               />
               <VictoryAxis 
                 dependentAxis
@@ -63,7 +63,6 @@ export default class sleepScreen extends Component {
                 style={{ axis: {stroke: "#969696"}, grid: {stroke: (t) => (Math.floor(t / 3600000) == 8) ? "#B5B2B2" : "transparent"}, ticks: {stroke: "grey", size: 0} }} 
               />
               <VictoryBar
-                labels={(d) => Math.floor(d.y/3600000).toString()+":"+Math.floor(((d.y-(Math.floor(d.y/3600000)/1000))%60)).toString()}
                 domain={{y: [0, 57600000]}}//86400000 = 16*60*60*1000 = 16h
                 style={{
                   parent: {

@@ -40,7 +40,7 @@ export function subscribe(getData, connectionLost, disabled){
   //   .then((values) => {
   //     console.log('mec')
   //   })
-  BluetoothSerial.subscribe('\r\n').then(  (data) => { console.log('subscribed BT') }  ) //trololoooo
+  BluetoothSerial.subscribe('\r\n').then(  (data) => { }  ) //trololoooo
   BluetoothSerial.on( 'data', (data) => { getData(data) } );
   BluetoothSerial.on( 'connectionLost', () => { connectionLost() } );
   BluetoothSerial.on('bluetoothDisabled', () => {  disabled()  }  )
@@ -123,10 +123,10 @@ export class BTScreen extends Component {
   write (message) {
     BluetoothSerial.write(message)
     .then((res) => {
-      console.log('Successfuly wrote to device this: ')
-      console.log(message)
+    //  console.log('Successfuly wrote to device this: ')
+    //  console.log(message)
     })
-    .catch((err) => console.log(err))
+    .catch((err) => {})
   }
   componentWillMount () {
     if (this.props.navigation !== undefined){

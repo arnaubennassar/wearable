@@ -104,43 +104,49 @@ export default (AuthScreen = React.createClass({
   //HANDLE LOGIN RESPONSE
   handlerLogin(res) {
     if (res.success) {
-      this.tokenAWS = res.message
-      ////// LOAD USER DATA //////
-      getPersonalData(this.tokenAWS, this.handlerPersonalData);
-      getNotifications(this.tokenAWS, null, (res) => {
-        this.props.notificationsActions.notificationsUpdated(res.data.Items);
-        this.completeLogin();
-      });
-      this._getAllData('ACTIVITY', 'a', (ans) => { 
-        if(ans != false){
-          processData({a: ans}, 0, false); 
-        }
-        this.completeLogin();
-      });
-      this._getAllData('HEART', 'h', (ans) => { 
-        if(ans != false){
-          processData({h: ans}, 0, false); 
-        }
-        this.completeLogin();
-      });
-      this._getAllData('TEMPERATURE', 't', (ans) => { 
-        if(ans != false){
-          processData({t: ans}, 0, false); 
-        }
-        this.completeLogin();
-      });
-      this._getAllData('BBT', 'b', (ans) => { 
-        if(ans != false){
-          processData({b: ans}, 0, false); 
-        }
-        this.completeLogin();
-      });      
-      this._getAllData('SLEEP', 's', (ans) => { 
-        if(ans != false){
-          processData({s: ans}, 0, false); 
-        }
-        this.completeLogin();
-      });
+
+    //    FAKE DATA     //
+      this.createFakeData();
+      this.completeLogin();
+    //    GET DATA FROM AWS     //
+
+      // this.tokenAWS = res.message
+      // ////// LOAD USER DATA //////
+      // getPersonalData(this.tokenAWS, this.handlerPersonalData);
+      // getNotifications(this.tokenAWS, null, (res) => {
+      //   this.props.notificationsActions.notificationsUpdated(res.data.Items);
+      //   this.completeLogin();
+      // });
+      // this._getAllData('ACTIVITY', 'a', (ans) => { 
+      //   if(ans != false){
+      //     processData({a: ans}, 0, false); 
+      //   }
+      //   this.completeLogin();
+      // });
+      // this._getAllData('HEART', 'h', (ans) => { 
+      //   if(ans != false){
+      //     processData({h: ans}, 0, false); 
+      //   }
+      //   this.completeLogin();
+      // });
+      // this._getAllData('TEMPERATURE', 't', (ans) => { 
+      //   if(ans != false){
+      //     processData({t: ans}, 0, false); 
+      //   }
+      //   this.completeLogin();
+      // });
+      // this._getAllData('BBT', 'b', (ans) => { 
+      //   if(ans != false){
+      //     processData({b: ans}, 0, false); 
+      //   }
+      //   this.completeLogin();
+      // });      
+      // this._getAllData('SLEEP', 's', (ans) => { 
+      //   if(ans != false){
+      //     processData({s: ans}, 0, false); 
+      //   }
+      //   this.completeLogin();
+      // });
     } else {
       this.props.actions.loginFail(res.message);
       if (res.message == "User is not confirmed." || res.message == "Password reset required for the user") {
@@ -150,9 +156,9 @@ export default (AuthScreen = React.createClass({
   },
   _getAllData(url, dataType, handler){
     getAllData(this.tokenAWS, url, null, (ans) => {
-      console.log(ans)
+  //    console.log(ans)
         if (ans.hasOwnProperty('error') ){
-        console.log('NOPE')
+  //      console.log('NOPE')
           handler(false);
         }
         else {
@@ -176,8 +182,8 @@ export default (AuthScreen = React.createClass({
   },
   completeLogin(){
     ++completedLogin;
-    console.log('login completed : ' + completedLogin + ' / 7' )
-    if (completedLogin == 7){
+  //  console.log('login completed : ' + completedLogin + ' / 7' )
+    if (completedLogin == 1){
       completedLogin = 0;
       this.props.actions.loginSuccess(this.tokenAWS);
     }
@@ -190,17 +196,58 @@ export default (AuthScreen = React.createClass({
       this.props.actions.registerFail(res.message);
     }
   },
+  createFakeData(){
+      var NOW = Date.parse(new Date());
+//      var token = res.message;
+      prevT = Math.random() * (38 - 36) + 36;
+      fakeData_activity = [];
+      fakeData_BBT = [];
+      fakeData_sleep = [];
+      for (var i = 0; i < 35; i++) {
+        var time = NOW - ( (35 - i)*86400000 )
+        var cTemp = prevT + Math.random()*2;
+        if (i > 20 && i < 30){
+          cTemp = prevT - Math.random()*2;
+          while(cTemp < 36){
+            var cTemp = cTemp + Math.random()*2;
+          }
+        }
+        while (cTemp > 38.5){
+          cTemp = cTemp - Math.random()*2;
+        }
+        prevT = cTemp;
+        fakeData_BBT.push.apply(fakeData_BBT, [{c: time, v: cTemp}]);
+        //fakeData_BBT[i] = [{c: time, v: cTemp}];
+        //postData([{c: time, v: cTemp}], time.toString(), token, 'BBT', (response)=>{console.log(response)})
+        var sv = Math.random() * (39600000 - 18000000) + 18000000;
+        fakeData_sleep.push.apply(fakeData_sleep, [{c: time, v: sv, sleep: true, c_out: time + sv }]);
+        //fakeData_sleep[i] = [{c: time, v: sv, sleep: true, c_out: time + sv }];
+        //postData([{c: time, v: sv, sleep: true, c_out: time + sv }], time.toString(), token, 'SLEEP', (response)=>{console.log(response)})
+        activityData_ = [];
+        for (var j = 0; j < 4; j++) {
+          val = Math.random() * 20000 + 250; 
+          activityData_[j] = {v: val, c: time + j, aX: val * Math.random(), aY: val * Math.random(), aZ: val * Math.random(), gX: val * Math.random(), gY: val * Math.random(), gZ: val * Math.random()}
+        };
+        fakeData_activity.push.apply(fakeData_activity, activityData_);
+        //fakeData_activity[i] = activityData_;
+        //postData(activityData_, time.toString(), token, 'ACTIVITY', (response)=>{console.log(response)})
+      };
+      processData({a: fakeData_activity}, 0, false);
+      processData({b: fakeData_BBT}, 0, false);
+      processData({s: fakeData_sleep}, 0, false);
+  },
   //HANDLE VALIDATION RESPONSE
   handlerValidation(res) {
     if (res.success) {
+      this.createFakeData();
       silentLogin(this.userInput, this.passInput, (token) => {
           this.props.actions.loginSuccess(token);
-          sendNotification ('Welocme!', 
+          sendNotification ('Welcome!', 
             'Welcome to Womba, tap this message to know more about this app.', 
             'user', 
             {fullDescription: 'README comming soon!'}, 
             token, 
-            (ans) => console.log(ans)
+            (ans) => {}
           );
       })
       this.props.actions.validationSuccess();
@@ -316,8 +363,7 @@ export default (AuthScreen = React.createClass({
             {this.props.state.loadingLogin ? (
               <ActivityIndicator
                 style={{
-                  position: "absolute",
-                  bottom: 50,
+                  marginTop: 10,
                   alignSelf: "center"
                 }}
                 animating
@@ -357,7 +403,7 @@ export default (AuthScreen = React.createClass({
               style={{
                 justifyContent: "center",
                 borderColor: "#F53B91",
-                marginTop: hait*0.2,
+                marginTop: hait*0.1,
                 alignSelf: "center",
                 width: wiz*0.6,
                 height: hait*0.06
@@ -601,8 +647,7 @@ const styles = StyleSheet.create({
   arrowTouch: { marginTop: 67, marginLeft: 67, width: 20, height: 20 },
   registerTouch: {
     backgroundColor:'transparent',
-    marginTop: 33.5,
-    marginBottom: 186.5,
+    marginTop: hait*0.2,
     marginLeft: 90,
     marginRight: 90
   },
@@ -612,7 +657,6 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     fontFamily: "System",
     fontWeight: "100",
-    marginTop:hait*0.2,
     fontSize: hait*0.02
   },
   button: { flex: 1, width: 300 },

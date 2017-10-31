@@ -19,7 +19,7 @@ export function postOSID (AWS: string, OS: string){
 	    OSID: OS,
 	  })
 	}).then(function (response){
-		console.log(response)
+	//	console.log(response)
 	});
 }
 
@@ -100,11 +100,11 @@ export function getAllData (AWS: string, endPoint: string, next: string, handler
 function getAllData_handler(AWS, endPoint, next, data, handler){
 //	console.log(data.length)
 	if (next != undefined){
-		console.log('lets get more')
+	//	console.log('lets get more')
 		getData (AWS, endPoint, next, data, handler);
 	}
 	else{ 
-		console.log('thats enoz')
+	//	console.log('thats enoz')
 		handler(data) 
 	}
 }
@@ -130,7 +130,7 @@ export function getData (AWS: string, endPoint: string, next: string, data, hand
 	  method: 'GET',
 	  headers: head,
 	}).then(function (response){
-		console.log(response);
+	//	console.log(response);
 		if(response.status == 401){
 			handler({'error':401})
 			return;
@@ -179,7 +179,7 @@ export function getPersonalData(AWS: string, handler){
 	  method: 'GET',
 	  headers: head,
 	}).then(function (response){
-		console.log(response);
+	//	console.log(response);
 		if(response.status == 401){
 			unauthHandle('getPersonalData');
 			return;
@@ -197,7 +197,7 @@ export function getPersonalData(AWS: string, handler){
 }
 
 function unauthHandle (actionName: string, params: object){
-	console.log('!!!!!AUTH FAIL!!!!')
+	//console.log('!!!!!AUTH FAIL!!!!')
 	// store.dispatch( refreshToken() );
 	// store.dispatch( pendingAction( {'function': actionName, 'params': params} ) );
 }

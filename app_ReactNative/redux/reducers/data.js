@@ -65,8 +65,8 @@ export const dataReducer = (state: DataState, action: Object) => {
         }
         else {
           var newActivityData = [];
-          console.log(new Date(newState.data.dailyActivity[newState.data.dailyActivity.length - 1].c).getDate())
-          console.log(new Date(action.payload.activity[0][0].c).getDate())
+        //  console.log(new Date(newState.data.dailyActivity[newState.data.dailyActivity.length - 1].c).getDate())
+        //  console.log(new Date(action.payload.activity[0][0].c).getDate())
           for(i = 0; i < action.payload.activity.length; ++i){
             var totalActivity = getAcumulatedActivity(action.payload.activity[i]);;
             if (i == 0 && new Date(newState.data.dailyActivity[newState.data.dailyActivity.length - 1].c).getDate() == new Date(action.payload.activity[0][0].c).getDate()){//sample from the same day
@@ -83,7 +83,7 @@ export const dataReducer = (state: DataState, action: Object) => {
               'runner', 
               {fullDescription: 'You have completed the current daily activity objective, congratulations. Since it seems easy to you, we have increased the dificulty of the daily activity objective'}, 
               action.payload.token, 
-              (ans) => console.log(ans)
+              (ans) =>{}
             );
           }
         }
@@ -97,9 +97,9 @@ export const dataReducer = (state: DataState, action: Object) => {
         }
         else {
           for (var i = 0; i < action.payload.BBT.length; i++) {
-            console.log(newState.data.BBT)
-            console.log( new Date(newState.data.BBT[newState.data.BBT.length - 1].c).getDate())
-            console.log(new Date(action.payload.BBT[0][0].c).getDate())
+            // console.log(newState.data.BBT)
+            // console.log( new Date(newState.data.BBT[newState.data.BBT.length - 1].c).getDate())
+            // console.log(new Date(action.payload.BBT[0][0].c).getDate())
             if (i == 0 && new Date(newState.data.BBT[newState.data.BBT.length - 1].c).getDate() == new Date(action.payload.BBT[0][0].c).getDate()){//sample from the same day
               if ( newState.data.BBT[newState.data.BBT.length - 1].v > action.payload.BBT[0][0].v ){
                 newState.data.BBT[newState.data.BBT.length - 1] = action.payload.BBT[0][0];
@@ -113,7 +113,7 @@ export const dataReducer = (state: DataState, action: Object) => {
       }
 //SLEEP
       if (action.payload.sleep != null){
-        console.log(action.payload.sleep)
+      //  console.log(action.payload.sleep)
         if(newState.data.sleep.length === 0){//first sample
           for(var i = 0; i < action.payload.sleep.length; ++i){
             newState.data.sleep[i] = {c: action.payload.sleep[i][0].c, v: getSleepTime(action.payload.sleep[i])}
@@ -137,7 +137,7 @@ export const dataReducer = (state: DataState, action: Object) => {
     case "DATA_FERTILITY":
       var newState: DataState = cloneObject(state);
         var len = newState.data.BBT.length;
-        if(newState.data.BBT[len - 2].c > newState.data.lastFertility){
+        if(len > 2 && newState.data.BBT[len - 2].c > newState.data.lastFertility){
           if(newState.data.BBT[len - 3].v > newState.data.BBT[len - 2].v && newState.data.BBT[len - 1].v > newState.data.BBT[len - 2].v){
             newState.data.lastFertility = newState.data.BBT[len - 2].c;
             sendNotification ('High fertility', 
@@ -145,7 +145,7 @@ export const dataReducer = (state: DataState, action: Object) => {
               'heart', 
               {fullDescription: 'Based on the analisis of the data we have been colecting, we estimate that you are on high fertility period.'}, 
               action.payload.token, 
-              (ans) => console.log(ans)
+              (ans) => {}
             );
           }
         }

@@ -46,7 +46,7 @@ export function login(email: string, password: string, handler ){
     cognitoUser = new CognitoUser(userData);
   }
   catch(e){
-    console.log(e);
+  //  console.log(e);
     handler ( { 'success': false, message: e.message } );
     return;
   }
@@ -61,7 +61,7 @@ export function login(email: string, password: string, handler ){
       handler ( { 'success': true, message: result.getIdToken().getJwtToken() } );
     },
     onFailure: (err) => {
-      console.log(err)
+    //  console.log(err)
         handler ( { 'success': false, message: err.message } );
     },
   });
@@ -91,7 +91,7 @@ export function silentLogin(email: string, password: string, handler){
       handler( result.getIdToken().getJwtToken()  );
     },
     onFailure: (err) => {
-      console.log( err );
+    //  console.log( err );
     },
   });
 }
@@ -101,7 +101,7 @@ export function register(userName: string, email: string, password: string, hand
         handler ( { 'success': false, message: 'invalid email' } );
         return;
   }
-  console.log(  validator.validate(email)  )
+//  console.log(  validator.validate(email)  )
   const userPool = new CognitoUserPool(poolData);
   var attributeList = [];
   var dataEmail = {

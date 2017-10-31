@@ -47,6 +47,7 @@ class DashboardScreen extends Component {
       var iWeek_b = 0;
       var iMonth_b = 0;
       const now = Date.parse(new Date());
+   //   console.log(this.props.state);
       for (var i = 0; i < this.props.state.data.BBT.length; i++) {
         current = this.props.state.data.BBT[i];
         if(now - current.c < 604800000 ){  //7*24*60*60*1000 = 1 week in ms
@@ -97,44 +98,54 @@ class DashboardScreen extends Component {
             ++iWeek_a;
           }        
           if(now - current.c < 2592000000){  //30*24*60*60*1000 = 1 month in ms
-            month_a[iMonth_a] = {x: i+1, c: current.c, y:current.v};
+            month_a[iMonth_a] = {x: i+1, c: current.c, y:current.v/_objective};
             ++iMonth_a;
           }        
-          all_a[i] = {x: i+1, c: current.c, y:current.v};
+          all_a[i] = {x: i+1, c: current.c, y:current.v/_objective};
         }
       };
       
   //////      FAKE DATA   ////
-      week_b = [{x:1507992980000, y: 36.4}, {x:1507474580000, y: 37}, {x:1507560980000, y: 37.3}, {x:1507647380000, y: 36.8}, {x:1507733780000, y: 36.5}, {x: 1507906580000, y: 35}, {x: 1507992980000, y: 36.8}];
-      // month_b = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
-      // all_b   = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
-      var _BBTData = [week_b, month_b, all_b];
+      // week_b = [{x:1507992980000, y: 36.4}, {x:1507474580000, y: 37}, {x:1507560980000, y: 37.3}, {x:1507647380000, y: 36.8}, {x:1507733780000, y: 36.5}, {x: 1507906580000, y: 35}, {x: 1507992980000, y: 36.8}];
+      // // month_b = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
+      // // all_b   = [{x: 1506874513000, y: 38}, {x: 1506960913000, y: 35}, {x: 1507047313000, y: 41}, {x: 1507133713000, y: 35.5} ];
+      // var _BBTData = [week_b, month_b, all_b];
 
-      week_s  = [{x: 1, c:1507992980000, y: 28000000}, {x: 2, c:1507474580000, y: 24000000}, {x: 3, c:1507560980000, y: 24500000}, {x: 4, c:1507647380000, y: 40000000}, {x: 5, c:1507733780000, y: 45800000}, {x: 6, c: 1507906580000, y: 12000000}, {x: 7, c: 1507992980000, y: 28000000}];
-      // month_s = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000}, {x: 5, y: 7000000}, {x: 6, y: 28000000}, {x: 7, y: 8200000}, {x: 8, y: 55500000},{x: 9, y: 7000000}, {x: 10, y: 28000000}, {x: 11, y: 8200000}, {x: 12, y: 55500000}, {x: 13, y: 7000000}, {x: 14, y: 28000000}, {x: 15, y: 8200000}, {x: 16, y: 55500000}, {x: 17, y: 28000000} ];
-      // all_s   = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000} ];
-      var _sleepData = [week_s, month_s, all_s];
+      // week_s  = [{x: 1, c:1507992980000, y: 28000000}, {x: 2, c:1507474580000, y: 24000000}, {x: 3, c:1507560980000, y: 24500000}, {x: 4, c:1507647380000, y: 40000000}, {x: 5, c:1507733780000, y: 45800000}, {x: 6, c: 1507906580000, y: 12000000}, {x: 7, c: 1507992980000, y: 28000000}];
+      // // month_s = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000}, {x: 5, y: 7000000}, {x: 6, y: 28000000}, {x: 7, y: 8200000}, {x: 8, y: 55500000},{x: 9, y: 7000000}, {x: 10, y: 28000000}, {x: 11, y: 8200000}, {x: 12, y: 55500000}, {x: 13, y: 7000000}, {x: 14, y: 28000000}, {x: 15, y: 8200000}, {x: 16, y: 55500000}, {x: 17, y: 28000000} ];
+      // // all_s   = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000} ];
+      // var _sleepData = [week_s, month_s, all_s];
 
-      week_a  = [{x: 1, c:1507992980000, y: 0.7}, {x: 2, c:1507474580000, y: 0.8}, {x: 3, c:1507560980000, y: 0.5}, {x: 4, c:1507647380000, y: 0.9}, {x: 5, c:1507733780000, y: 0.45}, {x: 6, c: 1507906580000, y: 0.72}, {x: 7, c: 1507992980000, y: 0.23}];
-      // month_a = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000}, {x: 5, y: 7000000}, {x: 6, y: 28000000}, {x: 7, y: 8200000}, {x: 8, y: 55500000},{x: 9, y: 7000000}, {x: 10, y: 28000000}, {x: 11, y: 8200000}, {x: 12, y: 55500000}, {x: 13, y: 7000000}, {x: 14, y: 28000000}, {x: 15, y: 8200000}, {x: 16, y: 55500000}, {x: 17, y: 28000000} ];
-      // all_a   = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000} ];
-      var _activityData = [week_s, month_s, all_s];
+      // week_a  = [{x: 1, c:1507992980000, y: 0.7}, {x: 2, c:1507474580000, y: 0.8}, {x: 3, c:1507560980000, y: 0.5}, {x: 4, c:1507647380000, y: 0.9}, {x: 5, c:1507733780000, y: 0.45}, {x: 6, c: 1507906580000, y: 0.72}, {x: 7, c: 1507992980000, y: 0.23}];
+      // // month_a = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000}, {x: 5, y: 7000000}, {x: 6, y: 28000000}, {x: 7, y: 8200000}, {x: 8, y: 55500000},{x: 9, y: 7000000}, {x: 10, y: 28000000}, {x: 11, y: 8200000}, {x: 12, y: 55500000}, {x: 13, y: 7000000}, {x: 14, y: 28000000}, {x: 15, y: 8200000}, {x: 16, y: 55500000}, {x: 17, y: 28000000} ];
+      // // all_a   = [{x: 1, y: 7000000}, {x: 2, y: 28000000}, {x: 3, y: 8200000}, {x: 4, y: 55500000} ];
+      // var _activityData = [week_s, month_s, all_s];
 
               /////
       var _activityData = [week_a, month_a, all_a];
       var sleepHours = 0; 
       var sleepMinutes = 0;
-      if(week_s[0] != undefined){
-        sleepHours = Math.floor(week_s[week_s.length-1].y /3600000); 
-        sleepMinutes = Math.floor(((week_s[week_s.length-1].y-(Math.floor(week_s[week_s.length-1].y/3600000)/1000))%60));
+      if(all_s[0] != undefined){
+        sleepHours = Math.floor(all_s[all_s.length-1].y /3600000); 
+        sleepMinutes = Math.floor(((all_s[all_s.length-1].y-(Math.floor(all_s[all_s.length-1].y/3600000)/1000))%60));
       }
-      if (week_b.length > 0){
-        temp = week_b[week_b.length -1].y;
+      if (all_b.length > 0){
+        temp = (all_b[all_b.length -1].y).toFixed(2);
       }
-      if (week_a.length > 0){
-        acti = week_a[week_a.length -1].y *100;
+      if (all_a.length > 0){
+        acti = all_a[all_a.length -1].y *100;
         acti = Math.floor(acti);
       }
+      // console.log(all_a)
+      // console.log(all_s)
+      // console.log(all_b)
+      // console.log(month_a)
+      // console.log(month_s)
+      // console.log(month_b)
+      // console.log(week_a)
+      // console.log(week_b)
+      // console.log(week_s)
+
 
         return(
             <Image style={styles.container} source={bground} >

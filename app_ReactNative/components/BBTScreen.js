@@ -35,7 +35,7 @@ export default class BBTScreen extends Component {
               padding={{ top: 10, bottom: 30, left: 10, right: 10 }}
             >
               <VictoryAxis 
-                tickCount={Math.min(8, this.props.navigation.state.params.BBTData[rangeSelected].length)} 
+                tickCount={12} 
                 tickFormat={(t) => new Date(t).getDate() + '/' + (new Date(t).getMonth()+1)}
                 style={{ axis: {stroke: "#969696"}, grid: {stroke: (t) => (t  == 1507900000000) ? "#F53B91" : "transparent"} }}
               />

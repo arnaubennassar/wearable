@@ -48,7 +48,7 @@ export const store = createStore(
 	initialState, 
 	compose(
 		autoRehydrate(),
-		applyMiddleware( createActionBuffer(REHYDRATE), thunk,  logger  )
+		applyMiddleware( createActionBuffer(REHYDRATE), thunk, logger  )
 	)
 );
 persistStore( store, { storage: AsyncStorage, blacklist: ['tab', 'home', 'notification', 'profile', 'BT'] } );
