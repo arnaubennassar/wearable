@@ -14,10 +14,10 @@ import {
 var validator = require("email-validator");
 
 const appConfig = {
-  region: 'ap-northeast-1',
-  IdentityPoolId: 'ap-northeast-1_EZgTRML85',
-  UserPoolId: 'ap-northeast-1_EZgTRML85',
-  ClientId: '1nthl81tk7nb4f9t4r76be3vif',
+  region: '*********',
+  IdentityPoolId: '********',
+  UserPoolId: '*********',
+  ClientId: '*************',
 }
 
 const poolData = {
@@ -142,21 +142,3 @@ export function verify(email: string, code: string, handler){
       }
   });
 }
-
-
-
-/*
-cognitoUser.getAttributeVerificationCode('email', {
-        onSuccess: function (result) {
-            console.log('call result: ' + result);
-        },
-        onFailure: function(err) {
-            alert(err);
-        },
-        inputVerificationCode: function() {
-            var verificationCode = prompt('Please input verification code: ' ,'');
-            cognitoUser.verifyAttribute('email', verificationCode, this);
-        }
-    });
-
-*/

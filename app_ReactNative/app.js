@@ -66,16 +66,6 @@ var APP  = React.createClass({
       });
     });
   },
-  onOpened(openResult) {
-    // console.log('Message: ', openResult.notification.payload.body);
-    // console.log('Data: ', openResult.notification.payload.additionalData);
-    // console.log('isActive: ', openResult.notification.isAppInFocus);
-    // console.log('openResult: ', openResult);
-  },
-
-  onRegistered(notifData) {
-  //  console.log("Device had been registered for push notifications!", notifData);
-  },
 
   onIds(device) {
     this.props.actions.user.OSRegistered(device.userId);
@@ -117,64 +107,21 @@ var APP  = React.createClass({
     this.props.actions.BT.disabled();
   },
   BTConnected(success){
-
     if(success){
       this.props.actions.BT.connected( Date.parse(new Date()) );
     }
-    else{
-    //  console.log('why this')
-      //BT.connect(this.BTConnected);
-      //this.props.actions.BT.desconnected();
-    }
   },
   BTDisconnected(){
-
-    /*
-    
-    */
-//    BT.disconnect();
-            //this.props.actions.user.logout();
-
-  //  this.props.actions.data.dataUpdated({BBT: [[{c: 1507399153000, v: 37}], [{c: 1507485553000, v: 36.2}], [{c: 1507571955000, v: 37}]]});
-  //  this.props.actions.data.checkFertility(this.props.state.user.user.tokenAWS);
-
     this.props.actions.BT.desconnected();
-   // console.log('BT DISConnected!!!!!')
-    // getAllData('a',(data)=>{
-    //   console.log(data)
-    // });
-    // getAllData('h',(data)=>{
-    //   console.log(data)
-    // });
-    // getAllData('t',(data)=>{
-    //   console.log(data)
-    // });
-    // getAllData('b',(data)=>{
-    //   console.log(data)
-    // });
-    // getAllData('s',(data)=>{
-    //   console.log(data)
-    // })
-    // checkDay('a');
-    // checkDay('h');
-    // checkDay('t');
-    // checkDay('b');
-    //checkDay('s');
-    //processData(  {t: [{v: 36, c: Date.parse(new Date())}]}/*JSON.parse( data.data.slice(0, -1) )*/  , 0, this.props.state.user.user.tokenAWS, this.props.state.user.user.email, this.props.state.user.user.password, 1506340031019 );
   },
   BTGetData(data){
     //console.log(data);
     if (!waitingBTReq && !waitingBTData ){//WAITING ACK
-   //   console.log("WAITING DATA REQUEST");
       if (data.data == "r\r\n") {
-   //     console.log(" <===   DATA REQUEST RECEIVED   ===");
-    //    console.log("===   SENDING DATA REQUEST ACK   ===>");
         waitingBTData = true;
         BT.write(() => {}, 'a');
       }
       else{
-    //    console.log(" <===   UNECSPECTED MESSAGE RECEIVED   ===");
-    //    console.log("===   SENDING RESET REQUEST   ===>");
         BT.write(() => {}, 'a');
       }
     }
@@ -184,13 +131,13 @@ var APP  = React.createClass({
         BT.write(() => {}, 'a');
       }
       else{//DATA RECEIVED
-      //  console.log( " <===   DATA RECEIVED   ===");
-      //  console.log("===   SENDING DATA ACK   ===>");
           //check login
           silentLogin(this.props.state.user.user.email, this.props.state.user.user.password, (token) => {
             
             lastTimeStamp = processData(  JSON.parse( data.data.slice(0, -1) ),  Date.parse(new Date()), true, token);
              if(new Date(lastTimeStamp).getDate() != new Date(this.props.state.data.data.lastUpdate).getDate()){
+
+                  // POST DATA to CLOUD  //
             //   console.log('hot')
             //   //get and post data
             //   getData_from('a', this.props.state.data.data.lastUpdate, (_data) => {
